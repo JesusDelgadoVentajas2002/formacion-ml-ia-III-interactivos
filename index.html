@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La retropropagación, vista entre neuronas · Módulo 8</title>
+<style>
+  :root{--bg:#060d17;--bg2:#0d2036;--panel:#0b1726;--line:#1d3048;--text:#b9c7d6;--strong:#eef4fa;--muted:#6f8399;
+        --accent:#2E6F95;--bubble:#0f2236f2;--bubbleLine:#2f5579;--btnHover:#36597d;--primary:#16314d;--primaryLine:#2b5378;
+        --kblue:#9cc7f0;--kred:#ff7a70;--kgreen:#4cc38a}
+  [data-theme="light"]{--bg:#f3f6f9;--bg2:#ffffff;--panel:#ffffff;--line:#d3dde7;--text:#3d4b59;--strong:#13202d;--muted:#6b7b8b;
+        --bubble:#fffffff5;--bubbleLine:#b9cbdc;--btnHover:#8fb0cc;--primary:#e6eef6;--primaryLine:#b9cbdc;
+        --kblue:#2E6F95;--kred:#C0504D;--kgreen:#3C8D5A}
+  *{box-sizing:border-box}
+  html,body{transition:background-color .3s,color .3s}
+  body{margin:0;background:radial-gradient(1200px 700px at 50% 0%,var(--bg2) 0%,var(--bg) 60%);color:var(--text);
+       font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  main{width:min(1180px,100% - 28px);margin:30px auto 70px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .kicker{font:11px/1.4 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+  h1{color:var(--strong);font-size:clamp(22px,3vw,32px);line-height:1.15;margin:10px 0 10px;font-weight:700;letter-spacing:-.01em}
+  .lead{max-width:860px;margin:0 0 18px}
+  .lead .b{color:var(--kblue);font-weight:700}.lead .r{color:var(--kred);font-weight:700}
+  .stage{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -40px #0008}
+  canvas{display:block;width:100%;height:auto}
+  .bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 2px 0}
+  .group{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .label{font:11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+  button{font:inherit;font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;transition:.15s}
+  button:hover:not(:disabled){border-color:var(--btnHover);color:var(--strong)}
+  button:disabled{opacity:.4;cursor:default}
+  button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary{background:var(--primary);border-color:var(--primaryLine);color:var(--strong)}
+  .theme{white-space:nowrap}
+  input[type=range]{accent-color:var(--accent);width:120px}
+  .readout{margin:14px 2px 0;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--text)}
+  .readout b{color:var(--strong)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin:10px 2px 0;font-size:13px;color:var(--muted)}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+  section{margin-top:30px;max-width:900px}
+  h2{color:var(--strong);font-size:17px;margin:0 0 8px}
+  li{margin:5px 0}
+  .small{font-size:13px;color:var(--muted)}
+  /* globo de diálogo */
+  .bubble{position:absolute;width:min(380px,44%);background:var(--bubble);border:1px solid var(--bubbleLine);border-radius:12px;
+          padding:12px 14px 12px;color:var(--text);font-size:14px;line-height:1.5;box-shadow:0 14px 40px -12px #000a;
+          transform:translateX(-50%);transition:left .45s cubic-bezier(.3,.7,.2,1),top .45s cubic-bezier(.3,.7,.2,1),opacity .25s;
+          backdrop-filter:blur(6px);z-index:3}
+  .bubble[hidden]{display:block;opacity:0;pointer-events:none}
+  .bubble .tail{position:absolute;width:14px;height:14px;background:var(--bubble);border-right:1px solid var(--bubbleLine);border-bottom:1px solid var(--bubbleLine);
+          bottom:-8px;transform:translateX(-50%) rotate(45deg)}
+  .bubble.below .tail{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
+  .bubble h3{margin:0 0 4px;font-size:14px;color:var(--strong)}
+  .bubble .count{font:11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .bubble p{margin:0}
+  .bubble .num{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--kred);font-weight:700}
+  .bubble .nav{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+  .bubble .nav button{padding:5px 10px;font-size:12.5px}
+  body.still main{margin:0;width:100%}
+  body.still .chrome{display:none}
+  body.still .stage{border:none;border-radius:0;box-shadow:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="chrome">
+    <div class="top">
+      <p class="kicker">Formación ML/IA básica · Parte III · Módulo 8 · Entrenamiento de redes neuronales</p>
+      <button class="theme" id="theme" aria-label="Cambiar entre modo claro y oscuro">☀ Modo claro</button>
+    </div>
+    <h1>La retropropagación, vista entre neuronas</h1>
+    <p class="lead">En la pasada hacia delante, las señales <span class="b">azules</span> viajan de la entrada a la salida. La salida se compara con la respuesta correcta y aparece el error, que recorre la red en sentido contrario como un pulso <span class="r">rojo</span>. Al atravesar cada capa, el error se multiplica por los pesos y por la pendiente de la activación: el tamaño del pulso y el brillo de cada neurona son el tamaño real de esa señal, calculado con una red de verdad. Pulsa <b>Paso a paso</b> para recorrerlo con explicaciones.</p>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1180" height="540" aria-label="Red neuronal con neuronas dibujadas como biológicas. Las señales viajan hacia delante y el error vuelve hacia atrás; el tamaño del pulso en cada capa es el tamaño real de la señal de error."></canvas>
+    <div class="bubble chrome" id="bubble" hidden role="status" aria-live="polite">
+      <div class="count" id="bcount"></div><h3 id="btitle"></h3><p id="btext"></p>
+      <div class="nav"><button id="bprev">← Anterior</button><button class="primary" id="bnext">Siguiente →</button></div>
+      <span class="tail" id="btail"></span>
+    </div>
+  </div>
+  <div class="chrome">
+    <div class="bar">
+      <div class="group"><span class="label">Modo</span><button id="modeAuto" aria-pressed="true">Animación continua</button><button id="modeStep" aria-pressed="false">Paso a paso</button></div>
+      <div class="group" id="autoCtl"><button class="primary" id="play">Pausa</button><button id="replay">Repetir</button></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="presets"><span class="label">Casos</span></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="acts"><span class="label">Activación</span></div>
+      <div class="group" id="inits"><span class="label">Pesos iniciales</span></div>
+      <div class="group"><span class="label">Atajos residuales</span><button id="res" aria-pressed="false">Desactivados</button></div>
+      <div class="group"><span class="label">Capas ocultas</span><input id="layers" type="range" min="3" max="10" value="6"><b id="lv">6</b></div>
+    </div>
+    <p class="readout" id="readout"></p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--kblue)"></i>Señal hacia delante</span>
+      <span><i class="dot" style="background:var(--kred)"></i>Error hacia atrás (su tamaño es real)</span>
+      <span><i class="dot" style="background:var(--kgreen)"></i>Atajo residual</span>
+    </div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>Paso a paso:</b> avanza con el botón «Siguiente» o con la flecha → del teclado. En cada paso, el globo explica qué ocurre y con qué números.</li>
+        <li><b>Sigmoide:</b> su pendiente vale como mucho 0.25, así que el error se encoge en cada capa. Con 10 capas, a la primera apenas le llega nada: es el <i>vanishing gradient</i> y explica por qué la red profunda con sigmoide de TensorFlow Playground (apartado 3.4 del Módulo 7) no aprendía.</li>
+        <li><b>ReLU con inicialización de He:</b> la pendiente es 1 en la zona positiva y la escala de los pesos está calculada para que la señal ni crezca ni se apague. El error llega prácticamente entero.</li>
+        <li><b>Pesos iniciales grandes:</b> la misma ReLU con pesos un 50 % más grandes. El error crece en cada capa: es la explosión del gradiente.</li>
+        <li><b>Sigmoide con atajos residuales:</b> cada dos capas, un atajo suma la entrada del bloque a su salida. El error dispone de un camino que no se multiplica y vuelve a llegar a las primeras capas.</li>
+        <li>Prueba a cambiar el número de capas: el efecto de multiplicar capa a capa crece de forma exponencial.</li>
+      </ul>
+      <p class="small">Cómo se calcula: una red real de 32 neuronas por capa, con datos aleatorios y la inicialización indicada (Glorot para sigmoide y tanh, He para ReLU). Cada capa se dibuja con 3 neuronas, y el valor bajo cada capa es el tamaño medio de la señal de error que llega a ella, comparado con el de la última capa oculta (media geométrica de 5 inicializaciones). Las neuronas tienen aspecto biológico solo como recurso visual: el cerebro no aprende por retropropagación.</p>
+    </section>
+  </div>
+</main>
+<script>
+(() => {
+// ------------------------------------------------------------ modelo real
+function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function gauss(r){let u=0,v=0;while(!u)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const ACT={
+  sigmoid:{f:z=>1/(1+Math.exp(-z)),d:(z,a)=>a*(1-a)},
+  tanh:{f:z=>Math.tanh(z),d:(z,a)=>1-a*a},
+  relu:{f:z=>z>0?z:0,d:(z,a)=>z>0?1:0}
+};
+function deltas(act,init,res,L,seed){
+  const W=32,B=64,OUT=10,r=rng(seed*7919+13);
+  const scale=init==="grandes"?1.5:1;
+  const std=(nin,nout)=>(act==="relu"?Math.sqrt(2/nin):Math.sqrt(2/(nin+nout)))*scale;
+  const Ws=[];for(let l=0;l<=L;l++){const nout=l===L?OUT:W,s=std(W,nout),m=new Float64Array(W*nout);for(let i=0;i<m.length;i++)m[i]=gauss(r)*s;Ws.push(m)}
+  const X=new Float64Array(B*W);for(let i=0;i<X.length;i++)X[i]=gauss(r);
+  const Y=new Int32Array(B);for(let i=0;i<B;i++)Y[i]=Math.floor(r()*OUT);
+  const h=[X],z=[null],a=[null],F=ACT[act];
+  for(let l=1;l<=L;l++){const M=Ws[l-1],hp=h[l-1],zz=new Float64Array(B*W),aa=new Float64Array(B*W);
+    for(let b=0;b<B;b++)for(let j=0;j<W;j++){let s=0;for(let i=0;i<W;i++)s+=hp[b*W+i]*M[i*W+j];zz[b*W+j]=s;aa[b*W+j]=F.f(s)}
+    z.push(zz);a.push(aa);
+    let hh=aa;if(res&&l%2===0){hh=new Float64Array(B*W);const hs=h[l-2];for(let k=0;k<hh.length;k++)hh[k]=aa[k]+hs[k]}
+    h.push(hh)}
+  // salida softmax + entropía cruzada
+  const Mo=Ws[L],g=[];for(let l=0;l<=L;l++)g.push(new Float64Array(B*W));
+  for(let b=0;b<B;b++){const o=new Float64Array(OUT);let mx=-1e9;for(let k=0;k<OUT;k++){let s=0;for(let i=0;i<W;i++)s+=h[L][b*W+i]*Mo[i*OUT+k];o[k]=s;mx=Math.max(mx,s)}
+    let se=0;for(let k=0;k<OUT;k++){o[k]=Math.exp(o[k]-mx);se+=o[k]}for(let k=0;k<OUT;k++)o[k]/=se;o[Y[b]]-=1;
+    for(let i=0;i<W;i++){let s=0;for(let k=0;k<OUT;k++)s+=Mo[i*OUT+k]*o[k];g[L][b*W+i]=s/B}}
+  for(let l=L;l>=1;l--){const M=Ws[l-1],gl=g[l],dz=new Float64Array(B*W);
+    for(let k=0;k<dz.length;k++)dz[k]=gl[k]*F.d(z[l][k],a[l][k]);
+    for(let b=0;b<B;b++)for(let i=0;i<W;i++){let s=0;for(let j=0;j<W;j++)s+=M[i*W+j]*dz[b*W+j];g[l-1][b*W+i]+=s}
+    if(res&&l%2===0){const gs=g[l-2];for(let k=0;k<gs.length;k++)gs[k]+=gl[k]}}
+  const rms=v=>{let s=0;for(const x of v)s+=x*x;return Math.sqrt(s/v.length)};
+  return g.map(rms);
+}
+let j;
+function relDeltas(act,init,res,L){
+  const S=5,acc=new Float64Array(L+1);
+  for(let s=0;s<S;s++){const d=deltas(act,init,res,L,s+1);for(let l=0;l<=L;l++)acc[l]+=Math.log(d[l]/d[L])}
+  return Array.from(acc,v=>Math.exp(v/S)); // índice 0 = entrada, L = última capa oculta
+}
+
+
+// ------------------------------------------------------------ estado
+const q=new URLSearchParams(location.search);
+const PRESETS={
+  sigmoide:{name:"Sigmoide",act:"sigmoid",init:"correcta",res:false},
+  relu:{name:"ReLU con inicialización de He",act:"relu",init:"correcta",res:false},
+  grandes:{name:"Pesos iniciales grandes",act:"relu",init:"grandes",res:false},
+  residual:{name:"Sigmoide con atajos residuales",act:"sigmoid",init:"correcta",res:true},
+};
+const ACTN={sigmoid:"Sigmoide",tanh:"Tanh",relu:"ReLU"};
+let st={act:"sigmoid",init:"correcta",res:false,L:6};
+const p0=PRESETS[q.get("preset")]||PRESETS.sigmoide;Object.assign(st,{act:p0.act,init:p0.init,res:p0.res});
+if(q.has("layers"))st.L=Math.max(3,Math.min(10,+q.get("layers")));
+const STILL=q.has("still");if(STILL)document.body.classList.add("still");
+let rel=[];
+
+// ------------------------------------------------------------ tema
+const THEMES={
+  dark:{bg0:"#0f2540",bg1:"#040a12",grid:"rgba(120,160,200,.05)",axon:"rgba(150,190,225,.20)",branch:"rgba(150,190,225,.14)",bouton:"rgba(170,205,235,.55)",
+        dend:"rgba(170,205,235,.62)",soma:["#eaf3fb","#8db8de","#2c5678"],nucleus:"rgba(20,45,70,.55)",dim:"4,10,18",
+        inFill:"#123150",inStroke:"#7fb0dc",label:"rgba(170,190,210,.75)",faint:"rgba(255,255,255,.12)",title:"rgba(200,215,230,.85)",sub:"rgba(150,175,200,.7)",
+        blue:"rgba(156,199,240,A)",green:"rgba(76,195,138,A)",red:[255,90,78],hot:[255,220,118],glowOp:"lighter",core:"255,255,255",errText:[255,150,135]},
+  light:{bg0:"#ffffff",bg1:"#e8eef4",grid:"rgba(46,111,149,.06)",axon:"rgba(46,111,149,.28)",branch:"rgba(46,111,149,.18)",bouton:"rgba(46,111,149,.55)",
+        dend:"rgba(70,120,160,.55)",soma:["#ffffff","#bcd5ea","#5B8DB8"],nucleus:"rgba(30,60,90,.45)",dim:"238,243,248",
+        inFill:"#DCE9F4",inStroke:"#2E6F95",label:"rgba(60,75,90,.85)",faint:"rgba(0,0,0,.15)",title:"rgba(20,32,45,.9)",sub:"rgba(90,105,120,.85)",
+        blue:"rgba(46,111,149,A)",green:"rgba(60,141,90,A)",red:[192,60,58],hot:[208,140,26],glowOp:"source-over",core:"255,255,255",errText:[192,70,66]}
+};
+let themeName=q.get("theme")==="light"?"light":(q.get("theme")==="dark"?"dark":(()=>{try{return localStorage.getItem("m8-theme")||"dark"}catch(e){return "dark"}})());
+let TH=THEMES[themeName];
+function applyTheme(){document.documentElement.dataset.theme=themeName;TH=THEMES[themeName];
+  const b=document.getElementById("theme");b.textContent=themeName==="dark"?"☀ Modo claro":"☾ Modo oscuro";
+  try{localStorage.setItem("m8-theme",themeName)}catch(e){}; if(!playing||stepMode)requestFrame()}
+
+function recompute(){rel=relDeltas(st.act,st.init,st.res,st.L);window.__rel=rel;layout();updateUI();t0=performance.now();if(stepMode){step=Math.min(step,totalSteps()-1);showStep()}}
+
+// ------------------------------------------------------------ dibujo
+const cv=document.getElementById("c"),cx=cv.getContext("2d");
+const CW=1180,CH=540;
+function fit(){const dpr=Math.min(window.devicePixelRatio||1,STILL?3:2);cv.width=CW*dpr;cv.height=CH*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
+fit();
+let NET=null;
+function bez(p0,p1,p2,p3,t){const u=1-t;return[u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]]}
+function layout(){
+  const L=st.L,r=rng(42);
+  const x0=150,x1=CW-190,ys=[CH*0.36,CH*0.55,CH*0.74];
+  const layers=[];
+  layers.push(ys.map((y)=>({x:70,y:y,kind:"in"})));
+  for(let l=1;l<=L;l++){const x=x0+(x1-x0)*(l-1)/Math.max(1,L-1);
+    layers.push(ys.map((y)=>({x:x+(r()-.5)*14,y:y+(r()-.5)*16,kind:"hid",soma:somaShape(r),dend:dendrites(r)})))}
+  layers.push([{x:CW-95,y:ys[1],kind:"out",soma:somaShape(r),dend:dendrites(r)}]);
+  const links=[];
+  for(let l=0;l<layers.length-1;l++){const A=layers[l],Bl=layers[l+1];const segs=[];
+    A.forEach((a,ia)=>{const start=[a.x+(a.kind==="in"?10:15),a.y];
+      const jx=a.x+(Bl[0].x-a.x)*0.45,jy=a.y*0.75+ys[1]*0.25+(r()-.5)*10;
+      const trunk=[start,[start[0]+30,start[1]],[jx-25,jy],[jx,jy]];
+      Bl.forEach((b,ib)=>{const end=[b.x-34,b.y+(ia-1)*7];const br=[[jx,jy],[jx+25,jy],[end[0]-30,end[1]],end];segs.push({from:ia,to:ib,trunk,br})})});
+    links.push(segs)}
+  const arcs=[];
+  if(st.res)for(let l=2;l<=L;l+=2){const a=layers[l-2][0],b=layers[l][0];const h=46+(l%4)*6;
+    arcs.push({from:l-2,to:l,p:[[a.x+4,a.y-16],[a.x+40,a.y-16-h*1.6],[b.x-40,b.y-16-h*1.6],[b.x-4,b.y-16]]})}
+  NET={layers,links,arcs,ys};
+}
+function somaShape(r){const n=9,ph=r()*6,amp=[];for(let i=0;i<n;i++)amp.push(.82+r()*.32);return{ph,amp}}
+function dendrites(r){const list=[];const k=5+Math.floor(r()*2);
+  for(let i=0;i<k;i++){const ang=Math.PI*(0.55+1.0*(i+r()*.6)/k);const len=22+r()*20;
+    const sub=[];const ns=1+Math.floor(r()*2);for(let s=0;s<ns;s++)sub.push({at:.45+r()*.35,da:(r()<.5?-1:1)*(.35+r()*.45),len:8+r()*10});
+    list.push({ang,len,bend:(r()-.5)*.6,sub})}
+  list.push({ang:-Math.PI*0.42,len:16+r()*8,bend:.3,sub:[]},{ang:Math.PI*0.42,len:16+r()*8,bend:-.3,sub:[]});
+  return list}
+function drawSoma(n,R,glowCol,glowAmt){
+  const {ph,amp}=n.soma;const pts=[];const N=36;
+  for(let i=0;i<N;i++){const t=i/N*2*Math.PI;let m=0;for(let k=0;k<amp.length;k++)m+=amp[k]*Math.cos(k*t+ph*(k+1))/amp.length;const rr=R*(1+.18*m);pts.push([n.x+rr*Math.cos(t),n.y+rr*0.92*Math.sin(t)])}
+  const path=()=>{cx.beginPath();pts.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath()};
+  cx.save();
+  if(glowAmt>0){cx.shadowColor=glowCol;cx.shadowBlur=10+38*glowAmt}
+  const g=cx.createRadialGradient(n.x-R*.3,n.y-R*.35,R*.1,n.x,n.y,R*1.25);
+  g.addColorStop(0,TH.soma[0]);g.addColorStop(.55,TH.soma[1]);g.addColorStop(1,TH.soma[2]);
+  cx.fillStyle=g;path();cx.fill();
+  if(glowAmt>0){cx.shadowBlur=0;cx.globalCompositeOperation=TH.glowOp;cx.fillStyle=glowCol;cx.globalAlpha=Math.min(themeName==="dark"?.85:.7,glowAmt*.8);path();cx.fill();cx.globalAlpha=1;cx.globalCompositeOperation="source-over"}
+  cx.restore();
+  if(themeName==="light"){cx.strokeStyle="rgba(46,111,149,.55)";cx.lineWidth=1;path();cx.stroke()}
+  cx.fillStyle=TH.nucleus;cx.beginPath();cx.ellipse(n.x+R*.1,n.y+R*.05,R*.34,R*.3,0,0,7);cx.fill();
+  cx.fillStyle="rgba(255,255,255,.55)";cx.beginPath();cx.arc(n.x-R*.05,n.y-R*.05,R*.1,0,7);cx.fill();
+}
+function taper(points,w0,w1,col){for(let i=0;i<points.length-1;i++){const t=i/(points.length-1);cx.strokeStyle=col;cx.lineWidth=w0+(w1-w0)*t;cx.beginPath();cx.moveTo(points[i][0],points[i][1]);cx.lineTo(points[i+1][0],points[i+1][1]);cx.stroke()}}
+function drawDendrites(n,col,R){
+  cx.lineCap="round";
+  for(const d of n.dend){const pts=[];const S=10;for(let i=0;i<=S;i++){const t=i/S;const a=d.ang+d.bend*t;const rr=R*.8+d.len*t;pts.push([n.x+rr*Math.cos(a),n.y+rr*Math.sin(a)])}
+    taper(pts,3.2,.6,col);
+    for(const s of d.sub){const i0=Math.round(s.at*S),p=pts[i0];const a=d.ang+d.bend*s.at+s.da;const sp=[];for(let i=0;i<=5;i++){const t=i/5;sp.push([p[0]+s.len*t*Math.cos(a),p[1]+s.len*t*Math.sin(a)])}taper(sp,1.4,.4,col)}}
+}
+function curvePts(c,n=28){const out=[];for(let i=0;i<=n;i++)out.push(bez(c[0],c[1],c[2],c[3],i/n));return out}
+function strokeCurve(c,w,col){cx.strokeStyle=col;cx.lineWidth=w;cx.beginPath();cx.moveTo(c[0][0],c[0][1]);cx.bezierCurveTo(c[1][0],c[1][1],c[2][0],c[2][1],c[3][0],c[3][1]);cx.stroke()}
+function pulse(x,y,size,col,alpha){cx.save();cx.globalCompositeOperation=TH.glowOp;
+  const g=cx.createRadialGradient(x,y,0,x,y,size*3.2);g.addColorStop(0,col.replace("A",(alpha).toFixed(3)));g.addColorStop(.35,col.replace("A",(alpha*.45).toFixed(3)));g.addColorStop(1,col.replace("A","0"));
+  cx.fillStyle=g;cx.beginPath();cx.arc(x,y,size*3.2,0,7);cx.fill();
+  cx.fillStyle=themeName==="dark"?`rgba(255,255,255,${(alpha*.9).toFixed(3)})`:col.replace("A",Math.min(1,alpha*1.2).toFixed(3));cx.beginPath();cx.arc(x,y,Math.max(.6,size*.45),0,7);cx.fill();cx.restore()}
+function hot(s){const h=Math.max(0,Math.min(1,(s-1)/0.55));const a=TH.red,b=TH.hot;return a.map((v,i)=>Math.round(v+(b[i]-v)*h))}
+function errCol(s,a){const [r,g,b]=hot(s);return a===undefined?`rgba(${r},${g},${b},A)`:`rgba(${r},${g},${b},${a})`}
+function strength(v){const lg=Math.log10(Math.max(v,1e-12));return Math.max(0,Math.min(1.6,1+lg/3.5))}
+const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+function fmt(v){if(v>=100)return v.toFixed(0);if(v>=1)return v.toFixed(2);if(v>=0.01)return v.toFixed(3);const e=Math.floor(Math.log10(v)),m=v/Math.pow(10,e);return m.toFixed(1)+"·10"+String(e).split("").map(c=>SUP[c]).join("")}
+
+// ------------------------------------------------------------ línea de tiempo
+const FWD=0.42,BWD=0.62,FLASH=0.8,HOLD=2.6;
+const SFWD=1.0,SBWD=1.3,SFLASH=1.1; // duraciones en modo paso a paso
+let t0=performance.now(),playing=!STILL,stepMode=false,step=0,stepT0=0,raf=0;
+function phaseAt(t){const nL=NET.layers.length-1;const tf=nL*FWD,tb=nL*BWD;const T=tf+FLASH+tb+HOLD;t=t%T;
+  if(t<tf)return{ph:"fwd",k:t/FWD};if(t<tf+FLASH)return{ph:"flash",k:(t-tf)/FLASH};
+  if(t<tf+FLASH+tb)return{ph:"bwd",k:(t-tf-FLASH)/BWD};return{ph:"hold",k:(t-tf-FLASH-tb)/HOLD}}
+// pasos: 0 inicio · 1..nL hacia delante · nL+1 error · nL+2..2nL+1 hacia atrás · 2nL+2 resumen
+function totalSteps(){const nL=NET.layers.length-1;return 2*nL+3}
+function stepPhase(s,tl){const nL=NET.layers.length-1;
+  if(s===0)return{ph:"idle"};
+  if(s<=nL){const p=Math.min(1,tl/SFWD);return p<1?{ph:"fwd",k:(s-1)+p}:{ph:"fwd",k:s,noPulse:true,done:true}}
+  if(s===nL+1){const p=Math.min(1,tl/SFLASH);return p<1?{ph:"flash",k:p}:{ph:"flash",k:.5,done:true}}
+  if(s<=2*nL+1){const j=s-nL-1;const p=Math.min(1,tl/SBWD);return p<1?{ph:"bwd",k:(j-1)+p}:{ph:"bwd",k:j,noPulse:true,done:true}}
+  return{ph:"hold",k:0,done:true}}
+
+function draw(now){
+  raf=0;
+  let P;
+  if(STILL)P={ph:"still"};
+  else if(stepMode)P=stepPhase(step,(now-stepT0)/1000);
+  else P=phaseAt(Math.max(0,(now-t0)/1000));
+  cx.clearRect(0,0,CW,CH);
+  const bg=cx.createRadialGradient(CW*.5,CH*.15,40,CW*.5,CH*.5,CW*.75);bg.addColorStop(0,TH.bg0);bg.addColorStop(1,TH.bg1);cx.fillStyle=bg;cx.fillRect(0,0,CW,CH);
+  cx.strokeStyle=TH.grid;cx.lineWidth=1;for(let x=0;x<CW;x+=40){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,CH);cx.stroke()}for(let y=0;y<CH;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(CW,y);cx.stroke()}
+  const nL=NET.layers.length-1,L=st.L;
+  const errAt=(li)=>li>L?1:rel[li];
+  let bReach=1e9;
+  if(P.ph==="bwd"){const seg=Math.floor(P.k);bReach=nL-seg}
+  else if(P.ph==="hold"||P.ph==="still")bReach=-1e9;
+  const errPhase=P.ph==="bwd"||P.ph==="hold"||P.ph==="still"||P.ph==="flash";
+  const lit=(li)=>(P.ph==="hold"||P.ph==="still")?true:(P.ph==="bwd"?li>=bReach:false)||(li===nL&&P.ph==="flash");
+  cx.lineCap="round";
+  NET.links.forEach((segs)=>{segs.forEach(s=>{strokeCurve(s.trunk,2.1,TH.axon);strokeCurve(s.br,1.2,TH.branch);
+    const e=s.br[3];cx.fillStyle=TH.bouton;cx.beginPath();cx.arc(e[0],e[1],2.1,0,7);cx.fill()})});
+  // conexiones recorridas por la señal hacia delante (paso a paso)
+  if(P.ph==="fwd"){const reached=Math.floor(P.k+1e-6);NET.links.forEach((segs,l)=>{if(l>=reached)return;segs.forEach(sg=>{strokeCurve(sg.trunk,2.4,TH.blue.replace("A",".45"));strokeCurve(sg.br,1.4,TH.blue.replace("A",".35"))})})}
+  NET.links.forEach((segs,l)=>{if(!(lit(l)&&errPhase&&P.ph!=="flash"))return;const s=strength(errAt(l));if(s<=0.02)return;
+    segs.forEach(sg=>{cx.save();cx.globalCompositeOperation=TH.glowOp;if(themeName==="dark"){cx.shadowColor="rgba(255,90,78,.9)";cx.shadowBlur=8*s}
+      strokeCurve(sg.br,0.3+1.8*s,errCol(s,(0.04+0.40*Math.min(1,s)).toFixed(3)));strokeCurve(sg.trunk,0.4+2.8*s,errCol(s,(0.05+0.45*Math.min(1,s)).toFixed(3)));cx.restore()})});
+  NET.arcs.forEach(a=>{cx.save();cx.shadowColor=TH.green.replace("A",".8");cx.shadowBlur=themeName==="dark"?10:4;strokeCurve(a.p,3,TH.green.replace("A",".6"));cx.restore();
+    const s=strength(errAt(a.from));if(lit(a.from)&&errPhase&&P.ph!=="flash"&&s>0.02){cx.save();cx.globalCompositeOperation=TH.glowOp;strokeCurve(a.p,1+2.5*s,errCol(s,(0.15+0.4*s).toFixed(3)));cx.restore()}});
+  NET.layers.forEach((layer,li)=>layer.forEach(n=>{
+    if(n.kind==="in"){const on=P.ph==="fwd"&&P.k<1;cx.save();cx.shadowColor=TH.blue.replace("A",".7");cx.shadowBlur=on?18:6;cx.fillStyle=TH.inFill;cx.strokeStyle=TH.inStroke;cx.lineWidth=1.6;
+      cx.beginPath();cx.roundRect?cx.roundRect(n.x-10,n.y-10,20,20,4):cx.rect(n.x-10,n.y-10,20,20);cx.fill();cx.stroke();cx.restore();return}
+    const R=n.kind==="out"?17:13;
+    drawDendrites(n,TH.dend,R);
+    let gAmt=0,gCol=errCol(1,1);
+    if(lit(li)&&errPhase){gAmt=strength(errAt(li));gCol=errCol(gAmt,1)}
+    if(P.ph==="fwd"){const on=stepMode?(P.k>=li-0.05&&P.k<=li+0.02):(P.k>=li-0.05&&P.k<li+0.9);if(on){gAmt=.7;gCol=TH.blue.replace("A","1")}
+      else if(stepMode&&P.k>li){gAmt=.25;gCol=TH.blue.replace("A","1")}}
+    drawSoma(n,R,gCol,Math.min(1.5,gAmt));
+    if(lit(li)&&errPhase&&P.ph!=="flash"&&n.kind!=="out"){const dim=Math.max(0,1-Math.min(1,gAmt));if(dim>0.02){cx.fillStyle=`rgba(${TH.dim},${(0.62*dim).toFixed(3)})`;cx.beginPath();cx.arc(n.x,n.y,R*1.25,0,7);cx.fill()}}
+  }));
+  if(P.ph==="fwd"&&!P.noPulse){const seg=Math.floor(P.k),f=P.k-seg;if(seg>=0&&seg<NET.links.length){NET.links[seg].forEach(s=>{const pts=f<.5?curvePts(s.trunk):curvePts(s.br);const tt=f<.5?f*2:(f-.5)*2;const p=pts[Math.min(pts.length-1,Math.round(tt*(pts.length-1)))];pulse(p[0],p[1],4.2,TH.blue,.95)})}}
+  if(P.ph==="bwd"&&!P.noPulse){const seg=Math.floor(P.k),f=P.k-seg;const l=nL-1-seg;if(l>=0){const s=strength(errAt(l));const size=1+6.5*s,al=Math.max(.06,Math.min(1,.15+.85*s));
+      NET.links[l].forEach(sg=>{const pts=f<.5?curvePts(sg.br).reverse():curvePts(sg.trunk).reverse();const tt=f<.5?f*2:(f-.5)*2;const p=pts[Math.min(pts.length-1,Math.round(tt*(pts.length-1)))];pulse(p[0],p[1],size,errCol(s),al)});
+      NET.arcs.filter(a=>a.to===l+1).forEach(a=>{const pts=curvePts(a.p,40).reverse();const p=pts[Math.round(f*40)];pulse(p[0],p[1],size,errCol(s),al)})}}
+  if(P.ph==="still"){NET.links.forEach((segs,l)=>{const s=strength(errAt(l));if(s<0.02)return;const size=1+6.5*s,al=Math.max(.08,Math.min(1,.15+.85*s));segs.forEach((sg,i)=>{if(i%3!==1)return;const pts=curvePts(sg.br);const p=pts[Math.round(pts.length*.45)];pulse(p[0],p[1],size,errCol(s),al)})});
+    NET.arcs.forEach(a=>{const s=strength(errAt(a.from));const pts=curvePts(a.p,40);const p=pts[20];pulse(p[0],p[1],1+6.5*s,errCol(s),Math.min(1,.15+.85*s))})}
+  const o=NET.layers[nL][0];
+  if(P.ph==="flash"){const k=Math.sin(Math.min(1,P.k)*Math.PI);pulse(o.x+2,o.y,9+6*k,errCol(1),.9*k+.1)}
+  // etiquetas
+  cx.textAlign="center";
+  NET.layers.forEach((layer,li)=>{const x=layer[0].x;const yb=CH-62;
+    cx.font="600 12px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.label;
+    const name=li===0?"entrada":li===nL?"salida":"capa "+li;cx.fillText(name.toUpperCase(),x,yb);
+    if(li<=L&&li>0){const show=lit(li)&&errPhase&&P.ph!=="flash";cx.font="700 15px ui-monospace,Menlo,Consolas,monospace";
+      const s=Math.min(1,strength(errAt(li)));const [r,g,b]=TH.errText;cx.fillStyle=show?`rgba(${r},${g},${b},${(0.45+0.55*s).toFixed(2)})`:TH.faint;
+      cx.fillText(show?"×"+fmt(errAt(li)):"·",x,yb+22)}
+    if(li===nL){cx.font="700 15px ui-monospace,Menlo,Consolas,monospace";const [r,g,b]=TH.errText;cx.fillStyle=errPhase?`rgba(${r},${g},${b},.95)`:TH.faint;cx.fillText("error",x,yb+22)}});
+  cx.textAlign="left";cx.font="600 13px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.title;
+  const cfg=(st.res?ACTN[st.act]+" con atajos residuales":(st.init==="grandes"?ACTN[st.act]+" · pesos iniciales grandes":(st.act==="relu"?"ReLU · inicialización de He":ACTN[st.act]+" · inicialización de Glorot")));
+  cx.fillText(cfg.toUpperCase(),22,30);
+  cx.font="12px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.sub;
+  const phTxt={idle:"Red en reposo",fwd:"1 · pasada hacia delante",flash:"2 · se calcula el error",bwd:"3 · el error vuelve hacia atrás",hold:"3 · el error vuelve hacia atrás",still:"Error que llega a cada capa (última capa = ×1)"}[P.ph];
+  cx.fillText(phTxt.toUpperCase(),22,50);
+  cx.textAlign="right";cx.font="600 13px ui-monospace,Menlo,Consolas,monospace";const [r,g,b]=TH.errText;cx.fillStyle=`rgba(${r},${g},${b},.9)`;
+  if(P.ph==="hold"||P.ph==="still"||(P.ph==="bwd"&&bReach<=1))cx.fillText("A LA CAPA 1 LLEGA ×"+fmt(rel[1]),CW-22,30);
+  const animating=!STILL&&((!stepMode&&playing)||(stepMode&&!P.done&&P.ph!=="idle"));
+  if(animating)raf=requestAnimationFrame(draw);
+}
+function requestFrame(){if(!raf)raf=requestAnimationFrame(draw)}
+
+// ------------------------------------------------------------ explicaciones paso a paso
+const stage=document.getElementById("stage"),bubble=document.getElementById("bubble");
+function slopeNote(d){ // d: capa a la que llega el error (desde d+1)
+  if(st.res&&d%2===0&&d+2<=st.L)return ` Además, por el atajo residual le llega directamente el error de la capa ${d+2} sin multiplicarse: por eso no se pierde.`;
+  if(st.init==="grandes")return " Los pesos son demasiado grandes y multiplican la señal por más de 1: el error crece.";
+  if(st.act==="sigmoid")return " La pendiente de la sigmoide vale como mucho 0.25, por eso el error se encoge.";
+  if(st.act==="tanh")return " La pendiente de tanh vale como mucho 1 y se reduce lejos del centro.";
+  return " Con ReLU la pendiente es 1 y la escala de los pesos está ajustada: el error se mantiene.";
+}
+function stepInfo(s){
+  const nL=NET.layers.length-1,L=st.L,act=st.act==="relu"?"ReLU":ACTN[st.act].toLowerCase();
+  const n=(v)=>`<span class="num">×${fmt(v)}</span>`;
+  if(s===0)return{at:0.5,title:"Una red de "+L+" capas ocultas",text:`Cada capa tiene 32 neuronas (aquí se dibujan 3) con activación ${act}${st.res?" y atajos residuales cada dos capas":""}. Vamos a seguir una predicción completa: primero hacia delante y después, el error hacia atrás.`};
+  if(s<=nL){const dest=s;const x=NET.layers[dest][0].x/CW;
+    if(s===1)return{at:x,title:"Los datos entran en la capa 1",text:`Cada neurona de la capa 1 recibe los datos de entrada, calcula su suma ponderada $z$ y le aplica la activación (${act}). Su salida es la entrada de la capa siguiente.`};
+    if(s===nL)return{at:x,title:"Se obtiene la predicción",text:"La última capa oculta alimenta a la neurona de salida, que devuelve la predicción ŷ. Hasta aquí, la red solo ha hecho cálculos: todavía no sabe si ha acertado."};
+    return{at:x,title:`De la capa ${s-1} a la capa ${s}`,text:`La capa ${s-1} pasa su salida a la capa ${s}, que repite el mismo cálculo: suma ponderada y activación. Así, capa a capa, la información avanza hacia la salida.`}}
+  if(s===nL+1)return{at:NET.layers[nL][0].x/CW,title:"Se calcula el error",text:"La predicción se compara con la respuesta correcta mediante la función de coste (apartado 1). La diferencia es el error de la salida: el punto de partida de la retropropagación."};
+  if(s<=2*nL+1){const j=s-nL-1,d=nL-j;const x=NET.layers[d][0].x/CW;
+    if(d===L)return{at:x,title:`El error llega a la capa ${L}`,text:`El error sale de la neurona de salida y llega a la última capa oculta. Tomamos su tamaño como referencia: ${n(1)}. A partir de aquí veremos cuánto se conserva en cada capa.`};
+    if(d===0)return{at:.12,title:"El error llega a la entrada",text:`Antes de los datos de entrada no hay más pesos, así que aquí termina el recorrido. Con el error que ha llegado a cada capa ya pueden calcularse los gradientes de todos los pesos (apartado 2.2).`};
+    if(st.res&&d%2===0&&d+2<=L)return{at:x,title:`De la capa ${d+1} a la capa ${d}`,text:`El error llega a la capa ${d} por dos caminos. Por el que atraviesa la capa ${d+1}, se multiplica por los pesos y por la pendiente de la sigmoide y se encoge. Pero por el atajo residual le llega directamente el error de la capa ${d+2}, sin multiplicarse. Sumando ambos, a la capa ${d} le llega ${n(rel[d])} del error de la capa ${L}: no se pierde.`};
+    const ratio=rel[d]/rel[d+1];
+    return{at:x,title:`De la capa ${d+1} a la capa ${d}`,text:`Al pasar de la capa ${d+1} a la ${d}, el error se multiplica por los pesos y por la pendiente de la activación: queda ${n(ratio)} el que había. En total, a la capa ${d} le llega ${n(rel[d])} del error de la capa ${L}.`+slopeNote(d)}}
+  const r1=rel[1];let diag;
+  if(r1<0.01)diag=`A la capa 1 llega solo ${n(r1)}: sus pesos apenas se corregirán y la red aprenderá muy despacio. Es el <i>vanishing gradient</i> (apartado 4.1).`;
+  else if(r1>3)diag=`A la capa 1 llega ${n(r1)}: el error ha crecido capa a capa y las correcciones serán desproporcionadas. Es la explosión del gradiente (apartado 4.1).`;
+  else diag=`A la capa 1 llega ${n(r1)}: el error ha atravesado toda la red sin perderse ni dispararse, así que todas las capas pueden aprender.`;
+  return{at:.5,title:"Resumen",text:diag+" Con estos gradientes, el optimizador actualiza los pesos (apartado 3) y el ciclo vuelve a empezar con el siguiente lote de datos."};
+}
+function texify(s){return s.replace(/\$z\$/g,"<i>z</i>")}
+function showStep(){
+  const info=stepInfo(step);
+  document.getElementById("bcount").textContent=`Paso ${step+1} de ${totalSteps()}`;
+  document.getElementById("btitle").textContent=info.title;
+  document.getElementById("btext").innerHTML=texify(info.text);
+  document.getElementById("bprev").disabled=step===0;
+  document.getElementById("bnext").textContent=step===totalSteps()-1?"Volver a empezar ↺":"Siguiente →";
+  bubble.hidden=false;
+  const W=stage.clientWidth,bw=bubble.offsetWidth;
+  const titleW=290*(W/CW);
+  const ax=Math.max(bw/2+titleW,Math.min(W-bw/2-10,info.at*W));
+  bubble.style.left=ax+"px";
+  bubble.classList.add("below");bubble.style.top=(stage.clientHeight*0.035)+"px";
+  // si el globo tapa la red en exceso, ponerlo debajo de la cabecera de la escena
+  const tail=document.getElementById("btail");tail.style.left=Math.max(18,Math.min(bw-18,info.at*W-ax+bw/2))+"px";
+  bubble.classList.remove("below");bubble.style.top=Math.max(8,stage.clientHeight*0.36-bubble.offsetHeight-58*(stage.clientWidth/CW))+"px";
+  stepT0=performance.now();requestFrame();
+}
+function setMode(m){stepMode=m==="step";
+  document.getElementById("modeAuto").setAttribute("aria-pressed",String(!stepMode));document.getElementById("modeStep").setAttribute("aria-pressed",String(stepMode));
+  document.getElementById("autoCtl").style.display=stepMode?"none":"flex";
+  if(stepMode){step=0;showStep()}else{bubble.hidden=true;t0=performance.now();playing=true;document.getElementById("play").textContent="Pausa";requestFrame()}}
+
+// ------------------------------------------------------------ interfaz
+function mk(parent,label,on){const b=document.createElement("button");b.textContent=label;b.onclick=on;document.getElementById(parent).appendChild(b);return b}
+const presetBtns=Object.entries(PRESETS).map(([k,p])=>{const b=mk("presets",p.name,()=>{Object.assign(st,{act:p.act,init:p.init,res:p.res});recompute();requestFrame()});b.dataset.k=k;return b});
+const actBtns=Object.keys(ACTN).map(k=>{const b=mk("acts",ACTN[k],()=>{st.act=k;recompute();requestFrame()});b.dataset.k=k;return b});
+const initBtns=[["correcta","Escala correcta"],["grandes","Un 50 % más grandes"]].map(([k,l])=>{const b=mk("inits",l,()=>{st.init=k;recompute();requestFrame()});b.dataset.k=k;return b});
+document.getElementById("res").onclick=()=>{st.res=!st.res;recompute();requestFrame()};
+const lay=document.getElementById("layers");lay.oninput=()=>{st.L=+lay.value;recompute();requestFrame()};
+document.getElementById("play").onclick=(e)=>{playing=!playing;e.target.textContent=playing?"Pausa":"Reproducir";if(playing){t0=performance.now()-pausedAt;requestFrame()}else pausedAt=performance.now()-t0};
+let pausedAt=0;
+document.getElementById("replay").onclick=()=>{t0=performance.now();playing=true;document.getElementById("play").textContent="Pausa";requestFrame()};
+document.getElementById("modeAuto").onclick=()=>setMode("auto");
+document.getElementById("modeStep").onclick=()=>setMode("step");
+document.getElementById("bnext").onclick=()=>{step=step===totalSteps()-1?0:step+1;showStep()};
+document.getElementById("bprev").onclick=()=>{if(step>0){step--;showStep()}};
+document.getElementById("theme").onclick=()=>{themeName=themeName==="dark"?"light":"dark";applyTheme();requestFrame()};
+document.addEventListener("keydown",e=>{if(!stepMode)return;if(e.key==="ArrowRight"){e.preventDefault();document.getElementById("bnext").click()}else if(e.key==="ArrowLeft"){e.preventDefault();document.getElementById("bprev").click()}});
+window.addEventListener("resize",()=>{if(stepMode)showStep()});
+function updateUI(){
+  presetBtns.forEach(b=>{const p=PRESETS[b.dataset.k];b.setAttribute("aria-pressed",String(p.act===st.act&&p.init===st.init&&p.res===st.res))});
+  actBtns.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===st.act)));
+  initBtns.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===st.init)));
+  const rb=document.getElementById("res");rb.setAttribute("aria-pressed",String(st.res));rb.textContent=st.res?"Activados":"Desactivados";
+  lay.value=st.L;document.getElementById("lv").textContent=st.L;
+  document.getElementById("readout").innerHTML=`Señal de error que llega a cada capa, comparada con la de la última: `+rel.slice(1).map((v,i)=>`capa ${i+1} <b>×${fmt(v)}</b>`).join(" · ");
+}
+applyTheme();
+recompute();
+if(q.get("mode")==="step"){setMode("step");if(q.has("step")){step=Math.min(+q.get("step"),totalSteps()-1);showStep()}}
+requestFrame();
+})();
+</script>
+</body>
+</html>
