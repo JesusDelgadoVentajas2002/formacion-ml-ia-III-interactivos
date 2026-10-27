@@ -1,0 +1,1454 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactivos · Formación ML/IA básica · Parte III</title>
+<style>
+  :root{--bg:#060d17;--bg2:#0d2036;--panel:#0b1726;--line:#1d3048;--text:#b9c7d6;--strong:#eef4fa;--muted:#6f8399;
+        --accent:#2E6F95;--bubble:#0f2236f2;--bubbleLine:#2f5579;--btnHover:#36597d;--primary:#16314d;--primaryLine:#2b5378;
+        --kblue:#9cc7f0;--kred:#ff7a70;--kgreen:#4cc38a}
+  [data-theme="light"]{--bg:#f3f6f9;--bg2:#ffffff;--panel:#ffffff;--line:#d3dde7;--text:#3d4b59;--strong:#13202d;--muted:#6b7b8b;
+        --bubble:#fffffff5;--bubbleLine:#b9cbdc;--btnHover:#8fb0cc;--primary:#e6eef6;--primaryLine:#b9cbdc;
+        --kblue:#2E6F95;--kred:#C0504D;--kgreen:#3C8D5A}
+  *{box-sizing:border-box}
+  html,body{transition:background-color .3s,color .3s}
+  body{margin:0;background:radial-gradient(1200px 700px at 50% 0%,var(--bg2) 0%,var(--bg) 60%);color:var(--text);
+       font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  main{width:min(1180px,100% - 28px);margin:30px auto 70px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .kicker{font:11px/1.4 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+  h1{color:var(--strong);font-size:clamp(22px,3vw,32px);line-height:1.15;margin:10px 0 10px;font-weight:700;letter-spacing:-.01em}
+  .lead{max-width:860px;margin:0 0 18px}
+  .lead .b{color:var(--kblue);font-weight:700}.lead .r{color:var(--kred);font-weight:700}
+  .stage{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -40px #0008}
+  canvas{display:block;width:100%;height:auto}
+  .bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 2px 0}
+  .group{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .label{font:11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+  button{font:inherit;font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;transition:.15s}
+  button:hover:not(:disabled){border-color:var(--btnHover);color:var(--strong)}
+  button:disabled{opacity:.4;cursor:default}
+  button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary{background:var(--primary);border-color:var(--primaryLine);color:var(--strong)}
+  .theme{white-space:nowrap}
+  input[type=range]{accent-color:var(--accent);width:120px}
+  .readout{margin:14px 2px 0;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--text)}
+  .readout b{color:var(--strong)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 22px;margin:10px 2px 0;font-size:13px;color:var(--muted)}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+  section{margin-top:30px;max-width:900px}
+  h2{color:var(--strong);font-size:17px;margin:0 0 8px}
+  li{margin:5px 0}
+  .small{font-size:13px;color:var(--muted)}
+  /* globo de diálogo */
+  .bubble{position:absolute;width:min(380px,44%);background:var(--bubble);border:1px solid var(--bubbleLine);border-radius:12px;
+          padding:12px 14px 12px;color:var(--text);font-size:14px;line-height:1.5;box-shadow:0 14px 40px -12px #000a;
+          transform:translateX(-50%);transition:left .45s cubic-bezier(.3,.7,.2,1),top .45s cubic-bezier(.3,.7,.2,1),opacity .25s;
+          backdrop-filter:blur(6px);z-index:3}
+  .bubble[hidden]{display:block;opacity:0;pointer-events:none}
+  .bubble .tail{position:absolute;width:14px;height:14px;background:var(--bubble);border-right:1px solid var(--bubbleLine);border-bottom:1px solid var(--bubbleLine);
+          bottom:-8px;transform:translateX(-50%) rotate(45deg)}
+  .bubble.below .tail{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
+  .bubble h3{margin:0 0 4px;font-size:14px;color:var(--strong)}
+  .bubble .count{font:11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .bubble p{margin:0}
+  .bubble .num{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--kred);font-weight:700}
+  .bubble .nav{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+  .bubble .nav button{padding:5px 10px;font-size:12.5px}
+  body.still main{margin:0;width:100%}
+  body.still .chrome{display:none}
+  body.still .stage{border:none;border-radius:0;box-shadow:none}
+  /* ---------- estructura común de las pestañas ---------- */
+  header.site{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}
+  header.site .kicker{margin:0}
+  nav.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 22px}
+  nav.tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px 10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);min-height:74px;position:relative}
+  nav.tabs button .n{font:11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em;color:var(--muted)}
+  nav.tabs button .t{font-weight:700;color:var(--strong);font-size:14px;line-height:1.25}
+  nav.tabs button .m{font-size:11.5px;color:var(--muted);line-height:1.3}
+  nav.tabs button[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--primary)}
+  nav.tabs button[aria-selected="true"] .n{color:var(--kblue)}
+  @media (max-width:820px){nav.tabs{grid-template-columns:repeat(2,1fr)}}
+  .tab[hidden]{display:none}
+  .tab section{margin-top:30px;max-width:900px}
+  .status{margin:12px 2px 0;font-size:14.5px;line-height:1.55;color:var(--text);min-height:46px;max-width:1000px}
+  .status b{color:var(--strong)}
+  .lead.small{font-size:14px}
+  h2.sub{color:var(--strong);font-size:16px;margin:26px 0 8px}
+  .sliders{gap:10px 26px}
+  label.sl{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text)}
+  label.sl span{font:12px ui-monospace,Menlo,Consolas,monospace;color:var(--muted);min-width:22px}
+  label.sl.wide span{min-width:0}
+  label.sl b{font:700 13px ui-monospace,Menlo,Consolas,monospace;color:var(--strong);min-width:44px}
+  table.live{border-collapse:collapse;margin:8px 2px 0;font-size:13.5px;min-width:min(760px,100%)}
+  table.live.narrow{min-width:0}
+  table.live th{background:var(--accent);color:#fff;font-weight:600;text-align:left;padding:7px 12px;font-size:12.5px}
+  table.live td{padding:6px 12px;border-bottom:1px solid var(--line)}
+  table.live td.mono{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--strong)}
+  table.live tr.on td{background:var(--primary);font-weight:600}
+  table.live tbody tr{cursor:default}
+  #n-table tbody tr{cursor:pointer}
+  .stage + .stage{margin-top:14px}
+  body.still header.site,body.still nav.tabs{display:none}
+</style>
+</head>
+<body>
+<main>
+  <header class="site chrome">
+    <p class="kicker">Formación ML/IA básica · Parte III · Interactivos de los módulos 7 y 8</p>
+    <button class="theme" id="theme" aria-label="Cambiar entre modo claro y oscuro">☀ Modo claro</button>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Interactivos"><button role="tab" data-tab="neurona" aria-selected="false"><span class="n">1</span><span class="t">Una neurona por dentro</span><span class="m">Módulo 7 · apartados 1.2 y 3</span></button><button role="tab" data-tab="perceptron" aria-selected="false"><span class="n">2</span><span class="t">Perceptrón, XOR y capas ocultas</span><span class="m">Módulo 7 · apartados 2 y 4.1</span></button><button role="tab" data-tab="backprop" aria-selected="false"><span class="n">3</span><span class="t">Backpropagation</span><span class="m">Módulo 8 · apartados 2 y 4.1</span></button><button role="tab" data-tab="descenso" aria-selected="false"><span class="n">4</span><span class="t">Descenso por gradiente</span><span class="m">Módulo 8 · apartado 3</span></button><button role="tab" data-tab="sobreajuste" aria-selected="false"><span class="n">5</span><span class="t">Entrenamiento y sobreajuste</span><span class="m">Módulo 8 · apartado 4.2</span></button></nav>
+<div class="tab" data-tab="neurona" id="tab-neurona" hidden>
+  <div class="chrome">
+    <h1>Una neurona por dentro</h1>
+    <p class="lead">La neurona que decide si un correo es spam (apartado 1.1 del Módulo 7) recibe tres datos, multiplica cada uno por su peso, suma el sesgo y aplica una función de activación. Cambia las entradas, los pesos o la función, y observa cómo responden la suma <i>z</i>, la salida y su <b>pendiente</b>, la pieza que en el Módulo 8 decide cuánto puede aprender la neurona. También puedes arrastrar el punto de la curva para mover el sesgo.</p>
+  </div>
+  <div class="stage"><canvas id="n-c" aria-label="Neurona artificial con tres entradas, sus pesos, el sesgo y la gráfica de la función de activación con el punto de trabajo y su pendiente."></canvas></div>
+  <div class="chrome">
+    <p class="status" id="n-status"></p>
+    <div class="bar">
+      <div class="group" id="n-cases"><span class="label">Casos</span></div>
+      <div class="group"><button class="primary" id="n-anim">▶ Animar el cálculo</button></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="n-acts"><span class="label">Activación</span></div>
+      <div class="group"><span class="label">Pendiente</span><button id="n-slope" aria-pressed="true">Visible</button></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="n-ins"><span class="label">Entradas</span></div>
+    </div>
+    <div class="bar sliders">
+      <label class="sl"><span>w₁</span><input type="range" id="n-w1" min="-6" max="6" step="0.5"><b id="n-w1v"></b></label>
+      <label class="sl"><span>w₂</span><input type="range" id="n-w2" min="-6" max="6" step="0.5"><b id="n-w2v"></b></label>
+      <label class="sl"><span>w₃</span><input type="range" id="n-w3" min="-6" max="6" step="0.5"><b id="n-w3v"></b></label>
+      <label class="sl"><span>b</span><input type="range" id="n-b" min="-10" max="10" step="0.1"><b id="n-bv"></b></label>
+    </div>
+    <h2 class="sub">La misma <i>z</i> con cada función</h2>
+    <table class="live" id="n-table"><thead><tr><th>Función</th><th>Salida f(z)</th><th>Pendiente f′(z)</th><th>Cómo se lee</th></tr></thead><tbody></tbody></table>
+    <h2 class="sub">Softmax: varias clases a la vez</h2>
+    <p class="lead small">Una red clasifica un ticket de soporte en tres clases (apartado 3.5 del Módulo 7). Su capa de salida da una puntuación por clase y softmax las convierte, todas a la vez, en probabilidades que suman 1: primero calcula la exponencial de cada puntuación y después divide cada una entre la suma de todas.</p>
+  </div>
+  <div class="stage"><canvas id="n-sm" aria-label="Cálculo de softmax para tres clases: puntuaciones, exponenciales y probabilidades."></canvas></div>
+  <div class="chrome">
+    <div class="bar sliders">
+      <label class="sl wide"><span>Facturación</span><input type="range" id="n-z1" min="-3" max="5" step="0.1"><b id="n-z1v"></b></label>
+      <label class="sl wide"><span>Incidencia técnica</span><input type="range" id="n-z2" min="-3" max="5" step="0.1"><b id="n-z2v"></b></label>
+      <label class="sl wide"><span>Consulta comercial</span><input type="range" id="n-z3" min="-3" max="5" step="0.1"><b id="n-z3v"></b></label>
+    </div>
+    <div class="bar"><div class="group"><span class="label">Probar</span><button id="n-smcase">Ticket del apartado 3.5</button><button id="n-smadd">Sumar 1 a todas</button><button id="n-smsub">Restar 1 a todas</button><button id="n-smeq">Igualar las tres</button></div></div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>Animar el cálculo:</b> recorre la neurona por orden: entradas, pesos, suma ponderada, sesgo, activación y salida, con los números de cada paso.</li>
+        <li><b>Correo original y tras la corrección:</b> son los dos casos de la neurona del correo. Bajar w₁ de 4 a 2 lleva <i>z</i> de 1 a −1 y cambia la decisión.</li>
+        <li><b>Escalón frente a sigmoide:</b> el escalón responde «todo o nada» y su pendiente es 0 en todas partes; la sigmoide da una probabilidad y una pendiente útil cerca del centro.</li>
+        <li><b>Saturación:</b> sube w₁ hasta 6 con la sigmoide o tanh. La salida apenas cambia y la pendiente cae casi a 0: la neurona está saturada y aprenderá muy despacio.</li>
+        <li><b>ReLU y neuronas muertas:</b> con <i>z</i> negativa, ReLU devuelve 0 y su pendiente es 0. Leaky ReLU conserva una pequeña pendiente en esa zona.</li>
+        <li><b>Softmax:</b> sumar la misma cantidad a todas las puntuaciones no cambia las probabilidades; solo importan las diferencias. Cada punto de ventaja multiplica la probabilidad por e ≈ 2.72.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div class="tab" data-tab="perceptron" id="tab-perceptron" hidden>
+  <div class="chrome">
+    <h1>Perceptrón, XOR y capas ocultas</h1>
+    <p class="lead">Tres experimentos sobre el apartado 2 y el apartado 4.1 del Módulo 7. Primero, un perceptrón aprende paso a paso con su regla de corrección y se comprueba qué ocurre cuando las clases no se pueden separar con una recta. Después, una red de dos capas resuelve XOR <b>cambiando el punto de vista</b> de los datos. Por último, una capa oculta con más o menos neuronas ReLU aproxima una curva de demanda.</p>
+    <div class="bar"><div class="group" id="p-views"><span class="label">Experimento</span></div></div>
+  </div>
+  <div class="stage"><canvas id="p-c" aria-label="Experimentos con el perceptrón y con redes de dos capas."></canvas></div>
+  <div class="chrome">
+    <p class="status" id="p-status"></p>
+    <div id="p-v-train">
+      <div class="bar">
+        <div class="group" id="p-data"><span class="label">Datos</span></div>
+        <div class="group"><button class="primary" id="p-next">Siguiente ejemplo</button><button id="p-epoch">Época completa</button><button id="p-run">▶ Entrenar</button><button id="p-reset">Reiniciar</button></div>
+        <label class="sl"><span>η</span><input type="range" id="p-eta" min="0.1" max="1" step="0.1"><b id="p-etav"></b></label>
+      </div>
+      <table class="live narrow" id="p-table"><thead><tr><th>Época</th><th>Errores</th><th>w₁</th><th>w₂</th><th>b</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="p-v-red" hidden>
+      <div class="bar">
+        <div class="group"><button class="primary" id="p-morph">▶ Cambiar el punto de vista</button></div>
+        <label class="sl wide"><span>Transformación</span><input type="range" id="p-t" min="0" max="1" step="0.01"><b id="p-tv"></b></label>
+        <div class="group" id="p-case"><span class="label">Caso</span></div>
+      </div>
+    </div>
+    <div id="p-v-aprox" hidden>
+      <div class="bar">
+        <label class="sl wide"><span>Neuronas ocultas</span><input type="range" id="p-k" min="1" max="30" step="1"><b id="p-kv"></b></label>
+        <div class="group"><button class="primary" id="p-kanim">▶ De 1 a 20 neuronas</button><button id="p-each" aria-pressed="true">Ver cada neurona</button></div>
+      </div>
+    </div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>AND (préstamo):</b> pulsa «Siguiente ejemplo» y sigue cada corrección. La tabla reproduce, época a época, el entrenamiento del ejemplo del préstamo; en la cuarta época ya no hay errores.</li>
+        <li><b>XOR (conciliación):</b> con los mismos pasos, el perceptrón nunca termina. Los errores no bajan de cero y los pesos dan vueltas, porque ninguna recta separa las dos clases.</li>
+        <li><b>Cambiar el punto de vista:</b> la capa oculta de la red de conciliación lleva los cuatro casos a un espacio nuevo, donde los dos descuadres caen en el mismo punto y una sola recta los separa del resto.</li>
+        <li><b>Pulsa un caso</b> o una entrada de la red para seguir el cálculo hacia delante con números, como en la Tabla 12 del Módulo 7.</li>
+        <li><b>Aproximación universal:</b> cada neurona ReLU aporta un codo. Con 3 neuronas la curva es tosca; con 12 se ajusta casi a la perfección.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div class="tab" data-tab="backprop" id="tab-backprop" hidden>
+  <div class="chrome">
+    
+    <h1>La retropropagación, vista entre neuronas</h1>
+    <p class="lead">En la pasada hacia delante, las señales <span class="b">azules</span> viajan de la entrada a la salida. La salida se compara con la respuesta correcta y aparece el error, que recorre la red en sentido contrario como un pulso <span class="r">rojo</span>. Al atravesar cada capa, el error se multiplica por los pesos y por la pendiente de la activación: el tamaño del pulso y el brillo de cada neurona son el tamaño real de esa señal, calculado con una red de verdad. Pulsa <b>Paso a paso</b> para recorrerlo con explicaciones.</p>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1180" height="540" aria-label="Red neuronal con neuronas dibujadas como biológicas. Las señales viajan hacia delante y el error vuelve hacia atrás; el tamaño del pulso en cada capa es el tamaño real de la señal de error."></canvas>
+    <div class="bubble chrome" id="bubble" hidden role="status" aria-live="polite">
+      <div class="count" id="bcount"></div><h3 id="btitle"></h3><p id="btext"></p>
+      <div class="nav"><button id="bprev">← Anterior</button><button class="primary" id="bnext">Siguiente →</button></div>
+      <span class="tail" id="btail"></span>
+    </div>
+  </div>
+  <div class="chrome">
+    <div class="bar">
+      <div class="group"><span class="label">Modo</span><button id="modeAuto" aria-pressed="true">Animación continua</button><button id="modeStep" aria-pressed="false">Paso a paso</button></div>
+      <div class="group" id="autoCtl"><button class="primary" id="play">Pausa</button><button id="replay">Repetir</button></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="presets"><span class="label">Casos</span></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="acts"><span class="label">Activación</span></div>
+      <div class="group" id="inits"><span class="label">Pesos iniciales</span></div>
+      <div class="group"><span class="label">Atajos residuales</span><button id="res" aria-pressed="false">Desactivados</button></div>
+      <div class="group"><span class="label">Capas ocultas</span><input id="layers" type="range" min="3" max="10" value="6"><b id="lv">6</b></div>
+    </div>
+    <p class="readout" id="readout"></p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--kblue)"></i>Señal hacia delante</span>
+      <span><i class="dot" style="background:var(--kred)"></i>Error hacia atrás (su tamaño es real)</span>
+      <span><i class="dot" style="background:var(--kgreen)"></i>Atajo residual</span>
+    </div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>Paso a paso:</b> avanza con el botón «Siguiente» o con la flecha → del teclado. En cada paso, el globo explica qué ocurre y con qué números.</li>
+        <li><b>Sigmoide:</b> su pendiente vale como mucho 0.25, así que el error se encoge en cada capa. Con 10 capas, a la primera apenas le llega nada: es el <i>vanishing gradient</i> y explica por qué la red profunda con sigmoide de TensorFlow Playground (apartado 3.4 del Módulo 7) no aprendía.</li>
+        <li><b>ReLU con inicialización de He:</b> la pendiente es 1 en la zona positiva y la escala de los pesos está calculada para que la señal ni crezca ni se apague. El error llega prácticamente entero.</li>
+        <li><b>Pesos iniciales grandes:</b> la misma ReLU con pesos un 50 % más grandes. El error crece en cada capa: es la explosión del gradiente.</li>
+        <li><b>Sigmoide con atajos residuales:</b> cada dos capas, un atajo suma la entrada del bloque a su salida. El error dispone de un camino que no se multiplica y vuelve a llegar a las primeras capas.</li>
+        <li>Prueba a cambiar el número de capas: el efecto de multiplicar capa a capa crece de forma exponencial.</li>
+      </ul>
+      <p class="small">Cómo se calcula: una red real de 32 neuronas por capa, con datos aleatorios y la inicialización indicada (Glorot para sigmoide y tanh, He para ReLU). Cada capa se dibuja con 3 neuronas, y el valor bajo cada capa es el tamaño medio de la señal de error que llega a ella, comparado con el de la última capa oculta (media geométrica de 5 inicializaciones). Las neuronas tienen aspecto biológico solo como recurso visual: el cerebro no aprende por retropropagación.</p>
+    </section>
+  </div>
+</div>
+<div class="tab" data-tab="descenso" id="tab-descenso" hidden>
+  <div class="chrome">
+    <h1>Descenso por gradiente</h1>
+    <p class="lead">El optimizador baja por el paisaje de coste guiado solo por la pendiente del punto en el que está, como el excursionista en la niebla del apartado 3.1 del Módulo 8. Empieza con un solo peso para ver el efecto de la <b>tasa de aprendizaje</b> y pasa después a un paisaje de dos pesos: <b>pulsa sobre el mapa</b> para soltar una bola y compara el descenso básico con momentum y Adam, con y sin el ruido de los lotes pequeños.</p>
+    <div class="bar"><div class="group" id="d-views"><span class="label">Experimento</span></div></div>
+  </div>
+  <div class="stage"><canvas id="d-c" aria-label="Descenso por gradiente sobre una curva de coste y sobre un mapa de coste de dos pesos."></canvas></div>
+  <div class="chrome">
+    <p class="status" id="d-status"></p>
+    <div id="d-v-uno">
+      <div class="bar">
+        <div class="group" id="d-etas"><span class="label">Tasas del ejemplo</span></div>
+        <label class="sl"><span>η</span><input type="range" id="d-eta1" min="0.01" max="1.2" step="0.01"><b id="d-eta1v"></b></label>
+        <div class="group"><button class="primary" id="d-step1">Un paso</button><button id="d-run1">▶ Animar</button><button id="d-reset1">Reiniciar</button></div>
+      </div>
+      <table class="live narrow" id="d-table"><thead><tr><th>Iteración</th><th>w</th><th>J(w)</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="d-v-mapa" hidden>
+      <div class="bar">
+        <div class="group" id="d-lands"><span class="label">Paisaje</span></div>
+        <div class="group" id="d-opts"><span class="label">Optimizadores</span></div>
+      </div>
+      <div class="bar">
+        <div class="group" id="d-batch"><span class="label">Gradiente con</span></div>
+        <div class="group"><button class="primary" id="d-run2">❚❚ Pausa</button><button id="d-again">Repetir</button><button id="d-clear">Borrar</button></div>
+      </div>
+      <div class="bar sliders">
+        <label class="sl wide"><span>η (descenso y momentum)</span><input type="range" id="d-eta2" min="-3" max="0" step="0.01"><b id="d-eta2v"></b></label>
+        <label class="sl wide"><span>α (Adam)</span><input type="range" id="d-alpha" min="-3" max="-0.3" step="0.01"><b id="d-alphav"></b></label>
+      </div>
+    </div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>Las cuatro tasas del ejemplo:</b> con η = 0.1 avanza despacio; con 0.4 llega en cuatro pasos; con 0.9 rebota de un lado a otro del valle; con 1.1 cada paso termina más lejos y el coste se dispara.</li>
+        <li><b>Valle estrecho:</b> el descenso básico rebota de pared a pared y avanza muy poco hacia el fondo; momentum acumula la inercia a lo largo del valle y Adam ajusta el paso de cada peso.</li>
+        <li><b>Dos valles y un punto de silla:</b> suelta la bola cerca del centro. Según el punto de partida y el optimizador, termina en el mínimo global o se queda en el local; junto al punto de silla, el descenso se frena.</li>
+        <li><b>Lotes pequeños:</b> el gradiente calculado con pocos ejemplos es ruidoso. La trayectoria tiembla y, con tasa fija, nunca se queda quieta en el mínimo, pero ese ruido ayuda a salir de las zonas planas.</li>
+        <li><b>Pasa el ratón por el mapa</b> para ver hacia dónde apunta el gradiente negativo en cada punto: es la dirección del paso.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div class="tab" data-tab="sobreajuste" id="tab-sobreajuste" hidden>
+  <div class="chrome">
+    <h1>Entrenamiento y sobreajuste</h1>
+    <p class="lead">Una red de verdad se entrena en directo con pocos ejemplos de un problema con ruido. A la izquierda, los datos y la <b>frontera de decisión</b>; a la derecha, la <b>curva de aprendizaje</b>, con la pérdida en entrenamiento y en validación al final de cada época (apartado 4.2 del Módulo 8). Cuando la curva de validación deja de bajar y empieza a subir, la red está memorizando. Activa las técnicas contra el sobreajuste y compara.</p>
+  </div>
+  <div class="stage"><canvas id="s-c" aria-label="Entrenamiento en directo de una red neuronal: datos, frontera de decisión y curvas de pérdida en entrenamiento y validación."></canvas></div>
+  <div class="chrome">
+    <p class="status" id="s-status"></p>
+    <div class="bar">
+      <div class="group"><button class="primary" id="s-run">▶ Entrenar</button><button id="s-reset">Reiniciar la red</button><button id="s-data">Nuevos datos</button></div>
+      <label class="sl"><span>Velocidad</span><input type="range" id="s-speed" min="1" max="8" step="1"><b id="s-speedv"></b></label>
+      <div class="group"><span class="label">Validación</span><button id="s-val" aria-pressed="false">Oculta</button></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="s-size"><span class="label">Red</span></div>
+      <div class="group" id="s-n"><span class="label">Ejemplos de entrenamiento</span></div>
+    </div>
+    <div class="bar">
+      <div class="group" id="s-l2"><span class="label">Regularización L2</span></div>
+      <div class="group" id="s-drop"><span class="label">Dropout</span></div>
+      <div class="group"><span class="label">Parada temprana</span><button id="s-es" aria-pressed="false">Desactivada</button></div>
+    </div>
+    <section>
+      <h2>Qué probar</h2>
+      <ul>
+        <li><b>Sin ninguna técnica:</b> la red grande con 80 ejemplos llega a acertar casi el 100 % del entrenamiento, pero la pérdida de validación toca fondo pronto y después no deja de subir. La frontera se retuerce para rodear puntos aislados.</li>
+        <li><b>Parada temprana:</b> detiene el entrenamiento cuando la validación lleva 40 épocas sin mejorar y recupera los pesos de la mejor época.</li>
+        <li><b>Regularización L2 y dropout:</b> frenan la memorización. La curva de validación sube mucho más despacio y la frontera se suaviza.</li>
+        <li><b>Más datos:</b> con 400 ejemplos es mucho más difícil memorizar; las dos curvas se mantienen juntas durante más tiempo.</li>
+        <li><b>Una red más pequeña:</b> con 2-8-8-1 la red no tiene capacidad para memorizar el ruido, aunque aprende más despacio.</li>
+      </ul>
+      <p class="small">Cómo se calcula: una red densa con dos capas ocultas ReLU y salida sigmoide, entrenada con Adam (tasa 0.003) y entropía cruzada, usando en cada paso todos los ejemplos de entrenamiento. Los datos son dos medias lunas con ruido y un 8 % de etiquetas cambiadas al azar; la validación usa 300 ejemplos distintos generados de la misma forma.</p>
+    </section>
+  </div>
+</div>
+
+</main>
+<script>
+// ============================================================ núcleo común: tema, pestañas y utilidades
+const Core=(()=>{
+  const q=new URLSearchParams(location.search);
+  const TABS=["neurona","perceptron","backprop","descenso","sobreajuste"];
+  const TITLES={neurona:"Una neurona por dentro",perceptron:"Perceptrón, XOR y capas ocultas",backprop:"La retropropagación, vista entre neuronas",descenso:"Descenso por gradiente",sobreajuste:"Entrenamiento y sobreajuste"};
+  let theme=q.get("theme")==="light"?"light":(q.get("theme")==="dark"?"dark":(()=>{try{return localStorage.getItem("m8-theme")||"dark"}catch(e){return "dark"}})());
+  const STILL=q.has("still");if(STILL)document.body.classList.add("still");
+  const PALS={
+    light:{bg:"#ffffff",bg2:"#f5f8fb",grid:"#e6edf3",axis:"#9aabbb",text:"#3d4b59",strong:"#13202d",muted:"#6b7b8b",
+      blue:"#2E6F95",blue2:"#5B8DB8",lblue:"#DCE9F4",red:"#C0504D",lred:"#F6DEDD",green:"#3C8D5A",lgreen:"#DDF0E3",orange:"#E46B44",lorange:"#FBE3DA",gold:"#C98A14",
+      node:"#ffffff",nodeLine:"#2E6F95",shade:"rgba(192,80,77,.09)",cool:"rgba(46,111,149,.10)",dimText:"rgba(60,75,90,.55)",cm:[[255,255,255],[214,229,241],[120,166,201],[46,111,149],[24,62,92]]},
+    dark:{bg:"#08131f",bg2:"#0c1b2c",grid:"#16283c",axis:"#4b6480",text:"#b9c7d6",strong:"#eef4fa",muted:"#7a8ea3",
+      blue:"#9cc7f0",blue2:"#5b9bd5",lblue:"#16314d",red:"#ff7a70",lred:"#45222a",green:"#4cc38a",lgreen:"#143626",orange:"#ff9a6e",lorange:"#45291f",gold:"#f0c060",
+      node:"#0f2236",nodeLine:"#7fb0dc",shade:"rgba(255,122,112,.10)",cool:"rgba(156,199,240,.10)",dimText:"rgba(185,199,214,.5)",cm:[[6,14,24],[16,40,66],[34,82,124],[80,140,190],[170,210,240]]}
+  };
+  const listeners={theme:[],tab:[]};
+  function on(ev,f){listeners[ev].push(f)}
+  function applyTheme(){document.documentElement.dataset.theme=theme;const b=document.getElementById("theme");if(b)b.textContent=theme==="dark"?"☀ Modo claro":"☾ Modo oscuro";
+    try{localStorage.setItem("m8-theme",theme)}catch(e){};listeners.theme.forEach(f=>f(theme));window.dispatchEvent(new CustomEvent("themechange",{detail:theme}))}
+  let tab=null;
+  function pickTab(){const h=(location.hash||"").replace("#","");if(TABS.includes(h))return h;const t=q.get("tab");if(TABS.includes(t))return t;return "neurona"}
+  function show(t){tab=t;window.__tab=t;
+    document.querySelectorAll(".tab").forEach(s=>{s.hidden=s.dataset.tab!==t});
+    document.querySelectorAll("nav.tabs button").forEach(b=>{const on=b.dataset.tab===t;b.setAttribute("aria-selected",String(on));b.tabIndex=on?0:-1});
+    document.title=TITLES[t]+" · Interactivos · Formación ML/IA Parte III";
+    listeners.tab.forEach(f=>f(t));window.dispatchEvent(new CustomEvent("tabchange",{detail:t}))}
+  function init(){
+    document.getElementById("theme").onclick=()=>{theme=theme==="dark"?"light":"dark";applyTheme()};
+    document.querySelectorAll("nav.tabs button").forEach(b=>{b.onclick=()=>{if(location.hash!=="#"+b.dataset.tab)history.replaceState(null,"","#"+b.dataset.tab);show(b.dataset.tab);window.scrollTo({top:0})}});
+    document.querySelector("nav.tabs").addEventListener("keydown",e=>{if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;const i=TABS.indexOf(tab);const j=(i+(e.key==="ArrowRight"?1:TABS.length-1))%TABS.length;
+      const b=document.querySelector(`nav.tabs button[data-tab="${TABS[j]}"]`);b.click();b.focus();e.preventDefault()});
+    window.addEventListener("hashchange",()=>show(pickTab()));
+    document.documentElement.dataset.theme=theme;
+    const b=document.getElementById("theme");b.textContent=theme==="dark"?"☀ Modo claro":"☾ Modo oscuro";
+    show(pickTab());
+  }
+  // lienzo con alta resolución: coordenadas lógicas W×H
+  function canvas(cv,W,H){const dpr=Math.min(window.devicePixelRatio||1,STILL?3:2.5);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);return c}
+  function ptr(cv,e,W,H){const r=cv.getBoundingClientRect();const p=e.touches?e.touches[0]:e;return{x:(p.clientX-r.left)*W/r.width,y:(p.clientY-r.top)*H/r.height}}
+  function pal(){return PALS[theme]}
+  function rgba(hex,a){const n=parseInt(hex.slice(1),16);return`rgba(${n>>16},${(n>>8)&255},${n&255},${a})`}
+  function cmap(t){const cm=pal().cm;t=Math.max(0,Math.min(1,t))*(cm.length-1);const i=Math.min(cm.length-2,Math.floor(t)),f=t-i;return cm[i].map((v,k)=>Math.round(v+(cm[i+1][k]-v)*f))}
+  const F={ui:'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif',mono:'ui-monospace,Menlo,Consolas,monospace'};
+  function num(v,d=2){if(!isFinite(v))return "∞";const s=v.toFixed(d);return (s.startsWith("-")?"−"+s.slice(1):s)}
+  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+  function arrow(c,x0,y0,x1,y1,col,w=2,head=8){const a=Math.atan2(y1-y0,x1-x0);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x0,y0);c.lineTo(x1-Math.cos(a)*head*.6,y1-Math.sin(a)*head*.6);c.stroke();
+    c.beginPath();c.moveTo(x1,y1);c.lineTo(x1-head*Math.cos(a-.42),y1-head*Math.sin(a-.42));c.lineTo(x1-head*Math.cos(a+.42),y1-head*Math.sin(a+.42));c.closePath();c.fill()}
+  function seg(groupId,items,onPick){const g=document.getElementById(groupId);const btns=items.map(([k,l])=>{const b=document.createElement("button");b.textContent=l;b.dataset.k=k;b.onclick=()=>onPick(k);g.appendChild(b);return b});
+    return v=>btns.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===String(v))))}
+  return{on,init,refresh:()=>show(tab),canvas,ptr,pal,rgba,cmap,F,num,rr,arrow,seg,STILL,q,get tab(){return tab},get theme(){return theme},applyTheme};
+})();
+
+Core.init();
+</script>
+<script>
+// ---- núcleo numérico compartido por la pestaña de sobreajuste (también se prueba en node)
+function mkRng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function mkGauss(r){return()=>{let u=0,v=0;while(u===0)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}}
+function makeMoons(n,noise,flip,seed){const r=mkRng(seed),g=mkGauss(r);const X=new Float64Array(2*n),Y=new Float64Array(n);
+  for(let i=0;i<n;i++){const c=i%2;const t=Math.PI*r();let x,y;
+    if(c===0){x=Math.cos(t);y=Math.sin(t)}else{x=1-Math.cos(t);y=0.5-Math.sin(t)}
+    x+=g()*noise;y+=g()*noise;X[2*i]=(x-0.5)/1.1;X[2*i+1]=(y-0.25)/0.85;let lab=c;if(r()<flip)lab=1-lab;Y[i]=lab}
+  return{X,Y,n}}
+function makeNet(H,seed){const r=mkRng(seed),g=mkGauss(r);const sizes=[2,H,H,1];const W=[],B=[];
+  for(let l=0;l<3;l++){const fi=sizes[l],fo=sizes[l+1];const w=new Float64Array(fi*fo);const sd=Math.sqrt(2/fi)*(l===2?0.5:1);for(let i=0;i<w.length;i++)w[i]=g()*sd;W.push(w);B.push(new Float64Array(fo))}
+  const mk=()=>({W:W.map(w=>new Float64Array(w.length)),B:B.map(b=>new Float64Array(b.length))});
+  return{sizes,W,B,m:mk(),v:mk(),t:0,seed:seed,r}}
+function cloneNet(net){return{W:net.W.map(w=>Float64Array.from(w)),B:net.B.map(b=>Float64Array.from(b))}}
+function sig(z){return 1/(1+Math.exp(-z))}
+// pasada hacia delante de un lote; devuelve probabilidades
+function predict(net,X,n,out){const [_,H]=net.sizes;const W0=net.W[0],W1=net.W[1],W2=net.W[2],B0=net.B[0],B1=net.B[1],B2=net.B[2];
+  const h1=new Float64Array(H),h2=new Float64Array(H);
+  for(let i=0;i<n;i++){const x0=X[2*i],x1=X[2*i+1];
+    for(let j=0;j<H;j++){const z=W0[j*2]*x0+W0[j*2+1]*x1+B0[j];h1[j]=z>0?z:0}
+    for(let j=0;j<H;j++){let z=B1[j];const o=j*H;for(let k=0;k<H;k++)z+=W1[o+k]*h1[k];h2[j]=z>0?z:0}
+    let z=B2[0];for(let k=0;k<H;k++)z+=W2[k]*h2[k];out[i]=sig(z)}
+  return out}
+function lossAcc(net,D){const p=predict(net,D.X,D.n,new Float64Array(D.n));let L=0,ok=0;
+  for(let i=0;i<D.n;i++){const q=Math.min(1-1e-7,Math.max(1e-7,p[i]));L-=D.Y[i]*Math.log(q)+(1-D.Y[i])*Math.log(1-q);if((p[i]>0.5)===(D.Y[i]>0.5))ok++}
+  return{loss:L/D.n,acc:ok/D.n}}
+// una época = un paso de Adam con el lote completo; l2 = λ, drop = probabilidad de apagado
+function trainEpoch(net,D,lr,l2,drop){const H=net.sizes[1];const W0=net.W[0],W1=net.W[1],W2=net.W[2],B0=net.B[0],B1=net.B[1],B2=net.B[2];
+  const gW=net.W.map(w=>new Float64Array(w.length)),gB=net.B.map(b=>new Float64Array(b.length));
+  const h1=new Float64Array(H),h2=new Float64Array(H),m1=new Float64Array(H),m2=new Float64Array(H),d2=new Float64Array(H),d1=new Float64Array(H);
+  const keep=1-drop,sc=drop>0?1/keep:1,r=net.r;
+  for(let i=0;i<D.n;i++){const x0=D.X[2*i],x1=D.X[2*i+1];
+    for(let j=0;j<H;j++){m1[j]=drop>0?(r()<keep?sc:0):1;m2[j]=drop>0?(r()<keep?sc:0):1}
+    for(let j=0;j<H;j++){const z=W0[j*2]*x0+W0[j*2+1]*x1+B0[j];h1[j]=(z>0?z:0)*m1[j]}
+    for(let j=0;j<H;j++){let z=B1[j];const o=j*H;for(let k=0;k<H;k++)z+=W1[o+k]*h1[k];h2[j]=(z>0?z:0)*m2[j]}
+    let z=B2[0];for(let k=0;k<H;k++)z+=W2[k]*h2[k];const dz=(sig(z)-D.Y[i])/D.n;
+    gB[2][0]+=dz;for(let k=0;k<H;k++){gW[2][k]+=dz*h2[k];d2[k]=h2[k]>0?dz*W2[k]*m2[k]:0}
+    d1.fill(0);for(let j=0;j<H;j++){const dj=d2[j];if(dj===0)continue;gB[1][j]+=dj;const o=j*H;for(let k=0;k<H;k++){gW[1][o+k]+=dj*h1[k];d1[k]+=dj*W1[o+k]}}
+    for(let k=0;k<H;k++){const dk=h1[k]>0?d1[k]*m1[k]:0;if(dk===0)continue;gB[0][k]+=dk;gW[0][k*2]+=dk*x0;gW[0][k*2+1]+=dk*x1}}
+  if(l2>0)for(let l=0;l<3;l++){const w=net.W[l],g=gW[l];for(let i=0;i<w.length;i++)g[i]+=2*l2*w[i]}
+  net.t++;const b1=0.9,b2=0.999,c1=1-Math.pow(b1,net.t),c2=1-Math.pow(b2,net.t);
+  const upd=(P,G,M,V)=>{for(let i=0;i<P.length;i++){M[i]=b1*M[i]+(1-b1)*G[i];V[i]=b2*V[i]+(1-b2)*G[i]*G[i];P[i]-=lr*(M[i]/c1)/(Math.sqrt(V[i]/c2)+1e-8)}};
+  for(let l=0;l<3;l++){upd(net.W[l],gW[l],net.m.W[l],net.v.W[l]);upd(net.B[l],gB[l],net.m.B[l],net.v.B[l])}}
+if(typeof module!=="undefined")module.exports={mkRng,mkGauss,makeMoons,makeNet,cloneNet,predict,lossAcc,trainEpoch};
+
+</script>
+<script>
+// ============================================================ pestaña 1 · una neurona por dentro
+(()=>{
+const W=1180,H=440,cv=document.getElementById("n-c");let cx=Core.canvas(cv,W,H);
+const SW=1180,SH=300,sv=document.getElementById("n-sm");let sx=Core.canvas(sv,SW,SH);
+const {num,rr,arrow,F}=Core;
+const ACT={
+  step:{name:"Escalón",f:z=>z>0?1:0,d:z=>0,yr:[-0.2,1.2],read:"Spam o no spam, sin matices",formula:"f(z) = 1 si z > 0; 0 si z ≤ 0"},
+  sigmoid:{name:"Sigmoide",f:z=>1/(1+Math.exp(-z)),d:z=>{const s=1/(1+Math.exp(-z));return s*(1-s)},yr:[-0.2,1.2],read:"Probabilidad de que sea spam",formula:"f(z) = 1 / (1 + e^−z)",sat:4},
+  tanh:{name:"TanH",f:z=>Math.tanh(z),d:z=>1-Math.tanh(z)**2,yr:[-1.25,1.25],read:"Señal a favor o en contra, centrada en cero",formula:"f(z) = tanh(z)",sat:2.5},
+  relu:{name:"ReLU",f:z=>Math.max(0,z),d:z=>z>0?1:0,yr:[-1.2,6.5],read:"Deja pasar la señal positiva y anula la negativa",formula:"f(z) = max(0, z)"},
+  leaky:{name:"Leaky ReLU",f:z=>z>0?z:0.1*z,d:z=>z>0?1:0.1,yr:[-1.2,6.5],read:"Como ReLU, pero con una pequeña pendiente si z < 0",formula:"f(z) = z si z > 0; 0.1·z si z ≤ 0"}
+};
+const INS=[["x₁","contiene «Gratis»"],["x₂","remitente desconocido"],["x₃","nombre de pila"]];
+const st={x:[1,1,1],w:[4,3,-2],b:-4,act:"sigmoid",slope:true,anim:0,animT:0};
+const sm={z:[2.0,1.0,0.1],shown:null};
+const zOf=()=>st.w[0]*st.x[0]+st.w[1]*st.x[1]+st.w[2]*st.x[2]+st.b;
+const sumWX=()=>st.w[0]*st.x[0]+st.w[1]*st.x[1]+st.w[2]*st.x[2];
+function sgn(v){return v>=0?"+"+num(v,v%1?1:0):num(v,v%1?1:0)}
+function f1(v){return num(v,Math.abs(v%1)>1e-9?1:0)}
+function zf(v){const r=Math.round(v*10)/10;return num(r,Math.abs(r%1)>1e-9?1:0)}
+// ------------------------------------------------ geometría
+const IN=[{x:22,y:118},{x:22,y:218},{x:22,y:318}],BW=196,BH=62,SOMA={x:372,y:250,r:46},OUT={x:478,y:210,w:132,h:80};
+const PL={x0:690,x1:1150,y0:70,y1:370,zr:[-8,8]};
+function curveIn(i){const a={x:IN[i].x+BW,y:IN[i].y+BH/2},b={x:SOMA.x-SOMA.r*.92,y:SOMA.y+(i-1)*22};return[a,{x:a.x+70,y:a.y},{x:b.x-70,y:b.y},b]}
+function bz(c,t){const u=1-t;return{x:u*u*u*c[0].x+3*u*u*t*c[1].x+3*u*t*t*c[2].x+t*t*t*c[3].x,y:u*u*u*c[0].y+3*u*u*t*c[1].y+3*u*t*t*c[2].y+t*t*t*c[3].y}}
+const X=z=>PL.x0+(z-PL.zr[0])/(PL.zr[1]-PL.zr[0])*(PL.x1-PL.x0);
+function Y(v){const yr=ACT[st.act].yr;return PL.y1-(v-yr[0])/(yr[1]-yr[0])*(PL.y1-PL.y0)}
+const Zinv=x=>PL.zr[0]+(x-PL.x0)/(PL.x1-PL.x0)*(PL.zr[1]-PL.zr[0]);
+// ------------------------------------------------ animación del cálculo
+const STAGES=6,STAGE_T=2.1;
+function stageText(s){const z=zOf(),A=ACT[st.act],y=A.f(z);const xs=st.x,ws=st.w;
+  const prods=ws.map((w,i)=>`${f1(w)}·${xs[i]}`);const vals=ws.map((w,i)=>w*xs[i]);
+  switch(s){
+   case 1:return`<b>1 · Entradas.</b> El correo ${xs[0]?"contiene":"no contiene"} «Gratis» (x₁ = ${xs[0]}), el remitente ${xs[1]?"es":"no es"} desconocido (x₂ = ${xs[1]}) y ${xs[2]?"aparece":"no aparece"} el nombre de pila (x₃ = ${xs[2]}).`;
+   case 2:return`<b>2 · Pesos.</b> Cada entrada se multiplica por su peso: ${prods.join(", ")}. Los pesos positivos empujan hacia «spam»; los negativos, en contra.`;
+   case 3:return`<b>3 · Suma ponderada.</b> ${vals.map((v,i)=>i===0?f1(v):(v<0?" − "+f1(-v):" + "+f1(v))).join("")} = ${f1(sumWX())}.`;
+   case 4:return`<b>4 · Sesgo.</b> Se añade el sesgo: z = ${f1(sumWX())} ${st.b<0?"− "+zf(-st.b):"+ "+zf(st.b)} = ${zf(z)}.`;
+   case 5:return`<b>5 · Activación.</b> La función ${A.name.toLowerCase()} transforma z = ${zf(z)} en ${num(y,2)}. Su pendiente en ese punto vale ${num(A.d(z),2)}.`;
+   case 6:return`<b>6 · Salida.</b> `+verdict(z).long;
+  }return""}
+function verdict(z){const A=ACT[st.act],y=A.f(z);
+  if(st.act==="step")return y?{spam:true,short:"Spam",long:`La salida vale 1: el correo va a la carpeta de no deseado.`}:{spam:false,short:"No es spam",long:"La salida vale 0: el correo llega a la bandeja de entrada."};
+  if(st.act==="sigmoid")return y>0.5?{spam:true,short:"Spam ("+num(100*y,0)+" %)",long:`${num(100*y,0)} % de probabilidad de spam: supera el 50 %, así que el correo va a la carpeta de no deseado.`}:{spam:false,short:"No es spam ("+num(100*y,0)+" %)",long:`Solo un ${num(100*y,0)} % de probabilidad de spam: el correo llega a la bandeja de entrada.`};
+  if(st.act==="tanh")return y>0?{spam:true,short:"A favor de spam",long:`Salida ${num(y,2)}: positiva, es una señal a favor de que sea spam.`}:{spam:false,short:"En contra de spam",long:`Salida ${num(y,2)}: negativa, es una señal en contra de que sea spam.`};
+  return z>0?{spam:true,short:"La señal pasa",long:`z es positiva y la señal pasa tal cual (${num(y,2)}). ReLU no da una probabilidad: se usa en las capas ocultas (apartado 3.3).`}:{spam:false,short:st.act==="relu"?"Neurona apagada":"Señal muy atenuada",long:st.act==="relu"?"z es negativa: ReLU devuelve 0 y su pendiente también es 0, así que este ejemplo no corregiría sus pesos.":`z es negativa: Leaky ReLU deja pasar solo una décima parte (${num(y,2)}), pero conserva algo de pendiente.`}}
+// ------------------------------------------------ dibujo de la neurona
+let raf=0,last=performance.now(),clock=0;
+function draw(now){raf=0;const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;
+  if(st.anim){st.animT+=dt;if(st.animT>STAGE_T){st.animT=0;st.anim++;if(st.anim>STAGES){st.anim=0}updateStatus()}}
+  const P=Core.pal(),z=zOf(),A=ACT[st.act],y=A.f(z),V=verdict(z);
+  const em=s=>st.anim===0||st.anim===s, dimA=s=>em(s)?1:0.28;
+  cx.clearRect(0,0,W,H);cx.fillStyle=P.bg;cx.fillRect(0,0,W,H);
+  // ecuación
+  cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.textAlign="left";cx.fillText("NEURONA DEL CORREO",22,30);
+  cx.font=`15px ${F.mono}`;cx.fillStyle=P.strong;
+  const terms=st.w.map((w,i)=>(i?(w<0?" − ":" + "):(w<0?"−":""))+f1(Math.abs(w))+"·"+st.x[i]).join("");
+  cx.fillText(`z = ${terms} ${st.b<0?"− "+zf(-st.b):"+ "+zf(st.b)} = ${zf(z)}`,22,56);
+  // conexiones
+  for(let i=0;i<3;i++){const c=curveIn(i),w=st.w[i],on=st.x[i]===1;const col=w>=0?P.blue:P.red;const a=(on?1:.25)*dimA(2);
+    cx.globalAlpha=a;cx.strokeStyle=col;cx.lineWidth=1+Math.abs(w)*1.25;cx.lineCap="round";cx.beginPath();cx.moveTo(c[0].x,c[0].y);cx.bezierCurveTo(c[1].x,c[1].y,c[2].x,c[2].y,c[3].x,c[3].y);cx.stroke();cx.globalAlpha=1;
+    // pulsos
+    if(on&&Math.abs(w)>0&&(st.anim===0||st.anim===2||st.anim===3)){for(let k=0;k<2;k++){const t=((clock*0.55+k*.5+i*.13)%1);const p=bz(c,t);const s=2.5+Math.abs(w)*0.9;
+      cx.fillStyle=Core.rgba(col,.22);cx.beginPath();cx.arc(p.x,p.y,s*2.2,0,7);cx.fill();cx.fillStyle=col;cx.beginPath();cx.arc(p.x,p.y,s,0,7);cx.fill()}}
+    // etiqueta del peso
+    const m=bz(c,.42);cx.globalAlpha=dimA(2);cx.font=`700 13px ${F.mono}`;const lab=`w${"₁₂₃"[i]} = ${sgn(w)}`;const tw=cx.measureText(lab).width+16;
+    cx.fillStyle=P.bg;cx.strokeStyle=col;cx.lineWidth=1.2;rr(cx,m.x-tw/2,m.y-13,tw,26,13);cx.fill();cx.stroke();cx.fillStyle=col;cx.textAlign="center";cx.fillText(lab,m.x,m.y+4.5);
+    // producto
+    const pp=bz(c,.82);cx.globalAlpha=dimA(3)*(on?1:.6);cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText(f1(w*st.x[i]),pp.x,pp.y-12-Math.abs(w)*.6);cx.globalAlpha=1}
+  // cajas de entrada
+  for(let i=0;i<3;i++){const b=IN[i],on=st.x[i]===1;cx.globalAlpha=dimA(1);
+    cx.fillStyle=on?P.lblue:P.bg2;cx.strokeStyle=on?P.blue:P.axis;cx.lineWidth=on?1.8:1.2;rr(cx,b.x,b.y,BW,BH,10);cx.fill();cx.stroke();
+    cx.textAlign="left";cx.font=`700 17px ${F.mono}`;cx.fillStyle=on?P.strong:P.muted;cx.fillText(`${INS[i][0]} = ${st.x[i]}`,b.x+14,b.y+26);
+    cx.font=`13px ${F.ui}`;cx.fillStyle=P.muted;cx.fillText(INS[i][1],b.x+14,b.y+47);
+    cx.font=`11px ${F.ui}`;cx.textAlign="right";cx.fillText(on?"sí":"no",b.x+BW-12,b.y+26);cx.globalAlpha=1}
+  cx.textAlign="left";cx.font=`11px ${F.ui}`;cx.fillStyle=P.dimText;cx.fillText("Pulsa una entrada para cambiarla",24,404);
+  // sesgo
+  cx.globalAlpha=dimA(4);arrow(cx,SOMA.x,SOMA.y+SOMA.r+64,SOMA.x,SOMA.y+SOMA.r+6,st.b>=0?P.blue:P.red,2.2,10);
+  cx.font=`700 13px ${F.mono}`;cx.textAlign="center";cx.fillStyle=st.b>=0?P.blue:P.red;cx.fillText(`b = ${zf(st.b)}`,SOMA.x,SOMA.y+SOMA.r+82);cx.globalAlpha=1;
+  // soma
+  const g=em(3)||em(4);cx.save();if(st.anim===3||st.anim===4){cx.shadowColor=P.orange;cx.shadowBlur=24}
+  cx.fillStyle=P.node;cx.strokeStyle=st.anim===3||st.anim===4?P.orange:P.nodeLine;cx.lineWidth=2.4;cx.beginPath();cx.arc(SOMA.x,SOMA.y,SOMA.r,0,7);cx.fill();cx.stroke();cx.restore();
+  cx.globalAlpha=g?1:.4;cx.fillStyle=P.muted;cx.font=`12px ${F.mono}`;cx.fillText(st.anim===3?"Σ wᵢxᵢ":"Σ wᵢxᵢ + b",SOMA.x,SOMA.y-12);
+  cx.fillStyle=P.strong;cx.font=`700 19px ${F.mono}`;cx.fillText(st.anim===3?f1(sumWX()):"z = "+zf(z),SOMA.x,SOMA.y+14);cx.globalAlpha=1;
+  // salida
+  cx.globalAlpha=dimA(5)>.5||em(6)?1:.3;arrow(cx,SOMA.x+SOMA.r+4,SOMA.y,OUT.x-4,SOMA.y,P.axis,2,9);
+  cx.font=`600 11px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("f(z)",(SOMA.x+SOMA.r+OUT.x)/2,SOMA.y-8);
+  const oc=V.spam?P.red:P.green;cx.save();if(st.anim===6){cx.shadowColor=oc;cx.shadowBlur=20}
+  cx.fillStyle=V.spam?P.lred:P.lgreen;cx.strokeStyle=oc;cx.lineWidth=1.8;rr(cx,OUT.x,OUT.y,OUT.w,OUT.h,10);cx.fill();cx.stroke();cx.restore();
+  cx.fillStyle=P.muted;cx.font=`12px ${F.ui}`;cx.fillText("salida",OUT.x+OUT.w/2,OUT.y+20);
+  cx.fillStyle=P.strong;cx.font=`700 22px ${F.mono}`;cx.fillText("y = "+num(y,st.act==="step"?0:2),OUT.x+OUT.w/2,OUT.y+50);
+  cx.fillStyle=oc;cx.font=`700 12.5px ${F.ui}`;wrapC(V.short,OUT.x+OUT.w/2,OUT.y+OUT.h+22,170,16);cx.globalAlpha=1;
+  // ---------------------------------------- gráfica de la activación
+  cx.globalAlpha=dimA(5);
+  const yr=A.yr;
+  cx.fillStyle=P.bg2;cx.fillRect(PL.x0,PL.y0,PL.x1-PL.x0,PL.y1-PL.y0);
+  // zonas sin pendiente
+  cx.fillStyle=P.shade;
+  if(A.sat){cx.fillRect(PL.x0,PL.y0,X(-A.sat)-PL.x0,PL.y1-PL.y0);cx.fillRect(X(A.sat),PL.y0,PL.x1-X(A.sat),PL.y1-PL.y0)}
+  else if(st.act==="relu")cx.fillRect(PL.x0,PL.y0,X(0)-PL.x0,PL.y1-PL.y0);
+  else if(st.act==="step")cx.fillRect(PL.x0,PL.y0,PL.x1-PL.x0,PL.y1-PL.y0);
+  cx.font=`600 11px ${F.ui}`;cx.fillStyle=Core.rgba(P.red,.85);cx.textAlign="center";
+  if(A.sat){cx.fillText("saturación",(PL.x0+X(-A.sat))/2,PL.y0+18);cx.fillText("saturación",(PL.x1+X(A.sat))/2,PL.y0+18);
+    cx.font=`10.5px ${F.ui}`;cx.fillText("pendiente ≈ 0",(PL.x0+X(-A.sat))/2,PL.y0+33);cx.fillText("pendiente ≈ 0",(PL.x1+X(A.sat))/2,PL.y0+33)}
+  else if(st.act==="relu"){cx.fillText("pendiente 0",(PL.x0+X(0))/2,PL.y0+18);cx.font=`10.5px ${F.ui}`;cx.fillText("(neurona apagada)",(PL.x0+X(0))/2,PL.y0+33)}
+  else if(st.act==="step"){cx.fillText("pendiente 0 en todas partes (salvo en el salto)",(PL.x0+PL.x1)/2,PL.y0+18)}
+  // rejilla y ejes
+  cx.strokeStyle=P.grid;cx.lineWidth=1;cx.font=`11px ${F.mono}`;cx.fillStyle=P.muted;
+  for(let zz=-8;zz<=8;zz+=2){cx.beginPath();cx.moveTo(X(zz),PL.y0);cx.lineTo(X(zz),PL.y1);cx.stroke();cx.textAlign="center";cx.fillText(num(zz,0),X(zz),PL.y1+16)}
+  const ystep=(yr[1]-yr[0])>3?1:0.5;for(let v=Math.ceil(yr[0]/ystep)*ystep;v<=yr[1]+1e-9;v+=ystep){cx.beginPath();cx.moveTo(PL.x0,Y(v));cx.lineTo(PL.x1,Y(v));cx.stroke();cx.textAlign="right";cx.fillText(num(v,ystep<1?1:0),PL.x0-6,Y(v)+4)}
+  cx.strokeStyle=P.axis;cx.lineWidth=1.3;cx.beginPath();cx.moveTo(PL.x0,Y(0));cx.lineTo(PL.x1,Y(0));cx.moveTo(X(0),PL.y0);cx.lineTo(X(0),PL.y1);cx.stroke();
+  cx.textAlign="center";cx.fillStyle=P.muted;cx.font=`italic 13px ${F.ui}`;cx.fillText("z",PL.x1-8,Y(0)-8);
+  // pendiente (curva)
+  cx.save();cx.beginPath();cx.rect(PL.x0,PL.y0,PL.x1-PL.x0,PL.y1-PL.y0);cx.clip();
+  if(st.slope){cx.setLineDash([6,5]);cx.strokeStyle=P.orange;cx.lineWidth=2;cx.beginPath();for(let i=0;i<=400;i++){const zz=PL.zr[0]+i/400*(PL.zr[1]-PL.zr[0]);const yy=Y(A.d(zz));i?cx.lineTo(X(zz),yy):cx.moveTo(X(zz),yy)}cx.stroke();cx.setLineDash([])}
+  // curva
+  cx.strokeStyle=P.blue;cx.lineWidth=3;cx.beginPath();
+  if(st.act==="step"){cx.moveTo(PL.x0,Y(0));cx.lineTo(X(0),Y(0));cx.stroke();cx.beginPath();cx.moveTo(X(0),Y(1));cx.lineTo(PL.x1,Y(1));cx.stroke();cx.setLineDash([3,4]);cx.lineWidth=1.5;cx.beginPath();cx.moveTo(X(0),Y(0));cx.lineTo(X(0),Y(1));cx.stroke();cx.setLineDash([])}
+  else{for(let i=0;i<=400;i++){const zz=PL.zr[0]+i/400*(PL.zr[1]-PL.zr[0]);const yy=Y(A.f(zz));i?cx.lineTo(X(zz),yy):cx.moveTo(X(zz),yy)}cx.stroke()}
+  // punto de trabajo
+  const zc=Math.max(PL.zr[0],Math.min(PL.zr[1],z)),px=X(zc),py=Y(A.f(zc));
+  cx.setLineDash([4,4]);cx.strokeStyle=P.axis;cx.lineWidth=1.2;cx.beginPath();cx.moveTo(px,Y(0));cx.lineTo(px,py);cx.lineTo(X(0),py);cx.stroke();cx.setLineDash([]);
+  if(st.slope&&st.act!=="step"){const d=A.d(zc);const dz=1.6;cx.strokeStyle=P.orange;cx.lineWidth=2.6;cx.beginPath();cx.moveTo(X(zc-dz),Y(A.f(zc)-d*dz));cx.lineTo(X(zc+dz),Y(A.f(zc)+d*dz));cx.stroke()}
+  cx.restore();
+  cx.save();if(st.anim===5){cx.shadowColor=P.orange;cx.shadowBlur=18}cx.fillStyle=P.orange;cx.strokeStyle=P.bg;cx.lineWidth=2.5;cx.beginPath();cx.arc(px,py,8,0,7);cx.fill();cx.stroke();cx.restore();
+  if(z!==zc){cx.fillStyle=P.orange;cx.font=`600 11px ${F.ui}`;cx.textAlign=z>0?"right":"left";cx.fillText(z>0?"z fuera de la gráfica →":"← z fuera de la gráfica",z>0?PL.x1-6:PL.x0+6,PL.y1-8)}
+  // títulos de la gráfica
+  cx.textAlign="left";cx.fillStyle=P.strong;cx.font=`700 15px ${F.ui}`;cx.fillText(A.name,PL.x0,PL.y0-34);
+  cx.fillStyle=P.muted;cx.font=`13px ${F.mono}`;cx.fillText(A.formula,PL.x0+cx.measureText(A.name).width*1.2+16,PL.y0-34);
+  cx.font=`12px ${F.ui}`;cx.fillStyle=P.blue;cx.fillText("— f(z)",PL.x0,PL.y0-12);if(st.slope){cx.fillStyle=P.orange;cx.fillText("- - pendiente f′(z)",PL.x0+52,PL.y0-12)}
+  cx.textAlign="right";cx.font=`700 14px ${F.mono}`;cx.fillStyle=P.strong;
+  cx.fillText(`f(${zf(z)}) = ${num(y,2)}`,PL.x1,PL.y0-34);cx.fillStyle=P.orange;cx.fillText(`f′(${zf(z)}) = ${num(A.d(z),2)}`,PL.x1,PL.y0-12);
+  cx.textAlign="left";cx.font=`11px ${F.ui}`;cx.fillStyle=P.dimText;cx.fillText("Arrastra el punto para mover el sesgo",PL.x0,PL.y1+38);
+  cx.globalAlpha=1;
+  if(!Core.STILL&&Core.tab==="neurona")raf=requestAnimationFrame(draw);
+}
+function wrapC(t,x,y,w,lh){const words=t.split(" ");let line="",yy=y;for(const wd of words){const tt=line?line+" "+wd:wd;if(cx.measureText(tt).width>w&&line){cx.fillText(line,x,yy);line=wd;yy+=lh}else line=tt}cx.fillText(line,x,yy)}
+function req(){if(!raf)raf=requestAnimationFrame(draw)}
+// ------------------------------------------------ softmax
+function smDraw(){const P=Core.pal();sx.clearRect(0,0,SW,SH);sx.fillStyle=P.bg;sx.fillRect(0,0,SW,SH);
+  const names=["Facturación","Incidencia técnica","Consulta comercial"],cols=[P.blue,P.orange,P.green];
+  const z=sm.z,e=z.map(Math.exp),S=e.reduce((a,b)=>a+b,0),p=e.map(v=>v/S);
+  if(!sm.shown)sm.shown={z:[...z],e:[...e],p:[...p],em:Math.max(...e)};const k=.18;
+  const emax=Math.max(...e);sm.shown.em+=(emax-sm.shown.em)*k;
+  for(let i=0;i<3;i++){sm.shown.z[i]+=(z[i]-sm.shown.z[i])*k;sm.shown.e[i]+=(e[i]-sm.shown.e[i])*k;sm.shown.p[i]+=(p[i]-sm.shown.p[i])*k}
+  const hx=[250,610,900];sx.font=`600 12px ${F.mono}`;sx.fillStyle=P.muted;sx.textAlign="left";
+  sx.fillText("PUNTUACIÓN z",hx[0],30);sx.fillText("EXPONENCIAL eᶻ",hx[1],30);sx.fillText("PROBABILIDAD = eᶻ / SUMA",hx[2],30);
+  const z0=250+3*36; // eje del cero en la columna de puntuaciones
+  sx.strokeStyle=P.axis;sx.lineWidth=1;sx.beginPath();sx.moveTo(z0,44);sx.lineTo(z0,250);sx.stroke();sx.fillStyle=P.muted;sx.font=`10.5px ${F.mono}`;sx.textAlign="center";sx.fillText("0",z0,262);
+  for(let i=0;i<3;i++){const y=60+i*66,h=34,c=cols[i];
+    sx.textAlign="left";sx.fillStyle=P.strong;sx.font=`600 14px ${F.ui}`;sx.fillText(names[i],22,y+h/2+5);
+    const zz=sm.shown.z[i];sx.fillStyle=Core.rgba(c,.85);const wz=zz*36;sx.fillRect(Math.min(z0,z0+wz),y,Math.abs(wz),h);
+    sx.fillStyle=P.strong;sx.font=`700 13px ${F.mono}`;sx.textAlign=zz>=0?"left":"right";sx.fillText(num(z[i],1),z0+wz+(zz>=0?8:-8),y+h/2+5);
+    arrow(sx,540,y+h/2,592,y+h/2,P.axis,1.5,8);
+    const we=170*sm.shown.e[i]/Math.max(1e-9,sm.shown.em);sx.fillStyle=Core.rgba(c,.55);sx.fillRect(hx[1],y,we,h);sx.fillStyle=P.strong;sx.textAlign="left";sx.fillText(e[i]>=100?num(e[i],0):num(e[i],2),hx[1]+we+8,y+h/2+5);
+    arrow(sx,850,y+h/2,888,y+h/2,P.axis,1.5,8);
+    sx.fillStyle=P.bg2;sx.fillRect(hx[2],y,250,h);const wp=250*sm.shown.p[i];sx.fillStyle=c;sx.fillRect(hx[2],y,wp,h);
+    sx.font=`700 14px ${F.mono}`;const lab=num(100*p[i],1)+" %";sx.fillStyle=wp>70?"#fff":P.strong;sx.textAlign=wp>70?"right":"left";sx.fillText(lab,wp>70?hx[2]+wp-8:hx[2]+wp+8,y+h/2+5)}
+  sx.textAlign="left";sx.font=`13px ${F.mono}`;sx.fillStyle=P.text;
+  sx.fillText(`Suma de exponenciales: ${S>=100?num(S,0):num(S,2)}`,hx[1]-50,276);
+  const r=p[0]/p[1];sx.font=`12px ${F.mono}`;sx.fillText(`Facturación / Incidencia = e^(${num(z[0],1)} − ${num(z[1],1)}) = ${num(r,2)}`,hx[2]-90,276);
+  sx.fillStyle=P.muted;sx.font=`12px ${F.ui}`;sx.fillText("Las tres probabilidades suman siempre 100 %.",22,276);
+  let moving=false;for(let i=0;i<3;i++){if(Math.abs(sm.shown.p[i]-p[i])>1e-4||Math.abs(sm.shown.z[i]-z[i])>1e-3||Math.abs(sm.shown.e[i]-e[i])/Math.max(e[i],1e-9)>1e-3)moving=true}
+  if(Math.abs(sm.shown.em-emax)/emax>1e-3)moving=true;
+  if(moving&&!Core.STILL)requestAnimationFrame(smDraw);
+}
+// ------------------------------------------------ interfaz
+const setCase=Core.seg("n-cases",[["orig","Correo original (z = 1)"],["corr","Tras la corrección: w₁ = 2 (z = −1)"],["sat","Neurona saturada (w₁ = 6)"]],k=>{
+  if(k==="orig")Object.assign(st,{x:[1,1,1],w:[4,3,-2],b:-4});if(k==="corr")Object.assign(st,{x:[1,1,1],w:[2,3,-2],b:-4});if(k==="sat")Object.assign(st,{x:[1,1,1],w:[6,3,-2],b:-4});sync()});
+const setAct=Core.seg("n-acts",Object.entries(ACT).map(([k,a])=>[k,a.name]),k=>{st.act=k;sync()});
+const insG=document.getElementById("n-ins");const inBtns=INS.map((v,i)=>{const b=document.createElement("button");b.onclick=()=>{st.x[i]=1-st.x[i];sync()};insG.appendChild(b);return b});
+["w1","w2","w3"].forEach((id,i)=>{document.getElementById("n-"+id).oninput=e=>{st.w[i]=+e.target.value;sync()}});
+document.getElementById("n-b").oninput=e=>{st.b=+e.target.value;sync()};
+document.getElementById("n-slope").onclick=()=>{st.slope=!st.slope;sync()};
+document.getElementById("n-anim").onclick=()=>{st.anim=1;st.animT=0;updateStatus();req()};
+cv.addEventListener("click",e=>{const p=Core.ptr(cv,e,W,H);IN.forEach((b,i)=>{if(p.x>=b.x&&p.x<=b.x+BW&&p.y>=b.y&&p.y<=b.y+BH){st.x[i]=1-st.x[i];sync()}})});
+let drag=false;
+function setZ(px){const zt=Math.max(PL.zr[0],Math.min(PL.zr[1],Zinv(px)));st.b=Math.round(Math.max(-10,Math.min(10,zt-sumWX()))*10)/10;sync()}
+cv.addEventListener("pointerdown",e=>{const p=Core.ptr(cv,e,W,H);if(p.x>=PL.x0-10&&p.x<=PL.x1+10&&p.y>=PL.y0&&p.y<=PL.y1+10){drag=true;cv.setPointerCapture(e.pointerId);setZ(p.x)}});
+cv.addEventListener("pointermove",e=>{const p=Core.ptr(cv,e,W,H);cv.style.cursor=(p.x>=PL.x0&&p.x<=PL.x1&&p.y>=PL.y0&&p.y<=PL.y1)?"ew-resize":(IN.some(b=>p.x>=b.x&&p.x<=b.x+BW&&p.y>=b.y&&p.y<=b.y+BH)?"pointer":"default");if(drag)setZ(p.x)});
+cv.addEventListener("pointerup",()=>drag=false);
+["z1","z2","z3"].forEach((id,i)=>{document.getElementById("n-"+id).oninput=e=>{sm.z[i]=+e.target.value;smSync()}});
+document.getElementById("n-smcase").onclick=()=>{sm.z=[2.0,1.0,0.1];smSync()};
+document.getElementById("n-smadd").onclick=()=>{sm.z=sm.z.map(v=>Math.min(5,Math.round((v+1)*10)/10));smSync()};
+document.getElementById("n-smsub").onclick=()=>{sm.z=sm.z.map(v=>Math.max(-3,Math.round((v-1)*10)/10));smSync()};
+document.getElementById("n-smeq").onclick=()=>{const m=Math.round(sm.z.reduce((a,b)=>a+b,0)/3*10)/10;sm.z=[m,m,m];smSync()};
+function smSync(){["z1","z2","z3"].forEach((id,i)=>{document.getElementById("n-"+id).value=sm.z[i];document.getElementById("n-"+id+"v").textContent=num(sm.z[i],1)});smDraw()}
+function updateStatus(){const el=document.getElementById("n-status");el.innerHTML=st.anim?stageText(st.anim)+` <span class="small">(paso ${st.anim} de ${STAGES})</span>`:verdict(zOf()).long}
+function sync(){
+  ["w1","w2","w3"].forEach((id,i)=>{document.getElementById("n-"+id).value=st.w[i];document.getElementById("n-"+id+"v").textContent=sgn(st.w[i])});
+  document.getElementById("n-b").value=st.b;document.getElementById("n-bv").textContent=zf(st.b);
+  inBtns.forEach((b,i)=>{b.textContent=`${INS[i][0]} = ${st.x[i]} · ${INS[i][1]}`;b.setAttribute("aria-pressed",String(st.x[i]===1))});
+  setAct(st.act);const key=st.x.every(v=>v===1)&&st.b===-4&&st.w[1]===3&&st.w[2]===-2?({4:"orig",2:"corr",6:"sat"})[st.w[0]]:null;setCase(key);
+  const sb=document.getElementById("n-slope");sb.setAttribute("aria-pressed",String(st.slope));sb.textContent=st.slope?"Visible":"Oculta";
+  const z=zOf(),tb=document.querySelector("#n-table tbody");
+  document.querySelector("#n-table thead th:nth-child(2)").textContent=`Salida f(${zf(z)})`;document.querySelector("#n-table thead th:nth-child(3)").textContent=`Pendiente f′(${zf(z)})`;
+  tb.innerHTML=Object.entries(ACT).map(([k,a])=>`<tr class="${k===st.act?"on":""}" data-k="${k}"><td>${a.name}</td><td class="mono">${num(a.f(z),k==="step"?0:2)}</td><td class="mono">${num(a.d(z),2)}</td><td>${a.read}</td></tr>`).join("");
+  tb.querySelectorAll("tr").forEach(r=>r.onclick=()=>{st.act=r.dataset.k;sync()});
+  if(!st.anim)updateStatus();req();
+}
+Core.on("theme",()=>{req();smDraw()});
+Core.on("tab",t=>{if(t==="neurona"){last=performance.now();req();smDraw()}});
+window.__neurona={st,sm,sync,smSync,draw:()=>draw(performance.now())};
+if(Core.q.get("act")&&ACT[Core.q.get("act")])st.act=Core.q.get("act");
+sync();smSync();
+})();
+
+</script>
+<script>
+// ============================================================ pestaña 2 · perceptrón, XOR y capas ocultas
+(()=>{
+const W=1180,H=480,cv=document.getElementById("p-c");let cx=Core.canvas(cv,W,H);
+const {num,rr,arrow,F}=Core;
+const DATA={and:{name:"AND (préstamo)",y:[0,0,0,1],c1:"préstamo concedido",c0:"denegado"},or:{name:"OR",y:[0,1,1,1],c1:"clase 1",c0:"clase 0"},xor:{name:"XOR (conciliación)",y:[0,1,1,0],c1:"alerta (descuadre)",c0:"sin alerta"}};
+const PTS=[[0,0],[0,1],[1,0],[1,1]];
+let view=Core.q.get("view")||"train";
+// ------------------------------------------------ estado del perceptrón
+const P0={w:[0.1,-0.1],b:0.1};
+let tr;
+function resetTrain(keepData){const d=keepData&&tr?tr.data:(tr?tr.data:"and");const eta=tr?tr.eta:0.5;
+  tr={data:d,eta,w:[...P0.w],b:P0.b,disp:{w:[...P0.w],b:P0.b},epoch:1,idx:0,errs:0,rows:[{e:"Inicio",n:"–",w:[...P0.w],b:P0.b}],hist:[{w:[...P0.w],b:P0.b}],epochErrs:[],last:null,done:false,running:false,flash:0}}
+resetTrain();
+function r1(v){return Math.round(v*1000)/1000}
+function stepTrain(){if(tr.done)return;const i=tr.idx,[x1,x2]=PTS[i],y=DATA[tr.data].y[i];
+  const z=tr.w[0]*x1+tr.w[1]*x2+tr.b,pred=z>0?1:0,err=y-pred,old={w:[...tr.w],b:tr.b};
+  if(err!==0){tr.w[0]=r1(tr.w[0]+tr.eta*err*x1);tr.w[1]=r1(tr.w[1]+tr.eta*err*x2);tr.b=r1(tr.b+tr.eta*err);tr.errs++;tr.flash=1}
+  tr.last={i,z:r1(z),pred,y,err,old,nw:{w:[...tr.w],b:tr.b}};tr.hist.push({w:[...tr.w],b:tr.b});
+  tr.idx++;
+  if(tr.idx===4){tr.epochErrs.push(tr.errs);tr.rows.push({e:tr.epoch,n:tr.errs,w:[...tr.w],b:tr.b});
+    if(tr.errs===0){tr.done=true;tr.running=false}
+    else if(tr.epoch>=12){tr.running=false;tr.stopped=true}
+    tr.epoch++;tr.idx=0;tr.errs=0}
+  syncTrain()}
+function fmt(v){return num(Math.abs(v)<1e-9?0:v,Math.abs(v*10-Math.round(v*10))>1e-6?2:1)}
+function trainStatus(){const L=tr.last,D=DATA[tr.data];
+  if(tr.done)return`<b>Entrenamiento terminado.</b> En la época ${tr.epoch-1} el perceptrón no ha cometido ningún error. La frontera aprendida es ${fmt(tr.w[0])}x₁ + ${fmt(tr.w[1])}x₂ ${tr.b<0?"− "+fmt(-tr.b):"+ "+fmt(tr.b)} = 0.`;
+  if(tr.stopped&&tr.idx===0)return`<b>Tras ${tr.epoch-1} épocas sigue fallando.</b> Con XOR ninguna recta separa las dos clases: cada corrección arregla un caso y estropea otro, y los pesos dan vueltas sin fin. Es el límite que se resuelve con capas ocultas.`;
+  if(!L)return`Pesos iniciales: w₁ = ${fmt(tr.w[0])}, w₂ = ${fmt(tr.w[1])}, b = ${fmt(tr.b)}, con η = ${fmt(tr.eta)}. Pulsa «Siguiente ejemplo» para empezar la época 1.`;
+  const [x1,x2]=PTS[L.i];const head=`<b>Época ${L.i===3&&tr.idx===0?tr.epoch-1:tr.epoch} · ejemplo (${x1}, ${x2}), clase ${L.y}.</b> z = ${fmt(L.z)} ${L.z>0?"> 0":"≤ 0"}, así que predice ${L.pred}. `;
+  if(L.err===0)return head+"Acierta: los pesos no cambian.";
+  const parts=[];if(x1)parts.push(`w₁ ← ${fmt(L.old.w[0])} ${L.err>0?"+":"−"} ${fmt(tr.eta)} = ${fmt(L.nw.w[0])}`);if(x2)parts.push(`w₂ ← ${fmt(L.old.w[1])} ${L.err>0?"+":"−"} ${fmt(tr.eta)} = ${fmt(L.nw.w[1])}`);parts.push(`b ← ${fmt(L.old.b)} ${L.err>0?"+":"−"} ${fmt(tr.eta)} = ${fmt(L.nw.b)}`);
+  return head+`Se equivoca (error ${L.err>0?"+1":"−1"}): `+parts.join("; ")+(x1||x2?"":" (las entradas valen 0, solo se corrige el sesgo)")+"."}
+// ------------------------------------------------ red de conciliación
+const net={x:[1,0],t:0,target:0,anim:false};
+const relu=v=>Math.max(0,v),sig=z=>1/(1+Math.exp(-z));
+function fwd(x1,x2){const h1=relu(x1+x2),h2=relu(x1+x2-1),z=4*h1-8*h2-2;return{h1,h2,z,y:sig(z)}}
+// ------------------------------------------------ aproximación universal
+const apx={k:3,each:true,anim:false,shownK:3};
+const HRS=[];for(let i=0;i<=240;i++)HRS.push(i/10);
+function demand(t){return 14+58*Math.exp(-(((t-8.8)/1.5)**2))+44*Math.exp(-(((t-18.3)/2.1)**2))+10*Math.exp(-(((t-13.5)/1.4)**2))}
+const DEM=HRS.map(demand);
+function fitK(k){const knots=[];for(let j=0;j<k;j++)knots.push(24*(j+0.5)/k);const n=k+1;const A=Array.from({length:n},()=>new Float64Array(n)),bv=new Float64Array(n);
+  const feat=t=>[1,...knots.map(c=>relu(t-c))];
+  HRS.forEach((t,i)=>{const f=feat(t);for(let a=0;a<n;a++){bv[a]+=f[a]*DEM[i];for(let b=0;b<n;b++)A[a][b]+=f[a]*f[b]}});
+  for(let a=0;a<n;a++)A[a][a]+=1e-6;
+  // eliminación gaussiana
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];[bv[c],bv[p]]=[bv[p],bv[c]];
+    for(let r=c+1;r<n;r++){const f=A[r][c]/A[c][c];for(let q=c;q<n;q++)A[r][q]-=f*A[c][q];bv[r]-=f*bv[c]}}
+  const s=new Float64Array(n);for(let r=n-1;r>=0;r--){let v=bv[r];for(let q=r+1;q<n;q++)v-=A[r][q]*s[q];s[r]=v/A[r][r]}
+  const pred=HRS.map(t=>feat(t).reduce((a,f,i)=>a+f*s[i],0));const rmse=Math.sqrt(pred.reduce((a,p,i)=>a+(p-DEM[i])**2,0)/pred.length);
+  return{knots,coef:s,pred,rmse}}
+// ------------------------------------------------ dibujo
+let raf=0,last=performance.now(),acc=0;
+function draw(now){raf=0;const dt=Math.min(.05,(now-last)/1000);last=now;const P=Core.pal();let anim=false;
+  cx.clearRect(0,0,W,H);cx.fillStyle=P.bg;cx.fillRect(0,0,W,H);
+  if(view==="train")anim=drawTrain(P,dt,now);else if(view==="red")anim=drawNet(P,dt);else anim=drawApx(P,dt);
+  if(anim&&!Core.STILL&&Core.tab==="perceptron")raf=requestAnimationFrame(draw)}
+function req(){if(!raf)raf=requestAnimationFrame(draw)}
+function drawTrain(P,dt,now){let anim=false;
+  // animación de la recta
+  const k=1-Math.pow(0.0015,dt);for(let i=0;i<2;i++){tr.disp.w[i]+=(tr.w[i]-tr.disp.w[i])*k}tr.disp.b+=(tr.b-tr.disp.b)*k;
+  if(Math.abs(tr.disp.w[0]-tr.w[0])+Math.abs(tr.disp.w[1]-tr.w[1])+Math.abs(tr.disp.b-tr.b)>1e-3)anim=true;
+  if(tr.flash>0){tr.flash=Math.max(0,tr.flash-dt*1.6);anim=true}
+  if(tr.running){acc+=dt;if(acc>0.75){acc=0;stepTrain()}anim=true}
+  const D=DATA[tr.data],S={x0:60,y0:40,s:400},lo=-0.35,hi=1.35;
+  const X=v=>S.x0+(v-lo)/(hi-lo)*S.s,Y=v=>S.y0+S.s-(v-lo)/(hi-lo)*S.s;
+  cx.fillStyle=P.bg2;cx.fillRect(S.x0,S.y0,S.s,S.s);
+  // región que predice 1
+  const w1=tr.disp.w[0],w2=tr.disp.w[1],b=tr.disp.b;
+  let poly=[[lo,lo],[hi,lo],[hi,hi],[lo,hi]];const fh=p=>w1*p[0]+w2*p[1]+b;const out=[];
+  for(let i=0;i<poly.length;i++){const A=poly[i],B=poly[(i+1)%poly.length],fa=fh(A),fb=fh(B);if(fa>0)out.push(A);if((fa>0)!==(fb>0)){const t=fa/(fa-fb);out.push([A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t])}}
+  if(out.length>2){cx.fillStyle=P.cool;cx.beginPath();out.forEach((p,i)=>i?cx.lineTo(X(p[0]),Y(p[1])):cx.moveTo(X(p[0]),Y(p[1])));cx.closePath();cx.fill()}
+  cx.strokeStyle=P.grid;cx.lineWidth=1;for(let v=0;v<=1;v+=0.5){cx.beginPath();cx.moveTo(X(v),S.y0);cx.lineTo(X(v),S.y0+S.s);cx.moveTo(S.x0,Y(v));cx.lineTo(S.x0+S.s,Y(v));cx.stroke()}
+  // recta
+  cx.save();cx.beginPath();cx.rect(S.x0,S.y0,S.s,S.s);cx.clip();cx.strokeStyle=P.blue;cx.lineWidth=3;cx.beginPath();
+  if(Math.abs(w2)>1e-6){cx.moveTo(X(lo),Y(-(w1*lo+b)/w2));cx.lineTo(X(hi),Y(-(w1*hi+b)/w2))}else if(Math.abs(w1)>1e-6){cx.moveTo(X(-b/w1),Y(lo));cx.lineTo(X(-b/w1),Y(hi))}cx.stroke();cx.restore();
+  cx.font=`11px ${F.mono}`;cx.fillStyle=P.muted;cx.textAlign="center";[0,1].forEach(v=>{cx.fillText(v,X(v),S.y0+S.s+16)});cx.textAlign="right";[0,1].forEach(v=>cx.fillText(v,S.x0-8,Y(v)+4));
+  cx.font=`italic 14px ${F.ui}`;cx.textAlign="center";cx.fillText("x₁",S.x0+S.s/2,S.y0+S.s+34);cx.save();cx.translate(S.x0-30,S.y0+S.s/2);cx.rotate(-Math.PI/2);cx.fillText("x₂",0,0);cx.restore();
+  // puntos
+  PTS.forEach(([a,c],i)=>{const y=D.y[i],px=X(a),py=Y(c);const cur=tr.last&&tr.last.i===i;
+    if(cur){cx.strokeStyle=tr.last.err&&tr.flash>0?P.red:P.orange;cx.lineWidth=3;cx.beginPath();cx.arc(px,py,24+6*tr.flash,0,7);cx.stroke()}
+    cx.lineWidth=2.4;if(y){cx.fillStyle=P.blue;cx.strokeStyle=P.blue}else{cx.fillStyle=P.bg;cx.strokeStyle=P.red}
+    cx.beginPath();cx.arc(px,py,14,0,7);cx.fill();cx.stroke();cx.fillStyle=y?"#fff":P.red;cx.font=`700 13px ${F.mono}`;cx.textAlign="center";cx.fillText(y,px,py+4.5);
+    const z=tr.w[0]*a+tr.w[1]*c+tr.b,ok=(z>0?1:0)===y;cx.font=`11px ${F.mono}`;cx.fillStyle=ok?P.green:P.red;cx.fillText(ok?"✓":"✗",px+22,py-14)});
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText(D.name.toUpperCase(),S.x0,S.y0-14);
+  cx.font=`12px ${F.ui}`;cx.fillStyle=P.blue;cx.fillText("■ zona en la que predice 1",S.x0+190,S.y0-14);
+  // panel derecho: errores por época
+  const G={x0:560,x1:1150,y0:56,y1:220};cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("ERRORES EN CADA ÉPOCA",G.x0,G.y0-18);
+  cx.strokeStyle=P.axis;cx.lineWidth=1;cx.beginPath();cx.moveTo(G.x0,G.y1);cx.lineTo(G.x1,G.y1);cx.stroke();
+  const E=tr.epochErrs,nE=Math.max(12,E.length),bw=(G.x1-G.x0)/nE;
+  for(let v=1;v<=4;v++){const y=G.y1-v/4*(G.y1-G.y0);cx.strokeStyle=P.grid;cx.beginPath();cx.moveTo(G.x0,y);cx.lineTo(G.x1,y);cx.stroke();cx.fillStyle=P.muted;cx.font=`10.5px ${F.mono}`;cx.textAlign="right";cx.fillText(v,G.x0-6,y+4)}
+  E.forEach((n,i)=>{const h=n/4*(G.y1-G.y0);cx.fillStyle=n?P.red:P.green;cx.fillRect(G.x0+i*bw+bw*.18,G.y1-Math.max(h,2),bw*.64,Math.max(h,2));cx.fillStyle=P.muted;cx.textAlign="center";cx.font=`10.5px ${F.mono}`;cx.fillText(i+1,G.x0+i*bw+bw/2,G.y1+14)});
+  if(!E.length){cx.fillStyle=P.dimText;cx.textAlign="center";cx.font=`12px ${F.ui}`;cx.fillText("Aún no ha terminado ninguna época",(G.x0+G.x1)/2,(G.y0+G.y1)/2)}
+  // evolución de los pesos
+  const T={x0:560,x1:1150,y0:285,y1:440};cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("EVOLUCIÓN DE LOS PESOS (TRAS CADA EJEMPLO)",T.x0,T.y0-18);
+  const hs=tr.hist,nS=Math.max(16,hs.length-1);let mn=-1,mx=1;hs.forEach(h=>{mn=Math.min(mn,h.w[0],h.w[1],h.b);mx=Math.max(mx,h.w[0],h.w[1],h.b)});
+  const TX=i=>T.x0+i/nS*(T.x1-T.x0),TY=v=>T.y1-(v-mn)/(mx-mn)*(T.y1-T.y0);
+  cx.strokeStyle=P.axis;cx.beginPath();cx.moveTo(T.x0,TY(0));cx.lineTo(T.x1,TY(0));cx.stroke();cx.fillStyle=P.muted;cx.font=`10.5px ${F.mono}`;cx.textAlign="right";cx.fillText("0",T.x0-6,TY(0)+4);cx.fillText(num(mx,1),T.x0-6,TY(mx)+4);cx.fillText(num(mn,1),T.x0-6,TY(mn)+4);
+  for(let e=4;e<nS;e+=4){cx.strokeStyle=P.grid;cx.beginPath();cx.moveTo(TX(e),T.y0);cx.lineTo(TX(e),T.y1);cx.stroke()}
+  [[h=>h.w[0],P.blue,"w₁"],[h=>h.w[1],P.orange,"w₂"],[h=>h.b,P.green,"b"]].forEach(([g,c,l],k)=>{cx.strokeStyle=c;cx.lineWidth=2.2;cx.beginPath();hs.forEach((h,i)=>{i?cx.lineTo(TX(i),TY(g(h))):cx.moveTo(TX(i),TY(g(h)))});cx.stroke();
+    const lh=hs[hs.length-1];cx.fillStyle=c;cx.beginPath();cx.arc(TX(hs.length-1),TY(g(lh)),3.5,0,7);cx.fill();cx.textAlign="left";cx.font=`700 12px ${F.mono}`;cx.fillText(`${l} = ${fmt(g(lh))}`,T.x0+k*110,T.y1+26)});
+  return anim}
+function drawNet(P,dt){let anim=false;
+  if(net.anim){const dir=Math.sign(net.target-net.t);net.t=Math.max(0,Math.min(1,net.t+dir*dt/2.4));if((dir>0&&net.t>=net.target)||(dir<0&&net.t<=net.target)){net.t=net.target;net.anim=false;document.getElementById("p-morph").textContent=net.t>0.5?"◀ Volver a las entradas":"▶ Cambiar el punto de vista"}syncNetSlider();anim=true}
+  // diagrama de la red
+  const [x1,x2]=net.x,v=fwd(x1,x2);
+  const N={x1:{x:70,y:150},x2:{x:70,y:330},h1:{x:235,y:150},h2:{x:235,y:330},o:{x:390,y:240}};
+  const edge=(a,b,w,lab,t=.5)=>{const A=N[a],B=N[b];cx.strokeStyle=w>=0?Core.rgba(P.blue,.8):Core.rgba(P.red,.8);cx.lineWidth=1+Math.abs(w)*.55;cx.beginPath();cx.moveTo(A.x+24,A.y);cx.lineTo(B.x-26,B.y);cx.stroke();
+    const mx=A.x+24+(B.x-26-A.x-24)*t,my=A.y+(B.y-A.y)*t;cx.font=`700 12px ${F.mono}`;const tw=cx.measureText(lab).width+12;cx.fillStyle=P.bg;rr(cx,mx-tw/2,my-11,tw,22,11);cx.fill();cx.strokeStyle=w>=0?P.blue:P.red;cx.lineWidth=1;cx.stroke();cx.fillStyle=w>=0?P.blue:P.red;cx.textAlign="center";cx.fillText(lab,mx,my+4)};
+  edge("x1","h1",1,"1",.35);edge("x2","h1",1,"1",.3);edge("x1","h2",1,"1",.3);edge("x2","h2",1,"1",.35);edge("h1","o",4,"4");edge("h2","o",-8,"−8");
+  const node=(k,lab,val,sub,col)=>{const n=N[k];cx.fillStyle=P.node;cx.strokeStyle=col;cx.lineWidth=2.2;cx.beginPath();cx.arc(n.x,n.y,24,0,7);cx.fill();cx.stroke();
+    cx.fillStyle=P.strong;cx.font=`700 14px ${F.mono}`;cx.textAlign="center";cx.fillText(val,n.x,n.y+5);cx.fillStyle=P.muted;cx.font=`600 12px ${F.mono}`;cx.fillText(lab,n.x,n.y-32);if(sub){cx.font=`11px ${F.mono}`;cx.fillText(sub,n.x,n.y+42)}};
+  node("x1","x₁ · banco",x1,"",P.blue);node("x2","x₂ · contab.",x2,"",P.blue);
+  node("h1","h₁ (ReLU)",num(v.h1,0),"sesgo 0",P.nodeLine);node("h2","h₂ (ReLU)",num(v.h2,0),"sesgo −1",P.nodeLine);
+  node("o","ŷ (sigmoide)",num(v.y,2),"sesgo −2",v.y>0.5?P.red:P.green);
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("RED DE CONCILIACIÓN 2-2-1",20,34);
+  cx.font=`13px ${F.mono}`;cx.fillStyle=P.text;
+  cx.fillText(`h₁ = ReLU(${x1} + ${x2}) = ${v.h1}`,20,410);cx.fillText(`h₂ = ReLU(${x1} + ${x2} − 1) = ${v.h2}`,20,430);
+  cx.fillText(`ŷ = σ(4·${v.h1} − 8·${v.h2} − 2) = σ(${num(v.z,0)}) = ${num(v.y,2)}`,20,450);
+  cx.font=`700 13px ${F.ui}`;cx.fillStyle=v.y>0.5?P.red:P.green;cx.fillText(v.y>0.5?"→ Salta la alerta: hay descuadre":"→ Sin alerta",20,472);
+  cx.font=`11px ${F.ui}`;cx.fillStyle=P.dimText;cx.fillText("Pulsa una entrada para cambiarla",250,34);
+  // espacio transformado
+  const e=net.t<.5?2*net.t*net.t:1-Math.pow(-2*net.t+2,2)/2;
+  const R={x0:500,x1:1150,y0:40,y1:440};const r0=[[-0.35,1.35],[-0.35,1.35]],r1=[[-0.35,2.6],[-0.45,1.55]];
+  const rx=[r0[0][0]+(r1[0][0]-r0[0][0])*e,r0[0][1]+(r1[0][1]-r0[0][1])*e],ry=[r0[1][0]+(r1[1][0]-r0[1][0])*e,r0[1][1]+(r1[1][1]-r0[1][1])*e];
+  const sxv=(R.x1-R.x0)/(rx[1]-rx[0]),syv=(R.y1-R.y0)/(ry[1]-ry[0]);const sc=Math.min(sxv,syv);const cxm=(R.x0+R.x1)/2,cym=(R.y0+R.y1)/2,mxv=(rx[0]+rx[1])/2,myv=(ry[0]+ry[1])/2;
+  const X=u=>cxm+(u-mxv)*sc,Y=w=>cym-(w-myv)*sc;
+  const map=(u,w)=>{const s=u+w;const h1=relu(s),h2=relu(s-1);return[u+(h1-u)*e,w+(h2-w)*e]};
+  cx.save();cx.beginPath();cx.rect(R.x0,R.y0,R.x1-R.x0,R.y1-R.y0);cx.clip();cx.fillStyle=P.bg2;cx.fillRect(R.x0,R.y0,R.x1-R.x0,R.y1-R.y0);
+  // sombreado: franja en la entrada y semiplano en el espacio oculto
+  if(e<1){cx.globalAlpha=(1-e);cx.fillStyle=P.cool;cx.beginPath();
+    // franja 0.5 < x1 + x2 < 1.5 (solo tiene sentido sin transformar)
+    const P1=[[-2,2.5],[2.5,-2],[3.5,-2],[-2,3.5]];cx.moveTo(X(P1[0][0]),Y(P1[0][1]));P1.slice(1).forEach(p=>cx.lineTo(X(p[0]),Y(p[1])));cx.closePath();cx.fill();cx.globalAlpha=1}
+  if(e>0){cx.globalAlpha=e;cx.fillStyle=P.cool;cx.beginPath();// 4h1 - 8h2 - 2 > 0  ⇔  h2 < (4h1 - 2)/8
+    const lineY=u=>(4*u-2)/8;cx.moveTo(X(-3),Y(lineY(-3)));cx.lineTo(X(5),Y(lineY(5)));cx.lineTo(X(5),Y(-3));cx.lineTo(X(-3),Y(-3));cx.closePath();cx.fill();cx.globalAlpha=1}
+  // rejilla deformada
+  cx.strokeStyle=Core.rgba(P.axis,.45);cx.lineWidth=1;
+  for(let g=-0.25;g<=1.2501;g+=0.125){cx.beginPath();for(let s=0;s<=60;s++){const u=-0.25+s/60*1.5;const p=map(u,g);s?cx.lineTo(X(p[0]),Y(p[1])):cx.moveTo(X(p[0]),Y(p[1]))}cx.stroke();
+    cx.beginPath();for(let s=0;s<=60;s++){const w=-0.25+s/60*1.5;const p=map(g,w);s?cx.lineTo(X(p[0]),Y(p[1])):cx.moveTo(X(p[0]),Y(p[1]))}cx.stroke()}
+  // ejes
+  cx.strokeStyle=P.axis;cx.lineWidth=1.3;cx.beginPath();cx.moveTo(X(-5),Y(0));cx.lineTo(X(5),Y(0));cx.moveTo(X(0),Y(-5));cx.lineTo(X(0),Y(5));cx.stroke();
+  // fronteras
+  cx.lineWidth=2.6;if(e<1){cx.globalAlpha=1-e;cx.strokeStyle=P.blue;cx.setLineDash([7,5]);[0.5,1.5].forEach(c=>{cx.beginPath();cx.moveTo(X(-2),Y(c+2));cx.lineTo(X(c+2),Y(-2));cx.stroke()});cx.setLineDash([]);cx.globalAlpha=1}
+  if(e>0){cx.globalAlpha=e;cx.strokeStyle=P.blue;cx.beginPath();cx.moveTo(X(-3),Y((4*-3-2)/8));cx.lineTo(X(5),Y((4*5-2)/8));cx.stroke();cx.globalAlpha=1}
+  // puntos
+  const groups={};PTS.forEach(([a,c],i)=>{const p=map(a,c);const key=p.map(v=>v.toFixed(3)).join();(groups[key]=groups[key]||[]).push(i)});
+  PTS.forEach(([a,c],i)=>{const p=map(a,c),y=DATA.xor.y[i];const px=X(p[0]),py=Y(p[1]);const cur=net.x[0]===a&&net.x[1]===c;
+    if(cur){cx.strokeStyle=P.orange;cx.lineWidth=3;cx.beginPath();cx.arc(px,py,22,0,7);cx.stroke()}
+    cx.lineWidth=2.4;cx.fillStyle=y?P.blue:P.bg;cx.strokeStyle=y?P.blue:P.red;cx.beginPath();cx.arc(px,py,13,0,7);cx.fill();cx.stroke();
+    cx.fillStyle=y?"#fff":P.red;cx.font=`700 12px ${F.mono}`;cx.textAlign="center";cx.fillText(y,px,py+4)});
+  Object.entries(groups).forEach(([k,ids])=>{const p=map(...PTS[ids[0]]);const lab=ids.map(i=>`(${PTS[i][0]}, ${PTS[i][1]})`).join(" y ");cx.font=`11.5px ${F.mono}`;cx.fillStyle=P.text;cx.textAlign="left";cx.fillText(lab,X(p[0])+18,Y(p[1])+(ids.length>1?-18:-14))});
+  cx.restore();
+  // títulos
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText(e<0.5?"ESPACIO DE LAS ENTRADAS (x₁, x₂)":"ESPACIO DE LA CAPA OCULTA (h₁, h₂)",R.x0,R.y0-14);
+  cx.textAlign="right";cx.fillStyle=P.blue;cx.font=`12px ${F.ui}`;cx.fillText(e<0.5?"- - dos rectas: la alerta queda en la franja":"— una sola recta separa las alertas",R.x1,R.y0-14);
+  cx.font=`italic 13px ${F.ui}`;cx.fillStyle=P.muted;cx.textAlign="center";cx.fillText(e<0.5?"x₁":"h₁",R.x1-14,Y(0)-8>R.y1?R.y1-6:Y(0)-8);cx.fillText(e<0.5?"x₂":"h₂",X(0)+14,R.y0+16);
+  return anim}
+function drawApx(P,dt){let anim=false;
+  if(apx.anim){apx.shownK+=dt*2.2;if(apx.shownK>=20){apx.shownK=20;apx.anim=false}apx.k=Math.floor(apx.shownK);syncApx(true);anim=true}
+  const fit=fitK(apx.k),G={x0:80,x1:1150,y0:40,y1:400},ymax=90;
+  const X=t=>G.x0+t/24*(G.x1-G.x0),Y=v=>G.y1-v/ymax*(G.y1-G.y0);
+  cx.fillStyle=P.bg2;cx.fillRect(G.x0,G.y0,G.x1-G.x0,G.y1-G.y0);
+  cx.strokeStyle=P.grid;cx.lineWidth=1;cx.font=`11px ${F.mono}`;cx.fillStyle=P.muted;
+  for(let t=0;t<=24;t+=3){cx.beginPath();cx.moveTo(X(t),G.y0);cx.lineTo(X(t),G.y1);cx.stroke();cx.textAlign="center";cx.fillText(t+" h",X(t),G.y1+18)}
+  for(let v=0;v<=ymax;v+=20){cx.beginPath();cx.moveTo(G.x0,Y(v));cx.lineTo(G.x1,Y(v));cx.stroke();cx.textAlign="right";cx.fillText(v,G.x0-8,Y(v)+4)}
+  cx.save();cx.translate(26,(G.y0+G.y1)/2);cx.rotate(-Math.PI/2);cx.textAlign="center";cx.font=`12px ${F.ui}`;cx.fillText("Demanda (pedidos por hora)",0,0);cx.restore();
+  cx.save();cx.beginPath();cx.rect(G.x0,G.y0,G.x1-G.x0,G.y1-G.y0);cx.clip();
+  // aportación de cada neurona
+  if(apx.each){const cols=[P.orange,P.green,P.gold,P.red,P.blue2];fit.knots.forEach((c,j)=>{const v=fit.coef[j+1];cx.strokeStyle=Core.rgba(cols[j%cols.length],.55);cx.lineWidth=1.4;cx.beginPath();
+    HRS.forEach((t,i)=>{const val=fit.coef[0]*0+v*relu(t-c);const yy=Y(Math.max(-200,Math.min(400,val))+ (v>=0?0:0));i?cx.lineTo(X(t),yy):cx.moveTo(X(t),yy)});cx.stroke()})}
+  // curva real
+  cx.strokeStyle=P.muted;cx.lineWidth=2.2;cx.setLineDash([7,5]);cx.beginPath();HRS.forEach((t,i)=>{i?cx.lineTo(X(t),Y(DEM[i])):cx.moveTo(X(t),Y(DEM[i]))});cx.stroke();cx.setLineDash([]);
+  // aproximación
+  cx.strokeStyle=P.blue;cx.lineWidth=3.2;cx.beginPath();HRS.forEach((t,i)=>{i?cx.lineTo(X(t),Y(fit.pred[i])):cx.moveTo(X(t),Y(fit.pred[i]))});cx.stroke();
+  cx.restore();
+  // codos
+  fit.knots.forEach(c=>{const x=X(c);cx.fillStyle=P.orange;cx.beginPath();cx.moveTo(x,G.y1-2);cx.lineTo(x-6,G.y1+8);cx.lineTo(x+6,G.y1+8);cx.closePath();cx.fill()});
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText(`UNA CAPA OCULTA CON ${apx.k} NEURONA${apx.k>1?"S":""} RELU`,G.x0,G.y0-16);
+  cx.textAlign="right";cx.font=`12px ${F.ui}`;cx.fillStyle=P.muted;cx.fillText("- - demanda real",G.x1-330,G.y0-16);cx.fillStyle=P.blue;cx.fillText("— salida de la red",G.x1-200,G.y0-16);cx.fillStyle=P.orange;cx.fillText("▲ codo de cada neurona",G.x1,G.y0-16);
+  cx.textAlign="left";cx.font=`700 14px ${F.mono}`;cx.fillStyle=P.strong;cx.fillText(`Error medio (RMSE): ${num(fit.rmse,1)} pedidos/hora`,G.x0,G.y1+50);
+  cx.font=`12px ${F.ui}`;cx.fillStyle=P.muted;cx.fillText(apx.each?"Las líneas finas son la aportación de cada neurona: una rampa que empieza en su codo. La salida es su suma más el sesgo.":"Los pesos de salida se calculan por mínimos cuadrados para cada número de neuronas.",G.x0+380,G.y1+49);
+  return anim}
+// ------------------------------------------------ interfaz
+const setView=Core.seg("p-views",[["train","1 · Entrenar un perceptrón"],["red","2 · Una red de dos capas"],["aprox","3 · Aproximación universal"]],k=>{view=k;syncView()});
+const setData=Core.seg("p-data",Object.entries(DATA).map(([k,d])=>[k,d.name]),k=>{tr.data=k;resetTrain(true);syncTrain()});
+document.getElementById("p-next").onclick=()=>{if(tr.done||tr.stopped)resetTrain(true);stepTrain();req()};
+document.getElementById("p-epoch").onclick=()=>{if(tr.done||tr.stopped)resetTrain(true);const e=tr.epoch;while(tr.epoch===e&&!tr.done)stepTrain();req()};
+document.getElementById("p-run").onclick=()=>{if(tr.done||tr.stopped)resetTrain(true);tr.running=!tr.running;acc=0.7;syncTrain();req()};
+document.getElementById("p-reset").onclick=()=>{resetTrain(true);syncTrain();req()};
+document.getElementById("p-eta").oninput=e=>{tr.eta=+e.target.value;resetTrain(true);syncTrain();req()};
+document.getElementById("p-morph").onclick=()=>{net.target=net.t>0.5?0:1;net.anim=true;req()};
+document.getElementById("p-t").oninput=e=>{net.t=+e.target.value;net.anim=false;syncNetSlider();req()};
+const setCase=Core.seg("p-case",[["00","(0, 0)"],["01","(0, 1)"],["10","(1, 0)"],["11","(1, 1)"]],k=>{net.x=[+k[0],+k[1]];syncNet()});
+document.getElementById("p-k").oninput=e=>{apx.k=+e.target.value;apx.shownK=apx.k;apx.anim=false;syncApx()};
+document.getElementById("p-kanim").onclick=()=>{apx.anim=true;apx.shownK=1;apx.k=1;req()};
+document.getElementById("p-each").onclick=()=>{apx.each=!apx.each;syncApx()};
+cv.addEventListener("click",e=>{if(view!=="red")return;const p=Core.ptr(cv,e,W,H);if(Math.hypot(p.x-70,p.y-150)<30){net.x[0]=1-net.x[0];syncNet()}if(Math.hypot(p.x-70,p.y-330)<30){net.x[1]=1-net.x[1];syncNet()}});
+cv.addEventListener("pointermove",e=>{if(view!=="red"){cv.style.cursor="default";return}const p=Core.ptr(cv,e,W,H);cv.style.cursor=(Math.hypot(p.x-70,p.y-150)<30||Math.hypot(p.x-70,p.y-330)<30)?"pointer":"default"});
+function syncView(){setView(view);["train","red","aprox"].forEach(v=>document.getElementById("p-v-"+v).hidden=v!==view);
+  if(view==="train")syncTrain();else if(view==="red")syncNet();else syncApx()}
+function syncTrain(){setData(tr.data);document.getElementById("p-eta").value=tr.eta;document.getElementById("p-etav").textContent=num(tr.eta,1);
+  document.getElementById("p-run").textContent=tr.running?"❚❚ Pausa":"▶ Entrenar";
+  document.querySelector("#p-table tbody").innerHTML=tr.rows.map(r=>`<tr${r.n===0?' class="on"':''}><td>${r.e}</td><td class="mono">${r.n}</td><td class="mono">${fmt(r.w[0])}</td><td class="mono">${fmt(r.w[1])}</td><td class="mono">${fmt(r.b)}</td></tr>`).join("");
+  if(view==="train")document.getElementById("p-status").innerHTML=trainStatus();req()}
+function syncNetSlider(){document.getElementById("p-t").value=net.t;document.getElementById("p-tv").textContent=Math.round(net.t*100)+" %"}
+function syncNet(){setCase(net.x.join(""));syncNetSlider();const v=fwd(...net.x);
+  document.getElementById("p-status").innerHTML=`Caso (${net.x[0]}, ${net.x[1]}): la capa oculta lo lleva al punto (h₁, h₂) = (${v.h1}, ${v.h2}) y la salida da ${num(v.y,2)}. `+(net.t<0.5?"En el espacio de las entradas, ninguna recta separa los descuadres: hacen falta dos y la alerta queda en la franja entre ambas.":"En el espacio de la capa oculta, los dos descuadres caen en el mismo punto (1, 0) y una sola recta, 4h₁ − 8h₂ − 2 = 0, los separa del resto.");req()}
+function syncApx(fromAnim){document.getElementById("p-k").value=apx.k;document.getElementById("p-kv").textContent=apx.k;const b=document.getElementById("p-each");b.setAttribute("aria-pressed",String(apx.each));b.textContent=apx.each?"Ver cada neurona":"Solo la suma";
+  const f=fitK(apx.k);document.getElementById("p-status").innerHTML=`Con ${apx.k} neurona${apx.k>1?"s":""} ReLU, la red construye una poligonal con ${apx.k} codo${apx.k>1?"s":""} y se aleja de la demanda real, de media, ${num(f.rmse,1)} pedidos por hora. `+(apx.k<6?"Faltan codos para seguir los picos de la mañana y de la tarde.":apx.k<12?"Ya sigue los dos picos, aunque con tramos rectos visibles.":"El ajuste es casi perfecto: así de flexible es una sola capa oculta con suficientes neuronas.");req()}
+Core.on("theme",req);Core.on("tab",t=>{if(t==="perceptron"){last=performance.now();req()}});
+window.__perceptron={get tr(){return tr},net,apx,stepTrain,syncView,resetTrain,setView:v=>{view=v;syncView()},draw:()=>draw(performance.now())};
+syncView();
+})();
+
+</script>
+<script>
+
+(() => {
+// ------------------------------------------------------------ modelo real
+function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function gauss(r){let u=0,v=0;while(!u)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const ACT={
+  sigmoid:{f:z=>1/(1+Math.exp(-z)),d:(z,a)=>a*(1-a)},
+  tanh:{f:z=>Math.tanh(z),d:(z,a)=>1-a*a},
+  relu:{f:z=>z>0?z:0,d:(z,a)=>z>0?1:0}
+};
+function deltas(act,init,res,L,seed){
+  const W=32,B=64,OUT=10,r=rng(seed*7919+13);
+  const scale=init==="grandes"?1.5:1;
+  const std=(nin,nout)=>(act==="relu"?Math.sqrt(2/nin):Math.sqrt(2/(nin+nout)))*scale;
+  const Ws=[];for(let l=0;l<=L;l++){const nout=l===L?OUT:W,s=std(W,nout),m=new Float64Array(W*nout);for(let i=0;i<m.length;i++)m[i]=gauss(r)*s;Ws.push(m)}
+  const X=new Float64Array(B*W);for(let i=0;i<X.length;i++)X[i]=gauss(r);
+  const Y=new Int32Array(B);for(let i=0;i<B;i++)Y[i]=Math.floor(r()*OUT);
+  const h=[X],z=[null],a=[null],F=ACT[act];
+  for(let l=1;l<=L;l++){const M=Ws[l-1],hp=h[l-1],zz=new Float64Array(B*W),aa=new Float64Array(B*W);
+    for(let b=0;b<B;b++)for(let j=0;j<W;j++){let s=0;for(let i=0;i<W;i++)s+=hp[b*W+i]*M[i*W+j];zz[b*W+j]=s;aa[b*W+j]=F.f(s)}
+    z.push(zz);a.push(aa);
+    let hh=aa;if(res&&l%2===0){hh=new Float64Array(B*W);const hs=h[l-2];for(let k=0;k<hh.length;k++)hh[k]=aa[k]+hs[k]}
+    h.push(hh)}
+  // salida softmax + entropía cruzada
+  const Mo=Ws[L],g=[];for(let l=0;l<=L;l++)g.push(new Float64Array(B*W));
+  for(let b=0;b<B;b++){const o=new Float64Array(OUT);let mx=-1e9;for(let k=0;k<OUT;k++){let s=0;for(let i=0;i<W;i++)s+=h[L][b*W+i]*Mo[i*OUT+k];o[k]=s;mx=Math.max(mx,s)}
+    let se=0;for(let k=0;k<OUT;k++){o[k]=Math.exp(o[k]-mx);se+=o[k]}for(let k=0;k<OUT;k++)o[k]/=se;o[Y[b]]-=1;
+    for(let i=0;i<W;i++){let s=0;for(let k=0;k<OUT;k++)s+=Mo[i*OUT+k]*o[k];g[L][b*W+i]=s/B}}
+  for(let l=L;l>=1;l--){const M=Ws[l-1],gl=g[l],dz=new Float64Array(B*W);
+    for(let k=0;k<dz.length;k++)dz[k]=gl[k]*F.d(z[l][k],a[l][k]);
+    for(let b=0;b<B;b++)for(let i=0;i<W;i++){let s=0;for(let j=0;j<W;j++)s+=M[i*W+j]*dz[b*W+j];g[l-1][b*W+i]+=s}
+    if(res&&l%2===0){const gs=g[l-2];for(let k=0;k<gs.length;k++)gs[k]+=gl[k]}}
+  const rms=v=>{let s=0;for(const x of v)s+=x*x;return Math.sqrt(s/v.length)};
+  return g.map(rms);
+}
+let j;
+function relDeltas(act,init,res,L){
+  const S=5,acc=new Float64Array(L+1);
+  for(let s=0;s<S;s++){const d=deltas(act,init,res,L,s+1);for(let l=0;l<=L;l++)acc[l]+=Math.log(d[l]/d[L])}
+  return Array.from(acc,v=>Math.exp(v/S)); // índice 0 = entrada, L = última capa oculta
+}
+
+
+// ------------------------------------------------------------ estado
+const q=new URLSearchParams(location.search);
+const PRESETS={
+  sigmoide:{name:"Sigmoide",act:"sigmoid",init:"correcta",res:false},
+  relu:{name:"ReLU con inicialización de He",act:"relu",init:"correcta",res:false},
+  grandes:{name:"Pesos iniciales grandes",act:"relu",init:"grandes",res:false},
+  residual:{name:"Sigmoide con atajos residuales",act:"sigmoid",init:"correcta",res:true},
+};
+const ACTN={sigmoid:"Sigmoide",tanh:"Tanh",relu:"ReLU"};
+let st={act:"sigmoid",init:"correcta",res:false,L:6};
+const p0=PRESETS[q.get("preset")]||PRESETS.sigmoide;Object.assign(st,{act:p0.act,init:p0.init,res:p0.res});
+if(q.has("layers"))st.L=Math.max(3,Math.min(10,+q.get("layers")));
+const STILL=q.has("still");if(STILL)document.body.classList.add("still");
+let rel=[];
+
+// ------------------------------------------------------------ tema
+const THEMES={
+  dark:{bg0:"#0f2540",bg1:"#040a12",grid:"rgba(120,160,200,.05)",axon:"rgba(150,190,225,.20)",branch:"rgba(150,190,225,.14)",bouton:"rgba(170,205,235,.55)",
+        dend:"rgba(170,205,235,.62)",soma:["#eaf3fb","#8db8de","#2c5678"],nucleus:"rgba(20,45,70,.55)",dim:"4,10,18",
+        inFill:"#123150",inStroke:"#7fb0dc",label:"rgba(170,190,210,.75)",faint:"rgba(255,255,255,.12)",title:"rgba(200,215,230,.85)",sub:"rgba(150,175,200,.7)",
+        blue:"rgba(156,199,240,A)",green:"rgba(76,195,138,A)",red:[255,90,78],hot:[255,220,118],glowOp:"lighter",core:"255,255,255",errText:[255,150,135]},
+  light:{bg0:"#ffffff",bg1:"#e8eef4",grid:"rgba(46,111,149,.06)",axon:"rgba(46,111,149,.28)",branch:"rgba(46,111,149,.18)",bouton:"rgba(46,111,149,.55)",
+        dend:"rgba(70,120,160,.55)",soma:["#ffffff","#bcd5ea","#5B8DB8"],nucleus:"rgba(30,60,90,.45)",dim:"238,243,248",
+        inFill:"#DCE9F4",inStroke:"#2E6F95",label:"rgba(60,75,90,.85)",faint:"rgba(0,0,0,.15)",title:"rgba(20,32,45,.9)",sub:"rgba(90,105,120,.85)",
+        blue:"rgba(46,111,149,A)",green:"rgba(60,141,90,A)",red:[192,60,58],hot:[208,140,26],glowOp:"source-over",core:"255,255,255",errText:[192,70,66]}
+};
+let themeName=q.get("theme")==="light"?"light":(q.get("theme")==="dark"?"dark":(()=>{try{return localStorage.getItem("m8-theme")||"dark"}catch(e){return "dark"}})());
+let TH=THEMES[themeName];
+function applyTheme(){document.documentElement.dataset.theme=themeName;TH=THEMES[themeName];
+  const b=document.getElementById("theme");b.textContent=themeName==="dark"?"☀ Modo claro":"☾ Modo oscuro";
+  try{localStorage.setItem("m8-theme",themeName)}catch(e){}; if(!playing||stepMode)requestFrame()}
+
+function recompute(){rel=relDeltas(st.act,st.init,st.res,st.L);window.__rel=rel;layout();updateUI();t0=performance.now();if(stepMode){step=Math.min(step,totalSteps()-1);showStep()}}
+
+// ------------------------------------------------------------ dibujo
+const cv=document.getElementById("c"),cx=cv.getContext("2d");
+const CW=1180,CH=540;
+function fit(){const dpr=Math.min(window.devicePixelRatio||1,STILL?3:2);cv.width=CW*dpr;cv.height=CH*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
+fit();
+let NET=null;
+function bez(p0,p1,p2,p3,t){const u=1-t;return[u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]]}
+function layout(){
+  const L=st.L,r=rng(42);
+  const x0=150,x1=CW-190,ys=[CH*0.36,CH*0.55,CH*0.74];
+  const layers=[];
+  layers.push(ys.map((y)=>({x:70,y:y,kind:"in"})));
+  for(let l=1;l<=L;l++){const x=x0+(x1-x0)*(l-1)/Math.max(1,L-1);
+    layers.push(ys.map((y)=>({x:x+(r()-.5)*14,y:y+(r()-.5)*16,kind:"hid",soma:somaShape(r),dend:dendrites(r)})))}
+  layers.push([{x:CW-95,y:ys[1],kind:"out",soma:somaShape(r),dend:dendrites(r)}]);
+  const links=[];
+  for(let l=0;l<layers.length-1;l++){const A=layers[l],Bl=layers[l+1];const segs=[];
+    A.forEach((a,ia)=>{const start=[a.x+(a.kind==="in"?10:15),a.y];
+      const jx=a.x+(Bl[0].x-a.x)*0.45,jy=a.y*0.75+ys[1]*0.25+(r()-.5)*10;
+      const trunk=[start,[start[0]+30,start[1]],[jx-25,jy],[jx,jy]];
+      Bl.forEach((b,ib)=>{const end=[b.x-34,b.y+(ia-1)*7];const br=[[jx,jy],[jx+25,jy],[end[0]-30,end[1]],end];segs.push({from:ia,to:ib,trunk,br})})});
+    links.push(segs)}
+  const arcs=[];
+  if(st.res)for(let l=2;l<=L;l+=2){const a=layers[l-2][0],b=layers[l][0];const h=46+(l%4)*6;
+    arcs.push({from:l-2,to:l,p:[[a.x+4,a.y-16],[a.x+40,a.y-16-h*1.6],[b.x-40,b.y-16-h*1.6],[b.x-4,b.y-16]]})}
+  NET={layers,links,arcs,ys};
+}
+function somaShape(r){const n=9,ph=r()*6,amp=[];for(let i=0;i<n;i++)amp.push(.82+r()*.32);return{ph,amp}}
+function dendrites(r){const list=[];const k=5+Math.floor(r()*2);
+  for(let i=0;i<k;i++){const ang=Math.PI*(0.55+1.0*(i+r()*.6)/k);const len=22+r()*20;
+    const sub=[];const ns=1+Math.floor(r()*2);for(let s=0;s<ns;s++)sub.push({at:.45+r()*.35,da:(r()<.5?-1:1)*(.35+r()*.45),len:8+r()*10});
+    list.push({ang,len,bend:(r()-.5)*.6,sub})}
+  list.push({ang:-Math.PI*0.42,len:16+r()*8,bend:.3,sub:[]},{ang:Math.PI*0.42,len:16+r()*8,bend:-.3,sub:[]});
+  return list}
+function drawSoma(n,R,glowCol,glowAmt){
+  const {ph,amp}=n.soma;const pts=[];const N=36;
+  for(let i=0;i<N;i++){const t=i/N*2*Math.PI;let m=0;for(let k=0;k<amp.length;k++)m+=amp[k]*Math.cos(k*t+ph*(k+1))/amp.length;const rr=R*(1+.18*m);pts.push([n.x+rr*Math.cos(t),n.y+rr*0.92*Math.sin(t)])}
+  const path=()=>{cx.beginPath();pts.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath()};
+  cx.save();
+  if(glowAmt>0){cx.shadowColor=glowCol;cx.shadowBlur=10+38*glowAmt}
+  const g=cx.createRadialGradient(n.x-R*.3,n.y-R*.35,R*.1,n.x,n.y,R*1.25);
+  g.addColorStop(0,TH.soma[0]);g.addColorStop(.55,TH.soma[1]);g.addColorStop(1,TH.soma[2]);
+  cx.fillStyle=g;path();cx.fill();
+  if(glowAmt>0){cx.shadowBlur=0;cx.globalCompositeOperation=TH.glowOp;cx.fillStyle=glowCol;cx.globalAlpha=Math.min(themeName==="dark"?.85:.7,glowAmt*.8);path();cx.fill();cx.globalAlpha=1;cx.globalCompositeOperation="source-over"}
+  cx.restore();
+  if(themeName==="light"){cx.strokeStyle="rgba(46,111,149,.55)";cx.lineWidth=1;path();cx.stroke()}
+  cx.fillStyle=TH.nucleus;cx.beginPath();cx.ellipse(n.x+R*.1,n.y+R*.05,R*.34,R*.3,0,0,7);cx.fill();
+  cx.fillStyle="rgba(255,255,255,.55)";cx.beginPath();cx.arc(n.x-R*.05,n.y-R*.05,R*.1,0,7);cx.fill();
+}
+function taper(points,w0,w1,col){for(let i=0;i<points.length-1;i++){const t=i/(points.length-1);cx.strokeStyle=col;cx.lineWidth=w0+(w1-w0)*t;cx.beginPath();cx.moveTo(points[i][0],points[i][1]);cx.lineTo(points[i+1][0],points[i+1][1]);cx.stroke()}}
+function drawDendrites(n,col,R){
+  cx.lineCap="round";
+  for(const d of n.dend){const pts=[];const S=10;for(let i=0;i<=S;i++){const t=i/S;const a=d.ang+d.bend*t;const rr=R*.8+d.len*t;pts.push([n.x+rr*Math.cos(a),n.y+rr*Math.sin(a)])}
+    taper(pts,3.2,.6,col);
+    for(const s of d.sub){const i0=Math.round(s.at*S),p=pts[i0];const a=d.ang+d.bend*s.at+s.da;const sp=[];for(let i=0;i<=5;i++){const t=i/5;sp.push([p[0]+s.len*t*Math.cos(a),p[1]+s.len*t*Math.sin(a)])}taper(sp,1.4,.4,col)}}
+}
+function curvePts(c,n=28){const out=[];for(let i=0;i<=n;i++)out.push(bez(c[0],c[1],c[2],c[3],i/n));return out}
+function strokeCurve(c,w,col){cx.strokeStyle=col;cx.lineWidth=w;cx.beginPath();cx.moveTo(c[0][0],c[0][1]);cx.bezierCurveTo(c[1][0],c[1][1],c[2][0],c[2][1],c[3][0],c[3][1]);cx.stroke()}
+function pulse(x,y,size,col,alpha){cx.save();cx.globalCompositeOperation=TH.glowOp;
+  const g=cx.createRadialGradient(x,y,0,x,y,size*3.2);g.addColorStop(0,col.replace("A",(alpha).toFixed(3)));g.addColorStop(.35,col.replace("A",(alpha*.45).toFixed(3)));g.addColorStop(1,col.replace("A","0"));
+  cx.fillStyle=g;cx.beginPath();cx.arc(x,y,size*3.2,0,7);cx.fill();
+  cx.fillStyle=themeName==="dark"?`rgba(255,255,255,${(alpha*.9).toFixed(3)})`:col.replace("A",Math.min(1,alpha*1.2).toFixed(3));cx.beginPath();cx.arc(x,y,Math.max(.6,size*.45),0,7);cx.fill();cx.restore()}
+function hot(s){const h=Math.max(0,Math.min(1,(s-1)/0.55));const a=TH.red,b=TH.hot;return a.map((v,i)=>Math.round(v+(b[i]-v)*h))}
+function errCol(s,a){const [r,g,b]=hot(s);return a===undefined?`rgba(${r},${g},${b},A)`:`rgba(${r},${g},${b},${a})`}
+function strength(v){const lg=Math.log10(Math.max(v,1e-12));return Math.max(0,Math.min(1.6,1+lg/3.5))}
+const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+function fmt(v){if(v>=100)return v.toFixed(0);if(v>=1)return v.toFixed(2);if(v>=0.01)return v.toFixed(3);const e=Math.floor(Math.log10(v)),m=v/Math.pow(10,e);return m.toFixed(1)+"·10"+String(e).split("").map(c=>SUP[c]).join("")}
+
+// ------------------------------------------------------------ línea de tiempo
+const FWD=0.42,BWD=0.62,FLASH=0.8,HOLD=2.6;
+const SFWD=1.0,SBWD=1.3,SFLASH=1.1; // duraciones en modo paso a paso
+let t0=performance.now(),playing=!STILL,stepMode=false,step=0,stepT0=0,raf=0;
+function phaseAt(t){const nL=NET.layers.length-1;const tf=nL*FWD,tb=nL*BWD;const T=tf+FLASH+tb+HOLD;t=t%T;
+  if(t<tf)return{ph:"fwd",k:t/FWD};if(t<tf+FLASH)return{ph:"flash",k:(t-tf)/FLASH};
+  if(t<tf+FLASH+tb)return{ph:"bwd",k:(t-tf-FLASH)/BWD};return{ph:"hold",k:(t-tf-FLASH-tb)/HOLD}}
+// pasos: 0 inicio · 1..nL hacia delante · nL+1 error · nL+2..2nL+1 hacia atrás · 2nL+2 resumen
+function totalSteps(){const nL=NET.layers.length-1;return 2*nL+3}
+function stepPhase(s,tl){const nL=NET.layers.length-1;
+  if(s===0)return{ph:"idle"};
+  if(s<=nL){const p=Math.min(1,tl/SFWD);return p<1?{ph:"fwd",k:(s-1)+p}:{ph:"fwd",k:s,noPulse:true,done:true}}
+  if(s===nL+1){const p=Math.min(1,tl/SFLASH);return p<1?{ph:"flash",k:p}:{ph:"flash",k:.5,done:true}}
+  if(s<=2*nL+1){const j=s-nL-1;const p=Math.min(1,tl/SBWD);return p<1?{ph:"bwd",k:(j-1)+p}:{ph:"bwd",k:j,noPulse:true,done:true}}
+  return{ph:"hold",k:0,done:true}}
+
+function draw(now){
+  raf=0;
+  let P;
+  if(STILL)P={ph:"still"};
+  else if(stepMode)P=stepPhase(step,(now-stepT0)/1000);
+  else P=phaseAt(Math.max(0,(now-t0)/1000));
+  cx.clearRect(0,0,CW,CH);
+  const bg=cx.createRadialGradient(CW*.5,CH*.15,40,CW*.5,CH*.5,CW*.75);bg.addColorStop(0,TH.bg0);bg.addColorStop(1,TH.bg1);cx.fillStyle=bg;cx.fillRect(0,0,CW,CH);
+  cx.strokeStyle=TH.grid;cx.lineWidth=1;for(let x=0;x<CW;x+=40){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,CH);cx.stroke()}for(let y=0;y<CH;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(CW,y);cx.stroke()}
+  const nL=NET.layers.length-1,L=st.L;
+  const errAt=(li)=>li>L?1:rel[li];
+  let bReach=1e9;
+  if(P.ph==="bwd"){const seg=Math.floor(P.k);bReach=nL-seg}
+  else if(P.ph==="hold"||P.ph==="still")bReach=-1e9;
+  const errPhase=P.ph==="bwd"||P.ph==="hold"||P.ph==="still"||P.ph==="flash";
+  const lit=(li)=>(P.ph==="hold"||P.ph==="still")?true:(P.ph==="bwd"?li>=bReach:false)||(li===nL&&P.ph==="flash");
+  cx.lineCap="round";
+  NET.links.forEach((segs)=>{segs.forEach(s=>{strokeCurve(s.trunk,2.1,TH.axon);strokeCurve(s.br,1.2,TH.branch);
+    const e=s.br[3];cx.fillStyle=TH.bouton;cx.beginPath();cx.arc(e[0],e[1],2.1,0,7);cx.fill()})});
+  // conexiones recorridas por la señal hacia delante (paso a paso)
+  if(P.ph==="fwd"){const reached=Math.floor(P.k+1e-6);NET.links.forEach((segs,l)=>{if(l>=reached)return;segs.forEach(sg=>{strokeCurve(sg.trunk,2.4,TH.blue.replace("A",".45"));strokeCurve(sg.br,1.4,TH.blue.replace("A",".35"))})})}
+  NET.links.forEach((segs,l)=>{if(!(lit(l)&&errPhase&&P.ph!=="flash"))return;const s=strength(errAt(l));if(s<=0.02)return;
+    segs.forEach(sg=>{cx.save();cx.globalCompositeOperation=TH.glowOp;if(themeName==="dark"){cx.shadowColor="rgba(255,90,78,.9)";cx.shadowBlur=8*s}
+      strokeCurve(sg.br,0.3+1.8*s,errCol(s,(0.04+0.40*Math.min(1,s)).toFixed(3)));strokeCurve(sg.trunk,0.4+2.8*s,errCol(s,(0.05+0.45*Math.min(1,s)).toFixed(3)));cx.restore()})});
+  NET.arcs.forEach(a=>{cx.save();cx.shadowColor=TH.green.replace("A",".8");cx.shadowBlur=themeName==="dark"?10:4;strokeCurve(a.p,3,TH.green.replace("A",".6"));cx.restore();
+    const s=strength(errAt(a.from));if(lit(a.from)&&errPhase&&P.ph!=="flash"&&s>0.02){cx.save();cx.globalCompositeOperation=TH.glowOp;strokeCurve(a.p,1+2.5*s,errCol(s,(0.15+0.4*s).toFixed(3)));cx.restore()}});
+  NET.layers.forEach((layer,li)=>layer.forEach(n=>{
+    if(n.kind==="in"){const on=P.ph==="fwd"&&P.k<1;cx.save();cx.shadowColor=TH.blue.replace("A",".7");cx.shadowBlur=on?18:6;cx.fillStyle=TH.inFill;cx.strokeStyle=TH.inStroke;cx.lineWidth=1.6;
+      cx.beginPath();cx.roundRect?cx.roundRect(n.x-10,n.y-10,20,20,4):cx.rect(n.x-10,n.y-10,20,20);cx.fill();cx.stroke();cx.restore();return}
+    const R=n.kind==="out"?17:13;
+    drawDendrites(n,TH.dend,R);
+    let gAmt=0,gCol=errCol(1,1);
+    if(lit(li)&&errPhase){gAmt=strength(errAt(li));gCol=errCol(gAmt,1)}
+    if(P.ph==="fwd"){const on=stepMode?(P.k>=li-0.05&&P.k<=li+0.02):(P.k>=li-0.05&&P.k<li+0.9);if(on){gAmt=.7;gCol=TH.blue.replace("A","1")}
+      else if(stepMode&&P.k>li){gAmt=.25;gCol=TH.blue.replace("A","1")}}
+    drawSoma(n,R,gCol,Math.min(1.5,gAmt));
+    if(lit(li)&&errPhase&&P.ph!=="flash"&&n.kind!=="out"){const dim=Math.max(0,1-Math.min(1,gAmt));if(dim>0.02){cx.fillStyle=`rgba(${TH.dim},${(0.62*dim).toFixed(3)})`;cx.beginPath();cx.arc(n.x,n.y,R*1.25,0,7);cx.fill()}}
+  }));
+  if(P.ph==="fwd"&&!P.noPulse){const seg=Math.floor(P.k),f=P.k-seg;if(seg>=0&&seg<NET.links.length){NET.links[seg].forEach(s=>{const pts=f<.5?curvePts(s.trunk):curvePts(s.br);const tt=f<.5?f*2:(f-.5)*2;const p=pts[Math.min(pts.length-1,Math.round(tt*(pts.length-1)))];pulse(p[0],p[1],4.2,TH.blue,.95)})}}
+  if(P.ph==="bwd"&&!P.noPulse){const seg=Math.floor(P.k),f=P.k-seg;const l=nL-1-seg;if(l>=0){const s=strength(errAt(l));const size=1+6.5*s,al=Math.max(.06,Math.min(1,.15+.85*s));
+      NET.links[l].forEach(sg=>{const pts=f<.5?curvePts(sg.br).reverse():curvePts(sg.trunk).reverse();const tt=f<.5?f*2:(f-.5)*2;const p=pts[Math.min(pts.length-1,Math.round(tt*(pts.length-1)))];pulse(p[0],p[1],size,errCol(s),al)});
+      NET.arcs.filter(a=>a.to===l+1).forEach(a=>{const pts=curvePts(a.p,40).reverse();const p=pts[Math.round(f*40)];pulse(p[0],p[1],size,errCol(s),al)})}}
+  if(P.ph==="still"){NET.links.forEach((segs,l)=>{const s=strength(errAt(l));if(s<0.02)return;const size=1+6.5*s,al=Math.max(.08,Math.min(1,.15+.85*s));segs.forEach((sg,i)=>{if(i%3!==1)return;const pts=curvePts(sg.br);const p=pts[Math.round(pts.length*.45)];pulse(p[0],p[1],size,errCol(s),al)})});
+    NET.arcs.forEach(a=>{const s=strength(errAt(a.from));const pts=curvePts(a.p,40);const p=pts[20];pulse(p[0],p[1],1+6.5*s,errCol(s),Math.min(1,.15+.85*s))})}
+  const o=NET.layers[nL][0];
+  if(P.ph==="flash"){const k=Math.sin(Math.min(1,P.k)*Math.PI);pulse(o.x+2,o.y,9+6*k,errCol(1),.9*k+.1)}
+  // etiquetas
+  cx.textAlign="center";
+  NET.layers.forEach((layer,li)=>{const x=layer[0].x;const yb=CH-62;
+    cx.font="600 12px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.label;
+    const name=li===0?"entrada":li===nL?"salida":"capa "+li;cx.fillText(name.toUpperCase(),x,yb);
+    if(li<=L&&li>0){const show=lit(li)&&errPhase&&P.ph!=="flash";cx.font="700 15px ui-monospace,Menlo,Consolas,monospace";
+      const s=Math.min(1,strength(errAt(li)));const [r,g,b]=TH.errText;cx.fillStyle=show?`rgba(${r},${g},${b},${(0.45+0.55*s).toFixed(2)})`:TH.faint;
+      cx.fillText(show?"×"+fmt(errAt(li)):"·",x,yb+22)}
+    if(li===nL){cx.font="700 15px ui-monospace,Menlo,Consolas,monospace";const [r,g,b]=TH.errText;cx.fillStyle=errPhase?`rgba(${r},${g},${b},.95)`:TH.faint;cx.fillText("error",x,yb+22)}});
+  cx.textAlign="left";cx.font="600 13px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.title;
+  const cfg=(st.res?ACTN[st.act]+" con atajos residuales":(st.init==="grandes"?ACTN[st.act]+" · pesos iniciales grandes":(st.act==="relu"?"ReLU · inicialización de He":ACTN[st.act]+" · inicialización de Glorot")));
+  cx.fillText(cfg.toUpperCase(),22,30);
+  cx.font="12px ui-monospace,Menlo,Consolas,monospace";cx.fillStyle=TH.sub;
+  const phTxt={idle:"Red en reposo",fwd:"1 · pasada hacia delante",flash:"2 · se calcula el error",bwd:"3 · el error vuelve hacia atrás",hold:"3 · el error vuelve hacia atrás",still:"Error que llega a cada capa (última capa = ×1)"}[P.ph];
+  cx.fillText(phTxt.toUpperCase(),22,50);
+  cx.textAlign="right";cx.font="600 13px ui-monospace,Menlo,Consolas,monospace";const [r,g,b]=TH.errText;cx.fillStyle=`rgba(${r},${g},${b},.9)`;
+  if(P.ph==="hold"||P.ph==="still"||(P.ph==="bwd"&&bReach<=1))cx.fillText("A LA CAPA 1 LLEGA ×"+fmt(rel[1]),CW-22,30);
+  const animating=!STILL&&((!stepMode&&playing)||(stepMode&&!P.done&&P.ph!=="idle"));
+  if(animating&&window.__tab==="backprop")raf=requestAnimationFrame(draw);
+}
+function requestFrame(){if(!raf)raf=requestAnimationFrame(draw)}
+
+// ------------------------------------------------------------ explicaciones paso a paso
+const stage=document.getElementById("stage"),bubble=document.getElementById("bubble");
+function slopeNote(d){ // d: capa a la que llega el error (desde d+1)
+  if(st.res&&d%2===0&&d+2<=st.L)return ` Además, por el atajo residual le llega directamente el error de la capa ${d+2} sin multiplicarse: por eso no se pierde.`;
+  if(st.init==="grandes")return " Los pesos son demasiado grandes y multiplican la señal por más de 1: el error crece.";
+  if(st.act==="sigmoid")return " La pendiente de la sigmoide vale como mucho 0.25, por eso el error se encoge.";
+  if(st.act==="tanh")return " La pendiente de tanh vale como mucho 1 y se reduce lejos del centro.";
+  return " Con ReLU la pendiente es 1 y la escala de los pesos está ajustada: el error se mantiene.";
+}
+function stepInfo(s){
+  const nL=NET.layers.length-1,L=st.L,act=st.act==="relu"?"ReLU":ACTN[st.act].toLowerCase();
+  const n=(v)=>`<span class="num">×${fmt(v)}</span>`;
+  if(s===0)return{at:0.5,title:"Una red de "+L+" capas ocultas",text:`Cada capa tiene 32 neuronas (aquí se dibujan 3) con activación ${act}${st.res?" y atajos residuales cada dos capas":""}. Vamos a seguir una predicción completa: primero hacia delante y después, el error hacia atrás.`};
+  if(s<=nL){const dest=s;const x=NET.layers[dest][0].x/CW;
+    if(s===1)return{at:x,title:"Los datos entran en la capa 1",text:`Cada neurona de la capa 1 recibe los datos de entrada, calcula su suma ponderada $z$ y le aplica la activación (${act}). Su salida es la entrada de la capa siguiente.`};
+    if(s===nL)return{at:x,title:"Se obtiene la predicción",text:"La última capa oculta alimenta a la neurona de salida, que devuelve la predicción ŷ. Hasta aquí, la red solo ha hecho cálculos: todavía no sabe si ha acertado."};
+    return{at:x,title:`De la capa ${s-1} a la capa ${s}`,text:`La capa ${s-1} pasa su salida a la capa ${s}, que repite el mismo cálculo: suma ponderada y activación. Así, capa a capa, la información avanza hacia la salida.`}}
+  if(s===nL+1)return{at:NET.layers[nL][0].x/CW,title:"Se calcula el error",text:"La predicción se compara con la respuesta correcta mediante la función de coste (apartado 1). La diferencia es el error de la salida: el punto de partida de la retropropagación."};
+  if(s<=2*nL+1){const j=s-nL-1,d=nL-j;const x=NET.layers[d][0].x/CW;
+    if(d===L)return{at:x,title:`El error llega a la capa ${L}`,text:`El error sale de la neurona de salida y llega a la última capa oculta. Tomamos su tamaño como referencia: ${n(1)}. A partir de aquí veremos cuánto se conserva en cada capa.`};
+    if(d===0)return{at:.12,title:"El error llega a la entrada",text:`Antes de los datos de entrada no hay más pesos, así que aquí termina el recorrido. Con el error que ha llegado a cada capa ya pueden calcularse los gradientes de todos los pesos (apartado 2.2).`};
+    if(st.res&&d%2===0&&d+2<=L)return{at:x,title:`De la capa ${d+1} a la capa ${d}`,text:`El error llega a la capa ${d} por dos caminos. Por el que atraviesa la capa ${d+1}, se multiplica por los pesos y por la pendiente de la sigmoide y se encoge. Pero por el atajo residual le llega directamente el error de la capa ${d+2}, sin multiplicarse. Sumando ambos, a la capa ${d} le llega ${n(rel[d])} del error de la capa ${L}: no se pierde.`};
+    const ratio=rel[d]/rel[d+1];
+    return{at:x,title:`De la capa ${d+1} a la capa ${d}`,text:`Al pasar de la capa ${d+1} a la ${d}, el error se multiplica por los pesos y por la pendiente de la activación: queda ${n(ratio)} el que había. En total, a la capa ${d} le llega ${n(rel[d])} del error de la capa ${L}.`+slopeNote(d)}}
+  const r1=rel[1];let diag;
+  if(r1<0.01)diag=`A la capa 1 llega solo ${n(r1)}: sus pesos apenas se corregirán y la red aprenderá muy despacio. Es el <i>vanishing gradient</i> (apartado 4.1).`;
+  else if(r1>3)diag=`A la capa 1 llega ${n(r1)}: el error ha crecido capa a capa y las correcciones serán desproporcionadas. Es la explosión del gradiente (apartado 4.1).`;
+  else diag=`A la capa 1 llega ${n(r1)}: el error ha atravesado toda la red sin perderse ni dispararse, así que todas las capas pueden aprender.`;
+  return{at:.5,title:"Resumen",text:diag+" Con estos gradientes, el optimizador actualiza los pesos (apartado 3) y el ciclo vuelve a empezar con el siguiente lote de datos."};
+}
+function texify(s){return s.replace(/\$z\$/g,"<i>z</i>")}
+function showStep(){
+  const info=stepInfo(step);
+  document.getElementById("bcount").textContent=`Paso ${step+1} de ${totalSteps()}`;
+  document.getElementById("btitle").textContent=info.title;
+  document.getElementById("btext").innerHTML=texify(info.text);
+  document.getElementById("bprev").disabled=step===0;
+  document.getElementById("bnext").textContent=step===totalSteps()-1?"Volver a empezar ↺":"Siguiente →";
+  bubble.hidden=false;
+  const W=stage.clientWidth,bw=bubble.offsetWidth;
+  const titleW=290*(W/CW);
+  const ax=Math.max(bw/2+titleW,Math.min(W-bw/2-10,info.at*W));
+  bubble.style.left=ax+"px";
+  bubble.classList.add("below");bubble.style.top=(stage.clientHeight*0.035)+"px";
+  // si el globo tapa la red en exceso, ponerlo debajo de la cabecera de la escena
+  const tail=document.getElementById("btail");tail.style.left=Math.max(18,Math.min(bw-18,info.at*W-ax+bw/2))+"px";
+  bubble.classList.remove("below");bubble.style.top=Math.max(8,stage.clientHeight*0.36-bubble.offsetHeight-58*(stage.clientWidth/CW))+"px";
+  stepT0=performance.now();requestFrame();
+}
+function setMode(m){stepMode=m==="step";
+  document.getElementById("modeAuto").setAttribute("aria-pressed",String(!stepMode));document.getElementById("modeStep").setAttribute("aria-pressed",String(stepMode));
+  document.getElementById("autoCtl").style.display=stepMode?"none":"flex";
+  if(stepMode){step=0;showStep()}else{bubble.hidden=true;t0=performance.now();playing=true;document.getElementById("play").textContent="Pausa";requestFrame()}}
+
+// ------------------------------------------------------------ interfaz
+function mk(parent,label,on){const b=document.createElement("button");b.textContent=label;b.onclick=on;document.getElementById(parent).appendChild(b);return b}
+const presetBtns=Object.entries(PRESETS).map(([k,p])=>{const b=mk("presets",p.name,()=>{Object.assign(st,{act:p.act,init:p.init,res:p.res});recompute();requestFrame()});b.dataset.k=k;return b});
+const actBtns=Object.keys(ACTN).map(k=>{const b=mk("acts",ACTN[k],()=>{st.act=k;recompute();requestFrame()});b.dataset.k=k;return b});
+const initBtns=[["correcta","Escala correcta"],["grandes","Un 50 % más grandes"]].map(([k,l])=>{const b=mk("inits",l,()=>{st.init=k;recompute();requestFrame()});b.dataset.k=k;return b});
+document.getElementById("res").onclick=()=>{st.res=!st.res;recompute();requestFrame()};
+const lay=document.getElementById("layers");lay.oninput=()=>{st.L=+lay.value;recompute();requestFrame()};
+document.getElementById("play").onclick=(e)=>{playing=!playing;e.target.textContent=playing?"Pausa":"Reproducir";if(playing){t0=performance.now()-pausedAt;requestFrame()}else pausedAt=performance.now()-t0};
+let pausedAt=0;
+document.getElementById("replay").onclick=()=>{t0=performance.now();playing=true;document.getElementById("play").textContent="Pausa";requestFrame()};
+document.getElementById("modeAuto").onclick=()=>setMode("auto");
+document.getElementById("modeStep").onclick=()=>setMode("step");
+document.getElementById("bnext").onclick=()=>{step=step===totalSteps()-1?0:step+1;showStep()};
+document.getElementById("bprev").onclick=()=>{if(step>0){step--;showStep()}};
+window.addEventListener("themechange",e=>{if(e.detail!==themeName){themeName=e.detail;applyTheme()}requestFrame()});
+window.addEventListener("tabchange",e=>{if(e.detail==="backprop"){if(stepMode)showStep();requestFrame()}});
+document.addEventListener("keydown",e=>{if(!stepMode||window.__tab!=="backprop")return;if(e.key==="ArrowRight"){e.preventDefault();document.getElementById("bnext").click()}else if(e.key==="ArrowLeft"){e.preventDefault();document.getElementById("bprev").click()}});
+window.addEventListener("resize",()=>{if(stepMode&&window.__tab==="backprop")showStep()});
+function updateUI(){
+  presetBtns.forEach(b=>{const p=PRESETS[b.dataset.k];b.setAttribute("aria-pressed",String(p.act===st.act&&p.init===st.init&&p.res===st.res))});
+  actBtns.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===st.act)));
+  initBtns.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===st.init)));
+  const rb=document.getElementById("res");rb.setAttribute("aria-pressed",String(st.res));rb.textContent=st.res?"Activados":"Desactivados";
+  lay.value=st.L;document.getElementById("lv").textContent=st.L;
+  document.getElementById("readout").innerHTML=`Señal de error que llega a cada capa, comparada con la de la última: `+rel.slice(1).map((v,i)=>`capa ${i+1} <b>×${fmt(v)}</b>`).join(" · ");
+}
+applyTheme();
+recompute();
+if(q.get("mode")==="step"){setMode("step");if(q.has("step")){step=Math.min(+q.get("step"),totalSteps()-1);showStep()}}
+requestFrame();
+})();
+
+</script>
+<script>
+// ============================================================ pestaña 4 · descenso por gradiente
+(()=>{
+const W=1180,H=500,cv=document.getElementById("d-c");let cx=Core.canvas(cv,W,H);
+const {num,rr,arrow,F}=Core;
+let view=Core.q.get("view")||"uno";
+// ------------------------------------------------ un solo peso
+const ETAS=[0.1,0.4,0.9,1.1];
+const one={eta:0.4,ws:[-2],running:false,acc:0};
+const J1=w=>(w-2)**2;
+function run1(eta,n){const r=[-2];for(let i=0;i<n;i++)r.push(r[r.length-1]-eta*2*(r[r.length-1]-2));return r}
+function fv(v){const a=Math.abs(v);if(a===0)return "0";if(a>=1)return num(v,2).replace(/0+$/,"").replace(/\.$/,"");if(a>=0.01)return num(v,3).replace(/0+$/,"").replace(/\.$/,"");if(a>=1e-7)return v.toFixed(-Math.floor(Math.log10(a)));return v.toExponential(1).replace("-","−")}
+function wv(v){let s=v.toFixed(3);if(s.includes("."))s=s.replace(/0+$/,"").replace(/\.$/,"");if(s==="-0")s="0";return s.startsWith("-")?"−"+s.slice(1):s}
+// ------------------------------------------------ paisajes de dos pesos
+const TH=-0.35,cs=Math.cos(TH),sn=Math.sin(TH);
+const LANDS={
+  cuenco:{name:"Cuenco",J:(x,y)=>(x*x+2*y*y)/2,g:(x,y)=>[x,2*y],start:[-2.4,1.5],eta:0.3,alpha:0.1},
+  valle:{name:"Valle estrecho",J:(x,y)=>{const u=x*cs+y*sn,v=-x*sn+y*cs;return 0.5*(0.03*u*u+4*v*v)},g:(x,y)=>{const u=x*cs+y*sn,v=-x*sn+y*cs,gu=0.03*u,gv=4*v;return[gu*cs-gv*sn,gu*sn+gv*cs]},start:[-2.7,0.6],eta:0.42,alpha:0.05},
+  valles:{name:"Dos valles y un punto de silla",J:(x,y)=>(x*x-2)**2/4+0.75*y*y+0.35*x,g:(x,y)=>[x*(x*x-2)+0.35,1.5*y],start:[2.2,1.5],eta:0.1,alpha:0.05}
+};
+// mínimos y punto de silla del paisaje de dos valles
+function roots(){const f=x=>x*(x*x-2)+0.35;const r=[];for(let a=-3;a<3;a+=0.01){if(f(a)*f(a+0.01)<=0){let lo=a,hi=a+0.01;for(let i=0;i<50;i++){const m=(lo+hi)/2;if(f(lo)*f(m)<=0)hi=m;else lo=m}r.push((lo+hi)/2)}}return r}
+const RV=roots();LANDS.valles.marks=[[RV[0],0,"mínimo global"],[RV[1],0,"punto de silla"],[RV[2],0,"mínimo local"]];
+for(const L of Object.values(LANDS)){let m=1e9;for(let i=0;i<=600;i++)for(let j=0;j<=400;j++){const v=L.J(-3+i/100,-2+j/100);if(v<m)m=v}L.min=Math.min(m,L.marks?L.J(RV[0],0):m)}
+LANDS.cuenco.marks=[[0,0,"mínimo"]];LANDS.valle.marks=[[0,0,"mínimo"]];
+const OPTS={gd:{name:"Descenso por gradiente",col:"blue"},mom:{name:"Momentum",col:"orange"},adam:{name:"Adam",col:"green"}};
+const BATCH={full:["Batch completo",0],b32:["Mini-batch de 32",0.25],b8:["Mini-batch de 8",0.55],b1:["Un ejemplo",1.4]};
+const mp={land:"valle",on:{gd:true,mom:true,adam:true},eta:0.45,alpha:0.08,batch:"full",runs:[],running:true,hover:null,start:null,seed:1};
+const MX={x0:20,x1:720,y0:20,y1:480},DOM={x:[-3,3],y:[-2,2]};
+const toX=x=>MX.x0+(x-DOM.x[0])/(DOM.x[1]-DOM.x[0])*(MX.x1-MX.x0),toY=y=>MX.y1-(y-DOM.y[0])/(DOM.y[1]-DOM.y[0])*(MX.y1-MX.y0);
+const frX=px=>DOM.x[0]+(px-MX.x0)/(MX.x1-MX.x0)*(DOM.x[1]-DOM.x[0]),frY=py=>DOM.y[0]+(MX.y1-py)/(MX.y1-MX.y0)*(DOM.y[1]-DOM.y[0]);
+let rng=null;function gauss(){let u=0;while(u===0)u=rng();const v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function mkRng(s){let a=s>>>0||1;return()=>{a^=a<<13;a>>>=0;a^=a>>>17;a^=a<<5;a>>>=0;return a/4294967296}}
+function drop(x,y){mp.start=[x,y];rng=mkRng(mp.seed++);mp.runs=Object.keys(OPTS).filter(k=>mp.on[k]).map(k=>({k,p:[x,y],v:[0,0],m:[0,0],s:[0,0],t:0,path:[[x,y]],J:[LANDS[mp.land].J(x,y)],dead:false}));mp.running=true;syncMap()}
+function iterate(r){if(r.dead)return;const L=LANDS[mp.land];let g=L.g(r.p[0],r.p[1]);const sig=BATCH[mp.batch][1];
+  if(sig>0){const sc=Math.max(0.6,Math.hypot(g[0],g[1])*0.6+0.6);g=[g[0]+sig*sc*gauss(),g[1]+sig*sc*gauss()]}
+  if(r.k==="gd"){r.p=[r.p[0]-mp.eta*g[0],r.p[1]-mp.eta*g[1]]}
+  else if(r.k==="mom"){r.v=[0.9*r.v[0]-mp.eta*g[0],0.9*r.v[1]-mp.eta*g[1]];r.p=[r.p[0]+r.v[0],r.p[1]+r.v[1]]}
+  else{r.t++;const b1=0.9,b2=0.999;r.m=r.m.map((m,i)=>b1*m+(1-b1)*g[i]);r.s=r.s.map((s,i)=>b2*s+(1-b2)*g[i]*g[i]);const c1=1-b1**r.t,c2=1-b2**r.t;r.p=r.p.map((p,i)=>p-mp.alpha*(r.m[i]/c1)/(Math.sqrt(r.s[i]/c2)+1e-8))}
+  if(!isFinite(r.p[0])||Math.abs(r.p[0])>40||Math.abs(r.p[1])>40){r.dead=true;return}
+  r.path.push([...r.p]);r.J.push(L.J(r.p[0],r.p[1]))}
+const MAXIT=400;
+// ------------------------------------------------ mapa de calor (cacheado)
+let heat=null,heatKey="";
+function buildHeat(){const P=Core.pal(),L=LANDS[mp.land];const key=mp.land+Core.theme;if(key===heatKey&&heat)return;heatKey=key;
+  const w=MX.x1-MX.x0,h=MX.y1-MX.y0,res=2;const nx=Math.ceil(w/res),ny=Math.ceil(h/res);const vals=new Float64Array((nx+1)*(ny+1));
+  let lo=1e9,hi=-1e9;for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const x=frX(MX.x0+i*res),y=frY(MX.y0+j*res);const v=Math.log(L.J(x,y)-L.min+0.02);vals[j*(nx+1)+i]=v;if(v<lo)lo=v;if(v>hi)hi=v}
+  const oc=document.createElement("canvas");const dpr=Math.min(window.devicePixelRatio||1,Core.STILL?3:2.5);oc.width=w*dpr;oc.height=h*dpr;const o=oc.getContext("2d");o.scale(dpr,dpr);
+  const img=o.createImageData(nx,ny);for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const t=(vals[j*(nx+1)+i]-lo)/(hi-lo);const c=Core.cmap(Core.theme==="light"?t*0.72:0.1+t*0.75);const k=4*(j*nx+i);img.data[k]=c[0];img.data[k+1]=c[1];img.data[k+2]=c[2];img.data[k+3]=255}
+  const tmp=document.createElement("canvas");tmp.width=nx;tmp.height=ny;tmp.getContext("2d").putImageData(img,0,0);o.imageSmoothingEnabled=true;o.drawImage(tmp,0,0,w,h);
+  // curvas de nivel
+  o.strokeStyle=Core.theme==="light"?"rgba(19,32,45,.22)":"rgba(220,235,250,.18)";o.lineWidth=1;const NL=14;
+  for(let l=1;l<NL;l++){const lev=lo+(hi-lo)*l/NL;o.beginPath();
+    for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=vals[j*(nx+1)+i],b=vals[j*(nx+1)+i+1],c=vals[(j+1)*(nx+1)+i+1],d=vals[(j+1)*(nx+1)+i];
+      const pts=[];const ed=(v1,v2,x1,y1,x2,y2)=>{if((v1-lev)*(v2-lev)<0){const t=(lev-v1)/(v2-v1);pts.push([x1+(x2-x1)*t,y1+(y2-y1)*t])}};
+      const X0=i*res,Y0=j*res;ed(a,b,X0,Y0,X0+res,Y0);ed(b,c,X0+res,Y0,X0+res,Y0+res);ed(c,d,X0+res,Y0+res,X0,Y0+res);ed(d,a,X0,Y0+res,X0,Y0);
+      if(pts.length>=2){o.moveTo(pts[0][0],pts[0][1]);o.lineTo(pts[1][0],pts[1][1]);if(pts.length===4){o.moveTo(pts[2][0],pts[2][1]);o.lineTo(pts[3][0],pts[3][1])}}}
+    o.stroke()}
+  heat=oc}
+// ------------------------------------------------ dibujo
+let raf=0,last=performance.now();
+function draw(now){raf=0;const dt=Math.min(.05,(now-last)/1000);last=now;const P=Core.pal();let anim=false;
+  cx.clearRect(0,0,W,H);cx.fillStyle=P.bg;cx.fillRect(0,0,W,H);
+  anim=view==="uno"?drawOne(P,dt):drawMap(P,dt);
+  if(anim&&!Core.STILL&&Core.tab==="descenso")raf=requestAnimationFrame(draw)}
+function req(){if(!raf)raf=requestAnimationFrame(draw)}
+function drawOne(P,dt){let anim=false;
+  if(one.running){one.acc+=dt;if(one.acc>0.6){one.acc=0;step1();if(one.ws.length>12)one.running=false;syncOne()}anim=true}
+  const G={x0:70,x1:620,y0:40,y1:420},wr=[-7,11],jr=[0,90];
+  const X=w=>G.x0+(w-wr[0])/(wr[1]-wr[0])*(G.x1-G.x0),Y=j=>G.y1-(j-jr[0])/(jr[1]-jr[0])*(G.y1-G.y0);
+  cx.fillStyle=P.bg2;cx.fillRect(G.x0,G.y0,G.x1-G.x0,G.y1-G.y0);
+  cx.strokeStyle=P.grid;cx.lineWidth=1;cx.font=`11px ${F.mono}`;cx.fillStyle=P.muted;
+  for(let w=-6;w<=10;w+=2){cx.beginPath();cx.moveTo(X(w),G.y0);cx.lineTo(X(w),G.y1);cx.stroke();cx.textAlign="center";cx.fillText(num(w,0),X(w),G.y1+16)}
+  for(let j=0;j<=90;j+=15){cx.beginPath();cx.moveTo(G.x0,Y(j));cx.lineTo(G.x1,Y(j));cx.stroke();cx.textAlign="right";cx.fillText(j,G.x0-8,Y(j)+4)}
+  cx.font=`italic 13px ${F.ui}`;cx.textAlign="center";cx.fillText("w",G.x1-10,G.y1-8);cx.fillText("J(w)",G.x0+22,G.y0+16);
+  cx.save();cx.beginPath();cx.rect(G.x0,G.y0,G.x1-G.x0,G.y1-G.y0);cx.clip();
+  cx.strokeStyle=P.blue;cx.lineWidth=3;cx.beginPath();for(let i=0;i<=300;i++){const w=wr[0]+i/300*(wr[1]-wr[0]);i?cx.lineTo(X(w),Y(J1(w))):cx.moveTo(X(w),Y(J1(w)))}cx.stroke();
+  // mínimo
+  cx.fillStyle=P.green;cx.beginPath();cx.arc(X(2),Y(0),5,0,7);cx.fill();
+  const ws=one.ws;
+  for(let i=1;i<ws.length;i++){const a=ws[i-1],b=ws[i];const ya=Y(J1(a)),yb=Y(J1(b));const mid=(X(a)+X(b))/2,top=Math.min(ya,yb)-28-8*(i%2);
+    cx.strokeStyle=Core.rgba(P.orange,.85);cx.lineWidth=2;cx.beginPath();cx.moveTo(X(a),ya);cx.quadraticCurveTo(mid,top,X(b),yb);cx.stroke();
+    const ang=Math.atan2(yb-top,X(b)-mid);cx.fillStyle=P.orange;cx.beginPath();cx.moveTo(X(b),yb);cx.lineTo(X(b)-9*Math.cos(ang-.4),yb-9*Math.sin(ang-.4));cx.lineTo(X(b)-9*Math.cos(ang+.4),yb-9*Math.sin(ang+.4));cx.closePath();cx.fill()}
+  ws.forEach((w,i)=>{const last=i===ws.length-1;cx.fillStyle=last?P.orange:P.bg;cx.strokeStyle=P.orange;cx.lineWidth=2;cx.beginPath();cx.arc(X(w),Y(J1(w)),last?8:5,0,7);cx.fill();cx.stroke();
+    if(i<8){cx.fillStyle=P.strong;cx.font=`600 11px ${F.mono}`;cx.textAlign="center";cx.fillText(i,X(w),Y(J1(w))+(i===0?-14:22))}});
+  cx.restore();
+  const lw=ws[ws.length-1];if(lw<wr[0]||lw>wr[1]){cx.fillStyle=P.red;cx.font=`700 12px ${F.ui}`;cx.textAlign=lw>0?"right":"left";cx.fillText(lw>0?"w se sale de la gráfica →":"← w se sale de la gráfica",lw>0?G.x1-8:G.x0+8,G.y0+18)}
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("COSTE J(w) = (w − 2)² · INICIO EN w = −2",G.x0,G.y0-16);
+  // coste por iteración
+  const C={x0:720,x1:1150,y0:40,y1:420},N=30,lmin=-7,lmax=3;
+  const CX=i=>C.x0+i/N*(C.x1-C.x0),CY=j=>{const l=Math.log10(Math.max(j,1e-7));return C.y1-(Math.min(lmax,l)-lmin)/(lmax-lmin)*(C.y1-C.y0)};
+  cx.fillStyle=P.bg2;cx.fillRect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);cx.strokeStyle=P.grid;cx.font=`11px ${F.mono}`;cx.fillStyle=P.muted;
+  for(let l=lmin;l<=lmax;l+=2){cx.beginPath();cx.moveTo(C.x0,CY(10**l));cx.lineTo(C.x1,CY(10**l));cx.stroke();cx.textAlign="right";cx.fillText("10"+sup(l),C.x0-6,CY(10**l)+4)}
+  for(let i=0;i<=N;i+=5){cx.beginPath();cx.moveTo(CX(i),C.y0);cx.lineTo(CX(i),C.y1);cx.stroke();cx.textAlign="center";cx.fillText(i,CX(i),C.y1+16)}
+  cx.textAlign="center";cx.fillText("iteración",(C.x0+C.x1)/2,C.y1+34);
+  cx.save();cx.beginPath();cx.rect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);cx.clip();
+  const cols={0.1:P.blue2,0.4:P.green,0.9:P.gold,1.1:P.red};
+  ETAS.forEach(e=>{const r=run1(e,N);cx.strokeStyle=Core.rgba(cols[e],.45);cx.lineWidth=1.5;cx.setLineDash([5,4]);cx.beginPath();r.forEach((w,i)=>{i?cx.lineTo(CX(i),CY(J1(w))):cx.moveTo(CX(i),CY(J1(w)))});cx.stroke();cx.setLineDash([])});
+  const rc=run1(one.eta,N);cx.strokeStyle=P.orange;cx.lineWidth=3;cx.beginPath();rc.slice(0,ws.length).forEach((w,i)=>{i?cx.lineTo(CX(i),CY(J1(w))):cx.moveTo(CX(i),CY(J1(w)))});cx.stroke();
+  rc.slice(0,ws.length).forEach((w,i)=>{cx.fillStyle=P.orange;cx.beginPath();cx.arc(CX(i),CY(J1(w)),3,0,7);cx.fill()});
+  cx.restore();
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("COSTE EN CADA ITERACIÓN (ESCALA LOGARÍTMICA)",C.x0,C.y0-16);
+  cx.font=`11.5px ${F.ui}`;let lx=C.x0+8;ETAS.forEach(e=>{cx.fillStyle=cols[e];const t=`- - η = ${e}`;cx.fillText(t,lx,C.y0+16);lx+=cx.measureText(t).width+14});cx.fillStyle=P.orange;cx.fillText(`— η = ${wv(one.eta)} (actual)`,lx,C.y0+16);
+  return anim}
+function jv(v){if(v>0&&v<0.001){const e=Math.floor(Math.log10(v));return num(v/10**e,1)+"·10"+sup(e)}return num(v,3)}
+function sup(l){const S={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};return String(l).split("").map(c=>S[c]).join("")}
+function step1(){const w=one.ws[one.ws.length-1];one.ws.push(w-one.eta*2*(w-2))}
+function drawMap(P,dt){let anim=false;const L=LANDS[mp.land];buildHeat();
+  cx.drawImage(heat,MX.x0,MX.y0,MX.x1-MX.x0,MX.y1-MX.y0);cx.strokeStyle=P.grid;cx.strokeRect(MX.x0,MX.y0,MX.x1-MX.x0,MX.y1-MX.y0);
+  // marcas
+  (L.marks||[]).forEach(([x,y,l])=>{const px=toX(x),py=toY(y);cx.strokeStyle=Core.theme==="light"?"#13202d":"#eef4fa";cx.lineWidth=1.6;cx.beginPath();cx.moveTo(px-6,py-6);cx.lineTo(px+6,py+6);cx.moveTo(px+6,py-6);cx.lineTo(px-6,py+6);cx.stroke();
+    cx.font=`600 11.5px ${F.ui}`;cx.textAlign="center";cx.fillStyle=Core.theme==="light"?"#13202d":"#eef4fa";cx.fillText(l,px,py+22)});
+  if(mp.running&&mp.runs.length){let alive=false;for(let s=0;s<2;s++)mp.runs.forEach(r=>{if(!r.dead&&r.path.length<=MAXIT){iterate(r)}});mp.runs.forEach(r=>{if(!r.dead&&r.path.length<=MAXIT)alive=true});if(!alive){mp.running=false;syncMap()}anim=alive;if(Math.random()<.2)syncStatus()}
+  // trayectorias
+  cx.save();cx.beginPath();cx.rect(MX.x0,MX.y0,MX.x1-MX.x0,MX.y1-MX.y0);cx.clip();
+  mp.runs.forEach(r=>{const col=P[OPTS[r.k].col];cx.strokeStyle=Core.theme==="light"?"rgba(255,255,255,.85)":"rgba(0,0,0,.5)";cx.lineWidth=4.5;cx.beginPath();r.path.forEach((p,i)=>{i?cx.lineTo(toX(p[0]),toY(p[1])):cx.moveTo(toX(p[0]),toY(p[1]))});cx.stroke();
+    cx.strokeStyle=col;cx.lineWidth=2.2;cx.stroke();
+    const p=r.path[r.path.length-1];cx.fillStyle=col;cx.strokeStyle="#fff";cx.lineWidth=2.5;cx.beginPath();cx.arc(toX(p[0]),toY(p[1]),8,0,7);cx.fill();cx.stroke()});
+  if(mp.start){cx.fillStyle="#fff";cx.strokeStyle="#13202d";cx.lineWidth=1.5;cx.beginPath();cx.arc(toX(mp.start[0]),toY(mp.start[1]),5,0,7);cx.fill();cx.stroke()}
+  // gradiente bajo el cursor
+  if(mp.hover){const [x,y]=mp.hover;const g=L.g(x,y),n=Math.hypot(g[0],g[1]);if(n>1e-9){const len=Math.min(70,18+n*22);const ux=-g[0]/n,uy=-g[1]/n;arrow(cx,toX(x),toY(y),toX(x)+ux*len,toY(y)-uy*len,Core.theme==="light"?"#13202d":"#fff",2.2,10)}
+    cx.font=`600 12px ${F.mono}`;cx.fillStyle=Core.theme==="light"?"#13202d":"#fff";cx.textAlign="left";cx.fillText(`J = ${num(L.J(x,y),3)}`,toX(x)+12,toY(y)+18)}
+  cx.restore();
+  if(!mp.runs.length){cx.fillStyle=Core.rgba(P.bg,.85);rr(cx,(MX.x0+MX.x1)/2-170,MX.y0+16,340,34,17);cx.fill();cx.fillStyle=P.strong;cx.font=`600 13px ${F.ui}`;cx.textAlign="center";cx.fillText("Pulsa sobre el mapa para soltar las bolas",(MX.x0+MX.x1)/2,MX.y0+38)}
+  // gráfica de coste
+  const C={x0:800,x1:1150,y0:50,y1:300};cx.fillStyle=P.bg2;cx.fillRect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);
+  const nIt=Math.max(60,...mp.runs.map(r=>r.J.length-1));const lmin=-6;let lmax=1;mp.runs.forEach(r=>{lmax=Math.max(lmax,Math.ceil(Math.log10(r.J[0]-L.min+1e-6)))});
+  const CX=i=>C.x0+i/nIt*(C.x1-C.x0),CY=j=>{const l=Math.log10(Math.max(j-L.min,1e-6));return C.y1-(Math.max(lmin,Math.min(lmax,l))-lmin)/(lmax-lmin)*(C.y1-C.y0)};
+  cx.strokeStyle=P.grid;cx.lineWidth=1;cx.font=`10.5px ${F.mono}`;cx.fillStyle=P.muted;for(let l=lmin;l<=lmax;l+=1){if((l-lmin)%2)continue;const y=C.y1-(l-lmin)/(lmax-lmin)*(C.y1-C.y0);cx.beginPath();cx.moveTo(C.x0,y);cx.lineTo(C.x1,y);cx.stroke();cx.textAlign="right";cx.fillText("10"+sup(l),C.x0-6,y+4)}
+  cx.textAlign="center";cx.fillText("0",C.x0,C.y1+15);cx.fillText(nIt,C.x1,C.y1+15);cx.fillText("iteración",(C.x0+C.x1)/2,C.y1+15);
+  cx.save();cx.beginPath();cx.rect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);cx.clip();
+  mp.runs.forEach(r=>{cx.strokeStyle=P[OPTS[r.k].col];cx.lineWidth=2;cx.beginPath();r.J.forEach((j,i)=>{i?cx.lineTo(CX(i),CY(j)):cx.moveTo(CX(i),CY(j))});cx.stroke()});cx.restore();
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("COSTE POR ENCIMA DEL MÍNIMO GLOBAL",C.x0-40,C.y0-18);
+  // leyenda y lecturas
+  let y=346;Object.entries(OPTS).forEach(([k,o])=>{const r=mp.runs.find(r=>r.k===k);const col=P[o.col];cx.globalAlpha=mp.on[k]?1:.35;cx.fillStyle=col;cx.beginPath();cx.arc(C.x0-30,y-4,6,0,7);cx.fill();
+    cx.fillStyle=P.strong;cx.font=`600 13px ${F.ui}`;cx.textAlign="left";cx.fillText(o.name,C.x0-16,y);
+    cx.font=`12px ${F.mono}`;cx.fillStyle=P.text;cx.fillText(r?(r.dead?"diverge: el coste se dispara":`iteración ${r.J.length-1} · J = ${jv(r.J[r.J.length-1])}`):(mp.on[k]?"—":"desactivado"),C.x0-16,y+18);cx.globalAlpha=1;y+=46});
+  cx.font=`600 12px ${F.mono}`;const lt=L.name.toUpperCase();const lw=cx.measureText(lt).width;cx.fillStyle=Core.rgba(P.bg,.88);rr(cx,MX.x0+8,MX.y0+8,lw+24,26,13);cx.fill();cx.textAlign="left";cx.fillStyle=P.strong;cx.fillText(lt,MX.x0+20,MX.y0+25);
+  return anim}
+function syncStatus(){if(view!=="mapa")return;const L=LANDS[mp.land];let t="";
+  if(!mp.runs.length)t=`<b>${L.name}.</b> Pulsa sobre el mapa para soltar una bola por cada optimizador activo. Las zonas claras son las de menor coste${Core.theme==="dark"?" (en modo oscuro, las más oscuras)":""}.`;
+  else{const parts=mp.runs.map(r=>{const p=r.path[r.path.length-1];let where="";if(L.marks&&L.marks.length===3){const d=L.marks.map(m=>Math.hypot(p[0]-m[0],p[1]-m[1]));const k=d.indexOf(Math.min(...d));if(d[k]<0.25)where=k===0?", en el mínimo global":k===2?", en el mínimo local":", junto al punto de silla"}
+      return `${OPTS[r.k].name}: ${r.dead?"diverge":`J = ${num(r.J[r.J.length-1],3)} tras ${r.J.length-1} iteraciones${where}`}`});
+    t=parts.join(" · ")+(BATCH[mp.batch][1]>0?`. El gradiente se estima con ${BATCH[mp.batch][0].toLowerCase()}, de ahí el temblor.`:".")}
+  document.getElementById("d-status").innerHTML=t}
+// ------------------------------------------------ interfaz
+const setView=Core.seg("d-views",[["uno","1 · Un solo peso"],["mapa","2 · Un paisaje de dos pesos"]],k=>{view=k;syncView()});
+const setEta=Core.seg("d-etas",ETAS.map(e=>[String(e),String(e)]),k=>{one.eta=+k;one.ws=[-2];one.running=false;syncOne()});
+document.getElementById("d-eta1").oninput=e=>{one.eta=+e.target.value;one.ws=[-2];one.running=false;syncOne()};
+document.getElementById("d-step1").onclick=()=>{if(one.ws.length>40)one.ws=[-2];step1();syncOne()};
+document.getElementById("d-run1").onclick=()=>{if(!one.running&&one.ws.length>12)one.ws=[-2];one.running=!one.running;one.acc=0.6;syncOne()};
+document.getElementById("d-reset1").onclick=()=>{one.ws=[-2];one.running=false;syncOne()};
+const setLand=Core.seg("d-lands",Object.entries(LANDS).map(([k,l])=>[k,l.name]),k=>{mp.land=k;mp.eta=LANDS[k].eta;mp.alpha=LANDS[k].alpha;drop(...LANDS[k].start)});
+const og=document.getElementById("d-opts");const optBtns=Object.entries(OPTS).map(([k,o])=>{const b=document.createElement("button");b.textContent=o.name;b.onclick=()=>{mp.on[k]=!mp.on[k];if(mp.start)drop(...mp.start);else syncMap()};og.appendChild(b);return[k,b]});
+const setBatch=Core.seg("d-batch",Object.entries(BATCH).map(([k,b])=>[k,b[0]]),k=>{mp.batch=k;if(mp.start)drop(...mp.start);else syncMap()});
+document.getElementById("d-eta2").oninput=e=>{mp.eta=Math.round(10**+e.target.value*1000)/1000;if(mp.start)drop(...mp.start);else syncMap()};
+document.getElementById("d-alpha").oninput=e=>{mp.alpha=Math.round(10**+e.target.value*1000)/1000;if(mp.start)drop(...mp.start);else syncMap()};
+document.getElementById("d-run2").onclick=()=>{mp.running=!mp.running;syncMap()};
+document.getElementById("d-again").onclick=()=>{if(mp.start)drop(...mp.start)};
+document.getElementById("d-clear").onclick=()=>{mp.runs=[];mp.start=null;syncMap()};
+cv.addEventListener("click",e=>{if(view!=="mapa")return;const p=Core.ptr(cv,e,W,H);if(p.x>=MX.x0&&p.x<=MX.x1&&p.y>=MX.y0&&p.y<=MX.y1)drop(frX(p.x),frY(p.y))});
+cv.addEventListener("pointermove",e=>{if(view!=="mapa")return;const p=Core.ptr(cv,e,W,H);const inside=p.x>=MX.x0&&p.x<=MX.x1&&p.y>=MX.y0&&p.y<=MX.y1;mp.hover=inside?[frX(p.x),frY(p.y)]:null;cv.style.cursor=inside?"crosshair":"default";req()});
+cv.addEventListener("pointerleave",()=>{mp.hover=null;req()});
+function syncView(){setView(view);document.getElementById("d-v-uno").hidden=view!=="uno";document.getElementById("d-v-mapa").hidden=view!=="mapa";view==="uno"?syncOne():syncMap()}
+function syncOne(){setEta(ETAS.includes(one.eta)?String(one.eta):null);document.getElementById("d-eta1").value=one.eta;document.getElementById("d-eta1v").textContent=num(one.eta,2);
+  document.getElementById("d-run1").textContent=one.running?"❚❚ Pausa":"▶ Animar";
+  const ws=one.ws;document.querySelector("#d-table tbody").innerHTML=ws.slice(-8).map((w,i)=>{const it=ws.length-Math.min(8,ws.length)+i;return`<tr${it===ws.length-1?' class="on"':''}><td>${it}</td><td class="mono">${wv(w)}</td><td class="mono">${fv(J1(w))}</td></tr>`}).join("");
+  const f=1-2*one.eta;let t=`Cada paso multiplica la distancia al mínimo por 1 − 2η = ${num(f,2)}. `;
+  if(Math.abs(f)>1)t+="Como su valor absoluto es mayor que 1, cada paso termina más lejos que el anterior: el entrenamiento diverge.";
+  else if(f<-0.5)t+="Es negativo: cada paso se pasa del mínimo y cae al otro lado del valle, en zigzag.";
+  else if(f<0)t+="Se pasa un poco del mínimo, pero se acerca muy deprisa.";
+  else if(f<0.5)t+="Se acerca deprisa al mínimo sin pasarse.";
+  else t+="Avanza en la dirección correcta, pero con pasos demasiado cortos.";
+  if(view==="uno")document.getElementById("d-status").innerHTML=t;req()}
+function syncMap(){setLand(mp.land);optBtns.forEach(([k,b])=>b.setAttribute("aria-pressed",String(mp.on[k])));setBatch(mp.batch);
+  document.getElementById("d-eta2").value=Math.log10(mp.eta);document.getElementById("d-eta2v").textContent=num(mp.eta,3);
+  document.getElementById("d-alpha").value=Math.log10(mp.alpha);document.getElementById("d-alphav").textContent=num(mp.alpha,3);
+  document.getElementById("d-run2").textContent=mp.running?"❚❚ Pausa":"▶ Continuar";syncStatus();req()}
+Core.on("theme",()=>{heatKey="";req()});Core.on("tab",t=>{if(t==="descenso"){last=performance.now();req()}});
+window.__descenso={one,mp,drop,iterate,LANDS,syncView,setView:v=>{view=v;syncView()},syncOne,syncMap,draw:()=>draw(performance.now())};
+mp.start=LANDS.valle.start;drop(...mp.start);mp.running=true;
+syncView();
+})();
+
+</script>
+<script>
+// ============================================================ pestaña 5 · entrenamiento y sobreajuste
+(()=>{
+const W=1180,H=480,cv=document.getElementById("s-c");let cx=Core.canvas(cv,W,H);
+const {num,rr,F}=Core;
+const SIZES={s:[8,"2-8-8-1"],m:[32,"2-32-32-1"],l:[64,"2-64-64-1"]};
+const st={size:"l",N:80,l2:0,drop:0,es:false,speed:3,showVal:false,running:false,dataSeed:7,netSeed:3,maxE:1000,patience:40};
+let tr,va,net,hist,best,stopped,epoch,started=false,bndDirty=true;
+function params(H){return 2*H+H+H*H+H+H+1}
+function newData(){tr=makeMoons(st.N,0.22,0.08,st.dataSeed);va=makeMoons(300,0.22,0.08,st.dataSeed*31+5)}
+function reset(){net=makeNet(SIZES[st.size][0],st.netSeed);epoch=0;hist={tl:[],vl:[],ta:[],vaa:[]};best={e:0,v:1e9,w:null};stopped=null;const a=lossAcc(net,tr),b=lossAcc(net,va);hist.tl.push(a.loss);hist.vl.push(b.loss);hist.ta.push(a.acc);hist.vaa.push(b.acc);bndDirty=true}
+newData();reset();
+function trainOne(){trainEpoch(net,tr,0.003,st.l2,st.drop);epoch++;const a=lossAcc(net,tr),b=lossAcc(net,va);hist.tl.push(a.loss);hist.vl.push(b.loss);hist.ta.push(a.acc);hist.vaa.push(b.acc);
+  if(b.loss<best.v){best={e:epoch,v:b.loss,w:cloneNet(net)}}
+  if(st.es&&epoch-best.e>=st.patience){stopped={e:epoch,best:best.e};net.W=best.w.W.map(w=>Float64Array.from(w));net.B=best.w.B.map(b=>Float64Array.from(b));st.running=false}
+  if(epoch>=st.maxE)st.running=false}
+// ------------------------------------------------ frontera de decisión
+let bnd=null;const D={x0:30,y0:20,s:440},lo=-1.9,hi=1.9,G=64;
+const toX=v=>D.x0+(v-lo)/(hi-lo)*D.s,toY=v=>D.y0+D.s-(v-lo)/(hi-lo)*D.s;
+function buildBnd(){const P=Core.pal();const X=new Float64Array(2*G*G);for(let j=0;j<G;j++)for(let i=0;i<G;i++){X[2*(j*G+i)]=lo+(i+.5)/G*(hi-lo);X[2*(j*G+i)+1]=hi-(j+.5)/G*(hi-lo)}
+  const p=predict(net,X,G*G,new Float64Array(G*G));const img=new ImageData(G,G);const c1=hex(P.blue),c0=hex(P.orange),bg=hex(P.bg);
+  for(let k=0;k<G*G;k++){const q=p[k],t=Math.min(1,Math.abs(q-.5)*2.2),c=q>.5?c1:c0,a=0.10+0.30*t;img.data[4*k]=Math.round(bg[0]+(c[0]-bg[0])*a);img.data[4*k+1]=Math.round(bg[1]+(c[1]-bg[1])*a);img.data[4*k+2]=Math.round(bg[2]+(c[2]-bg[2])*a);img.data[4*k+3]=255}
+  const tmp=document.createElement("canvas");tmp.width=G;tmp.height=G;tmp.getContext("2d").putImageData(img,0,0);bnd={img:tmp,p};bndDirty=false}
+function hex(h){const n=parseInt(h.slice(1),16);return[n>>16,(n>>8)&255,n&255]}
+// ------------------------------------------------ dibujo
+let raf=0,frame=0;
+function draw(){raf=0;const P=Core.pal();frame++;
+  if(st.running){for(let s=0;s<st.speed&&st.running;s++)trainOne();if(frame%3===0||!st.running)bndDirty=true;syncStatus();if(!st.running)syncUI()}
+  if(bndDirty)buildBnd();
+  cx.clearRect(0,0,W,H);cx.fillStyle=P.bg;cx.fillRect(0,0,W,H);
+  cx.imageSmoothingEnabled=true;cx.drawImage(bnd.img,D.x0,D.y0,D.s,D.s);
+  // contorno 0.5 (marching squares sobre la rejilla)
+  cx.strokeStyle=Core.theme==="light"?"#13202d":"#eef4fa";cx.lineWidth=2;cx.beginPath();const cs=D.s/G;
+  for(let j=0;j<G-1;j++)for(let i=0;i<G-1;i++){const a=bnd.p[j*G+i]-.5,b=bnd.p[j*G+i+1]-.5,c=bnd.p[(j+1)*G+i+1]-.5,d=bnd.p[(j+1)*G+i]-.5;const pts=[];
+    const X0=D.x0+(i+.5)*cs,Y0=D.y0+(j+.5)*cs;const e=(v1,v2,x1,y1,x2,y2)=>{if(v1*v2<0){const t=v1/(v1-v2);pts.push([x1+(x2-x1)*t,y1+(y2-y1)*t])}};
+    e(a,b,X0,Y0,X0+cs,Y0);e(b,c,X0+cs,Y0,X0+cs,Y0+cs);e(c,d,X0+cs,Y0+cs,X0,Y0+cs);e(d,a,X0,Y0+cs,X0,Y0);if(pts.length>=2){cx.moveTo(pts[0][0],pts[0][1]);cx.lineTo(pts[1][0],pts[1][1])}}
+  cx.stroke();
+  // puntos
+  const pts=(Dt,val)=>{for(let i=0;i<Dt.n;i++){const x=toX(Dt.X[2*i]),y=toY(Dt.X[2*i+1]);if(x<D.x0||x>D.x0+D.s||y<D.y0||y>D.y0+D.s)continue;const c=Dt.Y[i]>.5?P.blue:P.orange;
+    if(val){cx.strokeStyle=c;cx.lineWidth=1.3;cx.beginPath();cx.arc(x,y,3.2,0,7);cx.stroke()}else{cx.fillStyle=c;cx.strokeStyle=Core.theme==="light"?"#fff":"#08131f";cx.lineWidth=1.4;cx.beginPath();cx.arc(x,y,5.2,0,7);cx.fill();cx.stroke()}}};
+  if(st.showVal)pts(va,true);pts(tr,false);
+  cx.strokeStyle=P.grid;cx.lineWidth=1;cx.strokeRect(D.x0,D.y0,D.s,D.s);
+  cx.fillStyle=Core.rgba(P.bg,.88);rr(cx,D.x0+8,D.y0+8,260,26,13);cx.fill();cx.textAlign="left";cx.font=`600 11.5px ${F.mono}`;cx.fillStyle=P.strong;
+  cx.fillText(`RED ${SIZES[st.size][1]} · ${st.N} EJEMPLOS`,D.x0+20,D.y0+25);
+  // curvas
+  const C={x0:560,x1:1150,y0:44,y1:300};cx.fillStyle=P.bg2;cx.fillRect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);
+  const nE=Math.max(200,Math.ceil(epoch/100)*100),ymax=Math.max(0.8,Math.min(2.5,Math.ceil(Math.max(...hist.vl)*5)/5));
+  const X=e=>C.x0+e/nE*(C.x1-C.x0),Y=v=>C.y1-Math.min(v,ymax)/ymax*(C.y1-C.y0);
+  cx.strokeStyle=P.grid;cx.font=`10.5px ${F.mono}`;cx.fillStyle=P.muted;
+  for(let v=0;v<=ymax+1e-9;v+=ymax>1.5?0.5:0.2){cx.beginPath();cx.moveTo(C.x0,Y(v));cx.lineTo(C.x1,Y(v));cx.stroke();cx.textAlign="right";cx.fillText(num(v,1),C.x0-6,Y(v)+4)}
+  const stepE=nE<=400?50:nE<=800?100:200;for(let e=0;e<=nE;e+=stepE){cx.beginPath();cx.moveTo(X(e),C.y0);cx.lineTo(X(e),C.y1);cx.stroke();cx.textAlign="center";cx.fillText(e,X(e),C.y1+15)}
+  cx.fillText("época",(C.x0+C.x1)/2,C.y1+31);
+  if(best.e>0){cx.strokeStyle=P.green;cx.setLineDash([5,4]);cx.lineWidth=1.6;cx.beginPath();cx.moveTo(X(best.e),C.y0);cx.lineTo(X(best.e),C.y1);cx.stroke();cx.setLineDash([]);cx.fillStyle=P.green;cx.font=`600 11px ${F.ui}`;const rt=stopped||X(best.e)>C.x1-120;cx.textAlign=rt?"right":"left";cx.fillText(`mejor validación: época ${best.e}`,X(best.e)+(rt?-6:6),C.y0+14)}
+  if(stopped){cx.fillStyle=P.red;cx.font=`700 11px ${F.ui}`;const rs=X(stopped.e)>C.x1-190;cx.textAlign=rs?"right":"left";cx.fillText(`parada temprana: época ${stopped.e}`,X(stopped.e)+(rs?-6:6),C.y0+32);cx.strokeStyle=P.red;cx.lineWidth=1.6;cx.beginPath();cx.moveTo(X(stopped.e),C.y0);cx.lineTo(X(stopped.e),C.y1);cx.stroke()}
+  cx.save();cx.beginPath();cx.rect(C.x0,C.y0,C.x1-C.x0,C.y1-C.y0);cx.clip();
+  [[hist.tl,P.blue],[hist.vl,P.orange]].forEach(([arr,c])=>{cx.strokeStyle=c;cx.lineWidth=2.4;cx.beginPath();arr.forEach((v,i)=>{i?cx.lineTo(X(i),Y(v)):cx.moveTo(X(i),Y(v))});cx.stroke()});cx.restore();
+  cx.textAlign="left";cx.font=`600 12px ${F.mono}`;cx.fillStyle=P.muted;cx.fillText("CURVA DE APRENDIZAJE",C.x0,C.y0-16);
+  cx.font=`12px ${F.ui}`;cx.fillStyle=P.blue;cx.fillText("— entrenamiento",C.x1-230,C.y0-16);cx.fillStyle=P.orange;cx.fillText("— validación",C.x1-120,C.y0-16);
+  // tarjetas
+  const L=stopped?stopped.best:hist.tl.length-1;const cards=[[stopped?"Mejor época":"Época",String(stopped?stopped.best:epoch),P.strong],["Pérdida entren.",num(hist.tl[L],3),P.blue],["Pérdida valid.",num(hist.vl[L],3),P.orange],["Acierto entren.",num(100*hist.ta[L],0)+" %",P.blue],["Acierto valid.",num(100*hist.vaa[L],0)+" %",P.orange]];
+  const cw=(C.x1-C.x0-4*10)/5;cards.forEach(([l,v,c],i)=>{const x=C.x0+i*(cw+10),y=352;cx.fillStyle=P.bg2;rr(cx,x,y,cw,74,10);cx.fill();cx.strokeStyle=P.grid;cx.stroke();
+    cx.fillStyle=P.muted;cx.font=`11.5px ${F.ui}`;cx.textAlign="left";cx.fillText(l,x+12,y+22);cx.fillStyle=c;cx.font=`700 22px ${F.mono}`;cx.fillText(v,x+12,y+54)});
+  cx.fillStyle=P.muted;cx.font=`12px ${F.ui}`;cx.textAlign="left";const reg=[st.l2?`L2 con λ = ${st.l2}`:null,st.drop?`dropout del ${Math.round(st.drop*100)} %`:null,st.es?"parada temprana":null].filter(Boolean);
+  cx.fillText(`${params(SIZES[st.size][0]).toLocaleString("es-ES").replace(/\./g," ")} parámetros · ${reg.length?reg.join(", "):"sin técnicas contra el sobreajuste"}`,C.x0,452);
+  if(st.running&&!Core.STILL&&Core.tab==="sobreajuste")raf=requestAnimationFrame(draw)}
+function req(){if(!raf)raf=requestAnimationFrame(draw)}
+function syncStatus(){const L=hist.tl.length-1;let t;
+  if(epoch===0)t="Pesos iniciales al azar: la frontera todavía no separa nada. Pulsa «Entrenar».";
+  else if(stopped)t=`<b>Parada temprana.</b> La validación no mejoraba desde la época ${stopped.best}, así que el entrenamiento se detuvo en la ${stopped.e} y se recuperaron los pesos de la época ${stopped.best}: ${num(100*hist.vaa[stopped.best],0)} % de acierto en validación.`;
+  else{const gap=hist.vl[L]-best.v;
+    if(best.e<epoch-30&&gap>0.05)t=`La pérdida de validación tocó fondo en la época ${best.e} (${num(best.v,3)}) y desde entonces ha subido a ${num(hist.vl[L],3)}, mientras la de entrenamiento sigue bajando: <b>la red está memorizando</b>. Acierta el ${num(100*hist.ta[L],0)} % del entrenamiento, pero solo el ${num(100*hist.vaa[L],0)} % de la validación.`;
+    else t=`Las dos curvas bajan: la red está aprendiendo patrones generales. Acierto: ${num(100*hist.ta[L],0)} % en entrenamiento y ${num(100*hist.vaa[L],0)} % en validación.`}
+  document.getElementById("s-status").innerHTML=t}
+// ------------------------------------------------ interfaz
+const setSize=Core.seg("s-size",Object.entries(SIZES).map(([k,s])=>[k,s[1]]),k=>{st.size=k;restart()});
+const setN=Core.seg("s-n",[40,80,200,400].map(n=>[String(n),String(n)]),k=>{st.N=+k;newData();restart()});
+const setL2=Core.seg("s-l2",[0,0.001,0.003,0.01].map(v=>[String(v),v?"λ = "+v:"Sin L2"]),k=>{st.l2=+k;restart()});
+const setDrop=Core.seg("s-drop",[[0,"Sin dropout"],[0.2,"20 %"],[0.5,"50 %"]].map(([v,l])=>[String(v),l]),k=>{st.drop=+k;restart()});
+function restart(){reset();st.running=true;syncUI();req()}
+document.getElementById("s-run").onclick=()=>{if(epoch>=st.maxE||stopped)reset();st.running=!st.running;syncUI();req()};
+document.getElementById("s-reset").onclick=()=>{st.netSeed++;restart()};
+document.getElementById("s-data").onclick=()=>{st.dataSeed+=11;newData();restart()};
+document.getElementById("s-speed").oninput=e=>{st.speed=+e.target.value;syncUI()};
+document.getElementById("s-val").onclick=()=>{st.showVal=!st.showVal;syncUI();req()};
+document.getElementById("s-es").onclick=()=>{st.es=!st.es;if(st.es&&epoch-best.e>=st.patience){stopped={e:epoch,best:best.e};net.W=best.w.W.map(w=>Float64Array.from(w));net.B=best.w.B.map(b=>Float64Array.from(b));st.running=false;bndDirty=true}syncUI();req()};
+function syncUI(){setSize(st.size);setN(String(st.N));setL2(String(st.l2));setDrop(String(st.drop));
+  document.getElementById("s-run").textContent=st.running?"❚❚ Pausa":(epoch>0&&!stopped&&epoch<st.maxE?"▶ Continuar":"▶ Entrenar");
+  document.getElementById("s-speed").value=st.speed;document.getElementById("s-speedv").textContent="×"+st.speed;
+  const v=document.getElementById("s-val");v.setAttribute("aria-pressed",String(st.showVal));v.textContent=st.showVal?"Visible":"Oculta";
+  const e=document.getElementById("s-es");e.setAttribute("aria-pressed",String(st.es));e.textContent=st.es?"Activada (paciencia 40)":"Desactivada";syncStatus();req()}
+Core.on("theme",()=>{bndDirty=true;req()});
+Core.on("tab",t=>{if(t==="sobreajuste"){if(!started&&!Core.STILL&&!Core.q.has("noauto")){started=true;st.running=true;syncUI()}req()}});
+window.__sobreajuste={st,get epoch(){return epoch},get hist(){return hist},get best(){return best},reset,newData,restart,syncUI,run:n=>{for(let i=0;i<n&&(st.es?!stopped:true);i++){trainOne();if(stopped)break}bndDirty=true;syncUI();draw()},draw};
+syncUI();
+})();
+
+</script>
+<script>Core.refresh();</script>
+</body>
+</html>
