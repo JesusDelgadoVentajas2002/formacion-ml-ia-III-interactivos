@@ -1,0 +1,79 @@
+/* ============================================================
+   Laboratorio de ejercicios · Formación ML/IA básica · Parte III
+   ============================================================ */
+body.lab main.content{padding-bottom:140px}
+.mod-hero .hero-sub{position:relative;max-width:1080px;margin:14px auto 0!important;font:500 17px/1.5 "Instrument Sans",sans-serif;color:#fff!important;opacity:.92;text-align:left!important}
+.lab-how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:1080px;margin:0 auto 10px}
+.lab-how div{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.45;color:var(--text2)}
+.lab-how b{display:block;font:800 15px "Karla",sans-serif;color:var(--text);margin-bottom:4px}
+.lab-how span{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font:800 13px "Karla",sans-serif;margin-right:8px}
+
+/* ---------- cada ejercicio ---------- */
+section.ej{max-width:1080px;margin:40px auto 0}
+.ej-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;max-width:1080px}
+.ej-head .ej-n{font:800 12px "Karla",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:4px 10px;border-radius:999px}
+.ej-head h3{margin:0;font-size:24px}
+.ej-head .ej-ref{font-size:13.5px;color:var(--muted);margin-left:auto}
+.ej-head .ej-ref a{color:var(--link);text-decoration:none;border-bottom:1px dotted currentColor}
+.ej-goal{margin:12px 0 18px!important;padding:12px 16px;border-left:4px solid var(--orange);background:var(--bg2);border-radius:0 12px 12px 0;max-width:none!important;text-align:left!important;font-size:16px}
+.ej-goal b{color:var(--text)}
+.ej .ifig{min-height:300px}
+.ej-q{padding:10px 12px;border-radius:12px;background:var(--bg2);border:1px dashed var(--line)}
+.ej-q .q{flex:1 1 100%;font-size:14.5px;color:var(--text)}
+.w-read .muted{color:var(--muted)}
+
+/* ---------- corrección dentro de cada ejercicio ---------- */
+.ej-fb{margin:16px 0 0;border-radius:14px;border:1px solid var(--line);padding:14px 18px;background:var(--panel);box-shadow:var(--shadow);animation:fbIn .35s ease}
+@keyframes fbIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.ej-fb.ok{border-left:6px solid var(--green)}.ej-fb.mid{border-left:6px solid var(--ocre)}.ej-fb.bad{border-left:6px solid var(--red)}
+.fb-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.fb-score{font:800 30px/1 "Karla",sans-serif;color:var(--text)}.fb-score small{font-size:15px;color:var(--muted)}
+.ej-fb.ok .fb-score{color:var(--green)}.ej-fb.mid .fb-score{color:var(--ocre)}.ej-fb.bad .fb-score{color:var(--red)}
+.fb-msg{font:700 15px "Instrument Sans",sans-serif;color:var(--text2)}.fb-msg em{font-weight:400;color:var(--muted)}
+.fb-items{list-style:none;margin:0;padding:0!important}
+.fb-items li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.5}
+.fb-items li::before{flex:0 0 22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:800 13px "Karla",sans-serif;color:#fff;margin-top:1px}
+.fb-items li.ok::before{content:"✓";background:var(--green)}.fb-items li.mid::before{content:"~";background:var(--ocre)}.fb-items li.bad::before{content:"✕";background:var(--red)}
+.fb-items .pts{flex:0 0 64px;font:700 13px ui-monospace,Menlo,Consolas,monospace;color:var(--muted);padding-top:2px}
+.fb-items .txt{flex:1}
+.fb-sol{margin-top:10px}.fb-sol .sol{margin-top:4px;padding:10px 14px;border-radius:10px;background:color-mix(in srgb,var(--fillb) 60%,transparent);font-size:15px;line-height:1.5}
+
+/* ---------- módulo 9 ---------- */
+.soon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;max-width:1080px;margin:16px auto 0}
+.soon-card{position:relative;border:1px dashed var(--tline);border-radius:16px;padding:18px 16px 16px;background:var(--bg2);min-height:150px;overflow:hidden}
+.soon-card .n{font:800 12px "Karla",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.soon-card h4{margin:6px 0 6px;color:var(--text2);font-size:17px}
+.soon-card p{margin:0!important;font-size:13.5px;color:var(--muted);text-align:left!important}
+.soon-card .tag{position:absolute;top:12px;right:12px;font:800 10.5px "Karla",sans-serif;letter-spacing:.1em;text-transform:uppercase;background:var(--line);color:var(--muted);padding:3px 8px;border-radius:999px}
+.toc a.soon{opacity:.5;pointer-events:none}
+.toc a.done::after{content:"●";color:var(--green);margin-left:6px;font-size:10px;vertical-align:2px}
+
+/* ---------- barra inferior ---------- */
+.ej-bar{position:fixed;left:calc(50% + var(--sidebar)/2);transform:translateX(-50%);bottom:18px;z-index:60;display:flex;align-items:center;gap:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 20px 50px -18px rgba(10,30,60,.45)}
+.ej-bar #ejDone{font-size:14.5px;color:var(--text2);white-space:nowrap}
+.ej-bar .w-btn{border-radius:999px;padding:9px 18px;font-size:14.5px}
+.ej-bar .w-btn.primary{padding:10px 26px;font:800 15.5px "Karla",sans-serif;letter-spacing:.02em}
+body.lab .totop{bottom:86px}
+
+/* ---------- ventana de resultados ---------- */
+.ej-modal{position:fixed;inset:0;z-index:80;background:rgba(5,15,30,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
+.ej-modal[hidden]{display:none}
+body.modal{overflow:hidden}
+.ej-dialog{position:relative;width:min(620px,100%);max-height:calc(100vh - 40px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 30px 22px;box-shadow:var(--shadow);animation:fbIn .3s ease}
+.ej-dialog .close{position:absolute;top:14px;right:14px}
+.ej-dialog .kicker{font:800 12px "Karla",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+.nota{display:flex;align-items:baseline;gap:8px;margin:6px 0 4px}
+.nota span{font:800 72px/1 "Karla",sans-serif}.nota small{font:700 22px "Karla",sans-serif;color:var(--muted)}
+.nota.ok span{color:var(--green)}.nota.mid span{color:var(--ocre)}.nota.bad span{color:var(--red)}
+.nota-msg{font-size:16px;color:var(--text2);margin:0 0 14px}
+.ej-dialog .rows{list-style:none;padding:0;margin:0}
+.ej-dialog .rows li{display:grid;grid-template-columns:1fr 130px 36px;gap:12px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14.5px}
+.ej-dialog .rows a{color:var(--text);text-decoration:none}.ej-dialog .rows a:hover{color:var(--brand)}
+.ej-dialog .rows .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.ej-dialog .rows .bar i{display:block;height:100%;border-radius:4px}
+.ej-dialog .rows li.ok i{background:var(--green)}.ej-dialog .rows li.mid i{background:var(--ocre)}.ej-dialog .rows li.bad i{background:var(--red)}
+.ej-dialog .rows b{text-align:right;font:700 14px ui-monospace,Menlo,Consolas,monospace}
+
+@media (max-width:1100px){.ej-bar{left:50%;transform:translateX(-50%)}}
+@media (max-width:760px){.lab-how{grid-template-columns:1fr}.ej-bar{left:10px;right:10px;transform:none;justify-content:space-between;padding-left:14px}.ej-bar #ejDone{font-size:12.5px;white-space:normal}.ej-head .ej-ref{margin-left:0}}
+@media print{.ej-bar,.ej-modal{display:none!important}}
