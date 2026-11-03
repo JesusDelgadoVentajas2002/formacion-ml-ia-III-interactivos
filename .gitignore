@@ -1,0 +1,5 @@
+# El Word del curso no se sube: cada persona pone su copia en Word/
+Word/*
+!Word/.gitkeep
+
+node_modules/

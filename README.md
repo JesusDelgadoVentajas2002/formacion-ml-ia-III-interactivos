@@ -34,3 +34,10 @@ curso/
 ```
 
 Al cambiar CSS o JS, actualiza el parámetro `?v=` de los enlaces en los HTML para evitar la caché del navegador.
+
+## Actualizar la web con el Word
+
+1. Pon el `.docx` del curso en `Word/` (no se sube al repositorio).
+2. Abre el repositorio con un agente que lea skills (Claude Code, Codex, Gemini CLI, Cursor o VS Code con Copilot) y pídele «actualiza la web con el Word». En Claude Code también vale `/actualizar-curso`.
+
+La skill está en `.agents/skills/actualizar-curso/`. Necesita Node 20 o superior y Google Chrome. Deja los cambios en un commit; el push se hace a mano.

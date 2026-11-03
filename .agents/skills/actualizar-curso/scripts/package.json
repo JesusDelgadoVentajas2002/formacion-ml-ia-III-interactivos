@@ -1,0 +1,10 @@
+{
+  "name": "actualizar-curso-tools",
+  "private": true,
+  "type": "module",
+  "description": "Herramientas de la skill actualizar-curso. katex debe coincidir con curso/assets/katex/katex.min.css (0.19.1).",
+  "dependencies": {
+    "katex": "0.19.1",
+    "sharp": "^0.35.5"
+  }
+}
