@@ -112,6 +112,9 @@ table.nter p{margin:0!important;text-align:left!important}
 table.nter ul{margin:2px 0;padding-left:18px}
 table.nter .eq{margin:4px 0;text-align:left}
 table.nter tr:hover td{background:color-mix(in srgb,var(--fillb) 55%,transparent)}
+table.nter.code td{vertical-align:top;width:50%}
+table.nter pre.code{margin:0;font:400 13px/1.6 ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;color:var(--text);white-space:pre;overflow-x:auto}
+table.nter pre.code b{color:var(--blue);font-weight:700}
 
 /* ---------------- figuras ---------------- */
 figure.fig{margin:30px auto 34px;max-width:1080px}

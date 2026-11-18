@@ -237,7 +237,7 @@ Una neurona típica tiene tres partes (Figura 1, izquierda):
 
 En su extremo, el axón se ramifica en terminales, y cada uno de ellos se une a otra neurona mediante el espacio sináptico, el punto de conexión entre ambas. Cada neurona se conecta con miles de otras, formando una red enormemente densa.
 
-![](media/image29.png)
+![](media/image18.png)
 
 *Figura 1. Neurona biológica (izquierda).*
 
@@ -253,7 +253,7 @@ Las señales que llegan pueden ser:
 
 La neurona hace balance: si la suma de todas ellas supera un umbral, dispara; si no, permanece en reposo (Figura 2b). Funciona como una votación en la que no todos los votos pesan igual y la propuesta solo sale adelante si el apoyo total supera un mínimo.
 
-![](media/image9.png)
+![](media/image32.png)
 
 *Figura 2. Comunicación entre dos neuronas (a) y decisión de disparo por balance de señales (b).*
 
@@ -276,7 +276,7 @@ En 1943, McCulloch y Pitts propusieron el primer modelo matemático de neurona, 
 | Axón | Salida $y$ {eq-4} |
 | Refuerzo de las sinapsis | Ajuste de los pesos (entrenamiento) |
 
-![](media/image29.png)
+![](media/image18.png)
 
 *Figura 3. Neurona biológica (izquierda) y su versión artificial simplificada (derecha).*
 
@@ -315,21 +315,23 @@ $p=11+e−1$ {eq-31} ≈ 0.73
 
 Es decir, en lugar de responder solo «es spam», la neurona indica que hay un 73 % de probabilidad de que lo sea.
 
-![](media/image43.png)
+![](media/image26.png)
 
 *Figura 4. Una sola neurona con activación sigmoide (a) y una red multicapa que combina muchas neuronas organizadas en capas (b).*
 
+La pestaña «Una neurona por dentro» de la versión interactiva permite cambiar las entradas, los pesos y la función de activación de esta neurona y ver al momento cómo responden la suma ponderada, la salida y la decisión; se volverá a ella en el apartado 3.
+
 #### De 1943 a la IA generativa
 
-La historia de las redes neuronales ha alternado etapas de entusiasmo y de abandono (Figura 4). Tras el perceptrón de 1958, Minsky y Papert demostraron en 1969 sus limitaciones y el interés se desplomó. La retropropagación (1986) permitió entrenar redes de varias capas, pero durante los años noventa y dos mil otros métodos daban mejores resultados. El giro llegó en 2012, cuando la red AlexNet arrasó en la competición de reconocimiento de imágenes ImageNet. Desde entonces el deep learning no ha dejado de crecer, hasta los modelos de lenguaje actuales y el Nobel de Física de 2024 a Hopfield y Hinton.
+La historia de las redes neuronales ha alternado etapas de entusiasmo y de abandono (Figura 5). Tras el perceptrón de 1958, Minsky y Papert demostraron en 1969 sus limitaciones y el interés se desplomó. La retropropagación (1986) permitió entrenar redes de varias capas, pero durante los años noventa y dos mil otros métodos daban mejores resultados. El giro llegó en 2012, cuando la red AlexNet arrasó en la competición de reconocimiento de imágenes ImageNet. Desde entonces el deep learning no ha dejado de crecer, hasta los modelos de lenguaje actuales y el Nobel de Física de 2024 a Hopfield y Hinton.
 
-![](media/image25.png)
+![](media/image53.png)
 
 *Figura 5. Hitos principales en la historia de las redes neuronales.*
 
 #### ¿Por qué ahora?
 
-Las ideas existían desde los años ochenta; lo que faltaba eran tres ingredientes (Figura 5):
+Las ideas existían desde los años ochenta; lo que faltaba eran tres ingredientes (Figura 6):
 
 - Datos masivos para ajustar millones de pesos
 
@@ -337,17 +339,17 @@ Las ideas existían desde los años ochenta; lo que faltaba eran tres ingredient
 
 - Mejoras en algoritmos y software, como la función ReLU o frameworks como TensorFlow y PyTorch (Módulo 9).
 
-![](media/image42.png)
+![](media/image5.png)
 
-*Figura 5. Los tres factores que explican el despegue del deep learning.*
+*Figura 6. Los tres factores que explican el despegue del deep learning.*
 
 #### Dónde encajan (y dónde no)
 
-Las redes neuronales son la referencia con datos no estructurados: imágenes, texto, audio o vídeo. Con datos tabulares, los de filas y columnas típicos de empresa, los modelos basados en árboles, como random forest o gradient boosting, siguen igualando o superando a menudo a las redes, con menos coste y más interpretabilidad. La recomendación práctica es empezar por un modelo clásico y recurrir a una red solo si mejora claramente (Figura 6).
+Las redes neuronales son la referencia con datos no estructurados: imágenes, texto, audio o vídeo. Con datos tabulares, los de filas y columnas típicos de empresa, los modelos basados en árboles, como random forest o gradient boosting, siguen igualando o superando a menudo a las redes, con menos coste y más interpretabilidad. La recomendación práctica es empezar por un modelo clásico y recurrir a una red solo si mejora claramente (Figura 7).
 
-![](media/image45.png)
+![](media/image41.png)
 
-*Figura 6. Regla práctica para elegir entre modelos clásicos y redes neuronales.*
+*Figura 7. Regla práctica para elegir entre modelos clásicos y redes neuronales.*
 
 ## 2. Perceptrón
 
@@ -357,7 +359,7 @@ En 1958, Frank Rosenblatt propuso el perceptrón: la neurona artificial del apar
 
 #### Cómo decide: la función escalón
 
-El perceptrón resuelve problemas de clasificación binaria: cada ejemplo, descrito por $n$ {eq-32} variables $x1,…,xn$ {eq-33}, pertenece a la clase 1 o a la clase 0. Para decidir, calcula la suma ponderada $z$ {eq-34} vista en el apartado 1.2 y la pasa por la función escalón, la activación «todo o nada» del ejemplo del correo (Figura 7a):
+El perceptrón resuelve problemas de clasificación binaria: cada ejemplo, descrito por $n$ {eq-32} variables $x1,…,xn$ {eq-33}, pertenece a la clase 1 o a la clase 0. Para decidir, calcula la suma ponderada $z$ {eq-34} vista en el apartado 1.2 y la pasa por la función escalón, la activación «todo o nada» del ejemplo del correo (Figura 8a):
 
 $ŷ=1$ {eq-35}     si     $z>0$ {eq-36}
 
@@ -379,19 +381,19 @@ que es la ecuación de una recta. Despejando $x2$ {eq-48} (con $w2≠0$ {eq-49})
 
 $x2=−w1w2x1−bw2$ {eq-50}
 
-Esta recta es la frontera de decisión: a un lado $z>0$ {eq-51} y el perceptrón predice 1; al otro, predice 0 (Figura 7b). Los pesos fijan la inclinación de la recta y el sesgo la desplaza sin girarla. Además, el vector de pesos $(w1,w2)$ {eq-52} Es perpendicular a la frontera y apunta hacia la zona de la clase 1.
+Esta recta es la frontera de decisión: a un lado $z>0$ {eq-51} y el perceptrón predice 1; al otro, predice 0 (Figura 8b). Los pesos fijan la inclinación de la recta y el sesgo la desplaza sin girarla. Además, el vector de pesos $(w1,w2)$ {eq-52} Es perpendicular a la frontera y apunta hacia la zona de la clase 1.
 
-![](media/image28.png)
+![](media/image21.png)
 
-*Figura 7. Función escalón (a) y frontera de decisión aprendida por el perceptrón en el ejemplo AND (b).*
+*Figura 8. Función escalón (a) y frontera de decisión aprendida por el perceptrón en el ejemplo AND (b).*
 
 Con tres variables la frontera es un plano y, con $n$ {eq-53} variables, un hiperplano, la generalización del plano a más dimensiones. En todos los casos la frontera es plana, sin curvas: el perceptrón es un clasificador lineal.
 
-![](media/image16.png)
+![](media/image43.png)
 
-*Figura 7c. Frontera de decisión de un perceptrón con tres variables: un plano que separa las dos clases (datos simulados).*
+*Figura 9. Frontera de decisión de un perceptrón con tres variables: un plano que separa las dos clases (datos simulados).*
 
-La Figura 7c lleva a tres variables la misma idea de la Figura 7b. Cada ejemplo es ahora un punto del espacio $(x1, x2, x3)$ {eq-54} y la frontera, el conjunto de puntos donde $z=0$ {eq-55}, deja de ser una recta para convertirse en un plano: la superficie gris inclinada. En la figura, el perceptrón tiene pesos 0.5, 0.3 y 1 y sesgo −2, de modo que la frontera es:
+La Figura 9 lleva a tres variables la misma idea de la Figura 8b. Cada ejemplo es ahora un punto del espacio $(x1, x2, x3)$ {eq-54} y la frontera, el conjunto de puntos donde $z=0$ {eq-55}, deja de ser una recta para convertirse en un plano: la superficie gris inclinada. En la figura, el perceptrón tiene pesos 0.5, 0.3 y 1 y sesgo −2, de modo que la frontera es:
 
 $0.5x1+0.3x2+x3-2=0$ {eq-56}
 
@@ -437,7 +439,7 @@ Los dos ejemplos siguientes se clasifican bien. El cuarto, (1, 1), es de clase 1
 
 $w1$ {eq-80} ← 0.1 + 0.5 · 1 = 0.6       $w2$ {eq-81} ← −0.1 + 0.5 · 1 = 0.4       $b$ {eq-82} ← −0.4 + 0.5 = 0.1
 
-La Tabla 4 resume el resto del entrenamiento. En la cuarta época el perceptrón ya no comete ningún error y el entrenamiento termina. La frontera aprendida, 0.6$x1$ {eq-83} + 0.4$x2$ {eq-84} − 0.9 = 0. es la recta de la Figura 7b. Con ella, $z$ {eq-85} vale −0.9, −0.5, −0.3 y 0.1 en los cuatro casos: solo es positivo en (1, 1), el único solicitante que cumple las dos condiciones.
+La Tabla 4 resume el resto del entrenamiento. En la cuarta época el perceptrón ya no comete ningún error y el entrenamiento termina. La frontera aprendida, 0.6$x1$ {eq-83} + 0.4$x2$ {eq-84} − 0.9 = 0. es la recta de la Figura 8b. Con ella, $z$ {eq-85} vale −0.9, −0.5, −0.3 y 0.1 en los cuatro casos: solo es positivo en (1, 1), el único solicitante que cumple las dos condiciones.
 
 *Tabla 4. Pesos y sesgos al final de cada época.*
 
@@ -459,11 +461,11 @@ El ejemplo anterior no terminó por casualidad. El teorema de convergencia del p
 
 El ejemplo clásico de clases no separables es la función XOR («or exclusivo»): la salida vale 1 cuando exactamente una de las dos entradas vale 1. Un caso real es la conciliación de dos sistemas: si $x1$ {eq-86} indica que un pago figura en el banco y $x2$ {eq-87} que figura en contabilidad, debe saltar una alerta ($y=1$ {eq-88}) solo cuando hay descuadre, es decir, cuando el pago aparece en un sistema y no en el otro.
 
-Como muestra la Figura 8, los puntos de la clase 1, (0, 1) y (1, 0), quedan en una diagonal, y los de la clase 0 (0, 0) y (1, 1), en la otra: ninguna recta deja a unos a un lado y a los otros al otro. Puede demostrarse con cuatro desigualdades. Para acertar los cuatro casos, un perceptrón tendría que cumplir todas las condiciones de la Tabla 5.
+Como muestra la Figura 10, los puntos de la clase 1, (0, 1) y (1, 0), quedan en una diagonal, y los de la clase 0 (0, 0) y (1, 1), en la otra: ninguna recta deja a unos a un lado y a los otros al otro. Puede demostrarse con cuatro desigualdades. Para acertar los cuatro casos, un perceptrón tendría que cumplir todas las condiciones de la Tabla 5.
 
-![](media/image23.png)
+![](media/image46.png)
 
-*Figura 8. En XOR, cualquier recta deja al menos un punto en el lado equivocado.*
+*Figura 10. En XOR, cualquier recta deja al menos un punto en el lado equivocado.*
 
 *Tabla 5. Condiciones que debería cumplir un perceptrón para resolver XOR.*
 
@@ -478,9 +480,9 @@ Sumando la segunda y la tercera condición se obtiene $w1+w2+2b>0$ {eq-93}, es d
 
 #### La solución: combinar perceptrones en capas
 
-La salida es la idea de la Figura 4b: combinar varias neuronas. XOR puede descomponerse en dos condiciones que sí son lineales, «al menos una entrada vale 1» (OR) y «no valen 1 las dos a la vez» (NAND). Si una neurona $h1$ {eq-98} calcula OR y otra $h2$ {eq-99} calcula NAND, basta una tercera que compruebe que se cumplen ambas (AND) para obtener XOR (Figura 9a). La Tabla 6 verifica que la red acierta los cuatro casos.
+La salida es la idea de la Figura 4b: combinar varias neuronas. XOR puede descomponerse en dos condiciones que sí son lineales, «al menos una entrada vale 1» (OR) y «no valen 1 las dos a la vez» (NAND). Si una neurona $h1$ {eq-98} calcula OR y otra $h2$ {eq-99} calcula NAND, basta una tercera que compruebe que se cumplen ambas (AND) para obtener XOR (Figura 11a). La Tabla 6 verifica que la red acierta los cuatro casos.
 
-*Tabla 6. Cálculo de XOR con la red de dos capas de la Figura 9a.*
+*Tabla 6. Cálculo de XOR con la red de dos capas de la Figura 11a.*
 
 | **x₁** | **x₂** | **h₁ (OR)** | **h₂ (NAND)** | **ŷ (AND)** | **XOR** |
 |---|---|---|---|---|---|
@@ -489,11 +491,13 @@ La salida es la idea de la Figura 4b: combinar varias neuronas. XOR puede descom
 | 1 | 0 | 1 | 1 | 1 | 1 |
 | 1 | 1 | 1 | 0 | 0 | 0 |
 
-Geométricamente, cada neurona de la capa intermedia traza su propia recta, y la neurona de salida se queda con la franja comprendida entre ambas, justo donde están los dos puntos de la clase 1 (Figura 9b). Es la idea que desarrolla la red multicapa del apartado 4: las capas intermedias transforman el problema hasta hacerlo separable.
+Geométricamente, cada neurona de la capa intermedia traza su propia recta, y la neurona de salida se queda con la franja comprendida entre ambas, justo donde están los dos puntos de la clase 1 (Figura 11b). Es la idea que desarrolla la red multicapa del apartado 4: las capas intermedias transforman el problema hasta hacerlo separable.
 
-![](media/image32.png)
+![](media/image10.png)
 
-*Figura 9. Red de dos capas que resuelve XOR (a) y franja de decisión que generan sus dos rectas (b).*
+*Figura 11. Red de dos capas que resuelve XOR (a) y franja de decisión que generan sus dos rectas (b).*
+
+En la pestaña «Perceptrón, XOR y capas ocultas» de la versión interactiva puede repetirse paso a paso el entrenamiento de la Tabla 4 y comprobar que, con XOR, el perceptrón corrige sus pesos una y otra vez sin llegar a terminar.
 
 Queda un problema: en este ejemplo los pesos se han elegido a mano. La regla del perceptrón sólo sabe corregir la neurona de salida, porque es la única que puede compararse con la respuesta correcta; para las neuronas intermedias no existe una «respuesta correcta» con la que medir su error. Además, la función escalón es plana en todas partes salvo en el salto, así que un pequeño cambio en un peso casi nunca cambia la salida y no indica hacia dónde conviene moverlo. Superar ambos obstáculos exigió cambiar varias piezas del perceptrón, como resume la Tabla 7.
 
@@ -527,11 +531,11 @@ $h=w1x+b1$ {eq-104}
 
 $ŷ=w2h+b2=(w2w1)x+(w2b1+b2)$ {eq-105}
 
-El resultado vuelve a ser «un peso por la entrada más un sesgo»: apilar diez o cien capas sin activación equivale a una sola, y la red seguiría trazando una única frontera recta, sin poder resolver XOR (Figura 8). Es como intentar construir una curva empalmando varillas rígidas en línea: por muchas que se añadan, el resultado sigue siendo recto. La función de activación es la bisagra que permite «doblar» cada tramo y, combinando muchas dobleces, la red puede ajustar fronteras curvas (Figura 10).
+El resultado vuelve a ser «un peso por la entrada más un sesgo»: apilar diez o cien capas sin activación equivale a una sola, y la red seguiría trazando una única frontera recta, sin poder resolver XOR (Figura 10). Es como intentar construir una curva empalmando varillas rígidas en línea: por muchas que se añadan, el resultado sigue siendo recto. La función de activación es la bisagra que permite «doblar» cada tramo y, combinando muchas dobleces, la red puede ajustar fronteras curvas (Figura 12).
 
-![](media/image5.png)
+![](media/image8.png)
 
-*Figura 10. La misma red de dos capas ocultas entrenada sin activación (a) y con activación ReLU (b).*
+*Figura 12. La misma red de dos capas ocultas entrenada sin activación (a) y con activación ReLU (b).*
 
 Además, para que la red pueda aprender con los métodos que veremos en el Módulo 8, se pide a la función una pendiente útil: que un pequeño cambio en $z$ {eq-106} se pueda notar en la salida. Esa pendiente (la derivada de la función) será la protagonista de la retropropagación; aquí basta con la idea intuitiva, porque explica las ventajas y los problemas de cada función.
 
@@ -545,7 +549,7 @@ $σ(z)=11+e−z$ {eq-108}
 
 *Recordemos que *$z$ {eq-109}*, es la suma de las entradas multiplicadas por sus pesos, más el sesgo.*
 
-Su gráfica tiene forma de S (Figura 11a). Cuando $z$ {eq-110} es muy negativo, la salida se acerca a 0; en $z=0$ {eq-111} vale exactamente 0.5; y cuando $z$ {eq-112} es muy positivo, se acerca a 1. Es una versión suavizada de la función escalón: si el escalón es un interruptor de la luz, encendido o apagado, la sigmoide es un regulador de intensidad que sube poco a poco.
+Su gráfica tiene forma de S (Figura 13a). Cuando $z$ {eq-110} es muy negativo, la salida se acerca a 0; en $z=0$ {eq-111} vale exactamente 0.5; y cuando $z$ {eq-112} es muy positivo, se acerca a 1. Es una versión suavizada de la función escalón: si el escalón es un interruptor de la luz, encendido o apagado, la sigmoide es un regulador de intensidad que sube poco a poco.
 
 #### Cómo se interpreta: una probabilidad
 
@@ -581,9 +585,9 @@ $σ(5) ≈ 0.993307     →     σ′(5) ≈ 0.993307(1 − 0.993307) ≈ 0.0066
 
 Esta pendiente es unas 38 veces menor que 0.25. La salida apenas responde a pequeños cambios en z: la neurona está saturada, lo que puede dificultar el aprendizaje.
 
-![](media/image33.png)
+![](media/image25.png)
 
-*Figura 11. Función sigmoide (a) y su pendiente (b); en las zonas sombreadas la neurona está saturada.*
+*Figura 13. Función sigmoide (a) y su pendiente (b); en las zonas sombreadas la neurona está saturada.*
 
 El problema se agrava en redes profundas. Durante el entrenamiento, las pendientes de las distintas capas se multiplican entre sí; aunque todas estuvieran en su mejor punto, cinco capas darían $0.255≈0.001$ {eq-123}, de modo que la señal de corrección llega a las primeras capas casi apagada. Es el origen del problema del vanishing gradient que se estudiará en el Módulo 8. Por estas razones, hoy la sigmoide se usa sobre todo en la capa de salida de la clasificación binaria, donde su interpretación como probabilidad es justo lo que se necesita, y casi nunca en las capas intermedias.
 
@@ -599,7 +603,7 @@ Ambas funciones están relacionadas mediante esta expresión:
 
 $tanh(z) = 2σ(2z) − 1$ {eq-125}
 
-El 2 dentro de σ(2z) hace que la transición sea más rápida. Multiplicar la salida por 2 amplía su rango de (0, 1) a (0, 2), y restar 1 lo desplaza a (−1, 1), dejando el centro en cero (Figura 12a).
+El 2 dentro de σ(2z) hace que la transición sea más rápida. Multiplicar la salida por 2 amplía su rango de (0, 1) a (0, 2), y restar 1 lo desplaza a (−1, 1), dejando el centro en cero (Figura 14a).
 
 Así, tanh devuelve valores negativos si z es negativo, cero si z = 0 y valores positivos si z es positivo. Que la función esté centrada en cero no garantiza que la media de sus salidas sea cero: también depende de las entradas.
 
@@ -623,7 +627,7 @@ La salida tanh(z) vale cero únicamente en z = 0. En ese punto, e⁰ = 1 y obten
 
 $tanh(0) = 1 − 11 + 1 = 0     →     tanh′(0) = 1 − 02 = 1$ {eq-129}
 
-Por tanto, la pendiente máxima está en z = 0 y vale 1, cuatro veces la pendiente máxima de la sigmoide, que era 0.25 (Figura 12b). Cerca del centro, tanh responde más a pequeños cambios en z, lo que puede favorecer el aprendizaje, aunque no garantiza que toda la red aprenda más rápido.
+Por tanto, la pendiente máxima está en z = 0 y vale 1, cuatro veces la pendiente máxima de la sigmoide, que era 0.25 (Figura 14b). Cerca del centro, tanh responde más a pequeños cambios en z, lo que puede favorecer el aprendizaje, aunque no garantiza que toda la red aprenda más rápido.
 
 Sin embargo, también se satura. Cuando su salida se acerca a −1 o a 1, su cuadrado se acerca a 1 y la pendiente $1-p2$ {eq-130} se acerca a cero. Por ejemplo, con $z=3$ {eq-131}:
 
@@ -635,9 +639,9 @@ En esa zona, pequeños cambios en z apenas modifican la salida. Tanh mejora la p
 
 Tanh se utiliza, por ejemplo, en componentes de redes recurrentes que procesan secuencias. En el visualizador de redes neuronales, compara «Sigmoid» y «Tanh» en «Activation Function Shape»: observa sus rangos y la pendiente en el centro. Después, entrena con la misma arquitectura y tasa de aprendizaje y compara la pérdida. Si la inicialización cambia entre pruebas, las diferencias no se deben únicamente a la activación.
 
-![](media/image11.png)
+![](media/image54.png)
 
-*Figura 12. Tanh frente a la sigmoide (a) y comparación de sus pendientes (b).*
+*Figura 14. Tanh frente a la sigmoide (a) y comparación de sus pendientes (b).*
 
 Hoy tanh se usa sobre todo en las capas internas de las redes recurrentes, que procesan secuencias como texto o series temporales. El visualizador de redes neuronales permite elegir la función de activación: basta con seleccionar primero «Sigmoid» y después «Tanh», manteniendo la misma arquitectura y la misma tasa de aprendizaje, y comparar el gráfico de la forma de la función («Activation Function Shape») y la evolución de la pérdida durante el entrenamiento.
 
@@ -649,13 +653,13 @@ ReLU (Rectified Linear Unit) deja pasar los valores positivos tal cual y convier
 
 $ReLU(z)=max(0,z)$ {eq-134}
 
-Funciona como una válvula antirretorno: el flujo pasa en un sentido y se bloquea en el otro (Figura 13a). Aunque está formada por dos tramos rectos, no es lineal, porque tiene un «codo» en cero. Y eso basta: combinando muchas neuronas con codos en distintos puntos, la red construye curvas por tramos, igual que una poligonal con muchos segmentos imita una curva. Es justo lo que ocurre en la frontera de la Figura 10b.
+Funciona como una válvula antirretorno: el flujo pasa en un sentido y se bloquea en el otro (Figura 15a). Aunque está formada por dos tramos rectos, no es lineal, porque tiene un «codo» en cero. Y eso basta: combinando muchas neuronas con codos en distintos puntos, la red construye curvas por tramos, igual que una poligonal con muchos segmentos imita una curva. Es justo lo que ocurre en la frontera de la Figura 12b.
 
 #### Por qué es la opción por defecto
 
 ReLU es hoy la activación estándar en las capas ocultas por tres razones:
 
-- **No se satura por arriba:** para $z>0$ {eq-135} su pendiente es siempre 1, así que la señal de corrección no se va encogiendo capa a capa por culpa de la activación. Fue una de las mejoras de algoritmos que permitieron el despegue del deep learning (Figura 5).
+- **No se satura por arriba:** para $z>0$ {eq-135} su pendiente es siempre 1, así que la señal de corrección no se va encogiendo capa a capa por culpa de la activación. Fue una de las mejoras de algoritmos que permitieron el despegue del deep learning (Figura 6).
 
 - **Es muy barata:** basta con comparar con cero, sin calcular exponenciales. Con millones de neuronas, la diferencia en tiempo de cálculo es notable.
 
@@ -663,15 +667,15 @@ ReLU es hoy la activación estándar en las capas ocultas por tres razones:
 
 #### El riesgo: neuronas muertas y Leaky ReLU
 
-El punto débil está en la zona negativa, donde la pendiente es 0 (Figura 13b). Si los pesos de una neurona quedan de forma que su $z$ {eq-136} es negativo para todos los ejemplos, su salida es siempre 0, no recibe ninguna corrección y ya no vuelve a aprender: es una neurona muerta. Suele ocurrir cuando la tasa de aprendizaje es demasiado alta y una corrección brusca la empuja a esa zona. La variante Leaky ReLU («ReLU con fugas») lo evita dejando una pequeña pendiente $α$ {eq-137}, por ejemplo 0.01, en la parte negativa:
+El punto débil está en la zona negativa, donde la pendiente es 0 (Figura 15b). Si los pesos de una neurona quedan de forma que su $z$ {eq-136} es negativo para todos los ejemplos, su salida es siempre 0, no recibe ninguna corrección y ya no vuelve a aprender: es una neurona muerta. Suele ocurrir cuando la tasa de aprendizaje es demasiado alta y una corrección brusca la empuja a esa zona. La variante Leaky ReLU («ReLU con fugas») lo evita dejando una pequeña pendiente $α$ {eq-137}, por ejemplo 0.01, en la parte negativa:
 
 $LeakyReLU(z)=max(αz,z)$ {eq-138}
 
 En los modelos de lenguaje actuales se usan variantes suavizadas de la misma idea, como GELU, pero el principio es el mismo.
 
-![](media/image21.png)
+![](media/image9.png)
 
-*Figura 13. ReLU y Leaky ReLU (a) y su pendiente (b).*
+*Figura 15. ReLU y Leaky ReLU (a) y su pendiente (b).*
 
 ### 3.4. Comparativa práctica: sigmoide, tanh y ReLU
 
@@ -727,7 +731,7 @@ Lo único que cambia de un enlace a otro es la función de activación. En cada 
 
 **Enlace:** Abrir la red con activación ReLU.
 
-**Qué observar:** también aprende antes de la época 100, a un ritmo parecido al de tanh. La diferencia está en la forma de la frontera: en lugar de un círculo suave, es un polígono de lados rectos. Cada neurona aporta un «codo» y la red construye la curva por tramos, como en la Figura 10b.
+**Qué observar:** también aprende antes de la época 100, a un ritmo parecido al de tanh. La diferencia está en la forma de la frontera: en lugar de un círculo suave, es un polígono de lados rectos. Cada neurona aporta un «codo» y la red construye la curva por tramos, como en la Figura 12b.
 
 **Por qué:** para valores positivos su pendiente es siempre 1 y no se satura, así que la señal de corrección no se encoge capa a capa. En una red tan pequeña como esta, tanh y ReLU quedan prácticamente empatadas; la ventaja de ReLU aparece cuando la red es más profunda, como muestra la prueba siguiente.
 
@@ -782,11 +786,11 @@ Una red recibe el texto de un ticket y su capa de salida da las puntuaciones 2.0
 | Consulta comercial | 0.1 | 1.11 | 0.099 (9.9 %) |
 | Total | – | 11.21 | 1.000 (100 %) |
 
-La red asigna el ticket a facturación con un 65.9 % de probabilidad (Figura 14). Se cumple la regla anterior: la facturación supera en un punto a la incidencia técnica y su probabilidad es 2.72 veces mayor (0.659 / 0.242). Además, sumar la misma cantidad a todas las puntuaciones no cambia el resultado: solo importan las diferencias entre ellas.
+La red asigna el ticket a facturación con un 65.9 % de probabilidad (Figura 16). Se cumple la regla anterior: la facturación supera en un punto a la incidencia técnica y su probabilidad es 2.72 veces mayor (0.659 / 0.242). Además, sumar la misma cantidad a todas las puntuaciones no cambia el resultado: solo importan las diferencias entre ellas.
 
-![](media/image22.png)
+![](media/image19.png)
 
-*Figura 14. Puntuaciones de la capa de salida (a) y probabilidades obtenidas con softmax (b).*
+*Figura 16. Puntuaciones de la capa de salida (a) y probabilidades obtenidas con softmax (b).*
 
 Con solo dos clases, softmax da exactamente el mismo resultado que una sigmoide aplicada a la diferencia de puntuaciones, $σ(z1−z2)$ {eq-146}: la sigmoide es un caso particular de softmax. Por eso softmax se reserva para la capa de salida de la clasificación multiclase y no se usa en las capas ocultas.
 
@@ -802,6 +806,12 @@ Para ver las diferencias de un vistazo, la Tabla 9 aplica cada función a la neu
 | Sigmoide | 0.73 | 0.27 | Probabilidad de que sea spam |
 | TanH | 0.76 | −0.76 | Señal a favor o en contra, centrada en cero |
 | ReLU | 1 | 0 | Deja pasar la señal positiva y anula la negativa |
+
+La misma comparación puede hacerse de forma interactiva en la pestaña «Una neurona por dentro» de la versión interactiva, que muestra además la pendiente de cada función en el punto de trabajo y el cálculo de softmax para el ticket de soporte (Figura 17).
+
+![](media/image14.png)
+
+*Figura 17. Pestaña «Una neurona por dentro» de la versión interactiva: la neurona del correo con activación sigmoide, que da 0.73 para z = 1, y la pendiente de la función en ese punto (a), y softmax aplicada al ticket de soporte de la Tabla 8 (b).*
 
 *Tabla 10. Comparativa de las funciones de activación.*
 
@@ -833,7 +843,7 @@ En el apartado 2.2 se resolvió XOR combinando tres perceptrones en dos capas, a
 
 #### Cómo se organiza: capas totalmente conectadas
 
-Un perceptrón multicapa ordena sus neuronas en capas sucesivas (Figura 15a):
+Un perceptrón multicapa ordena sus neuronas en capas sucesivas (Figura 18a):
 
 - **Capa de entrada:** recibe los datos, con una neurona por variable. No calcula nada; solo reparte los valores a la capa siguiente.
 
@@ -841,25 +851,25 @@ Un perceptrón multicapa ordena sus neuronas en capas sucesivas (Figura 15a):
 
 - **Capa de salida:** produce la predicción final, con el número de neuronas y la activación que dicte el tipo de problema (Tabla 11).
 
-Cada neurona está conectada con todas las de la capa anterior, por eso se dice que las capas son densas o totalmente conectadas. Además, la información circula siempre hacia delante, de la entrada a la salida, sin volver atrás, y por eso este tipo de red se denomina también red feedforward («hacia delante»). La arquitectura se suele describir con el número de neuronas de cada capa: la red de la Figura 15a es una 3-4-4-1.
+Cada neurona está conectada con todas las de la capa anterior, por eso se dice que las capas son densas o totalmente conectadas. Además, la información circula siempre hacia delante, de la entrada a la salida, sin volver atrás, y por eso este tipo de red se denomina también red feedforward («hacia delante»). La arquitectura se suele describir con el número de neuronas de cada capa: la red de la Figura 18a es una 3-4-4-1.
 
 Cada neurona oculta hace exactamente lo mismo que la neurona del apartado 1.2: multiplica cada valor que le llega por su peso, suma los resultados, añade su sesgo y aplica su función de activación. Para la neurona $j$ {eq-149} de una capa que recibe $n$ {eq-150} valores:
 
 $hj=f(i=1nwjixi+bj)$ {eq-151}
 
-donde $wji$ {eq-152} es el peso de la conexión que va de la entrada $i$ {eq-153} a la neurona $j$ {eq-154}. Todos los pesos de una capa se agrupan en una tabla de números (una matriz) $W$ {eq-155} y todos sus sesgos en un vector $b$ {eq-156}; de ahí las etiquetas $W(1)$ {eq-157}, $b(1)$ {eq-158}… de la Figura 15a, donde el superíndice indica la capa. La red completa no es más que una cadena de estos cálculos, en la que la salida de cada capa es la entrada de la siguiente:
+donde $wji$ {eq-152} es el peso de la conexión que va de la entrada $i$ {eq-153} a la neurona $j$ {eq-154}. Todos los pesos de una capa se agrupan en una tabla de números (una matriz) $W$ {eq-155} y todos sus sesgos en un vector $b$ {eq-156}; de ahí las etiquetas $W(1)$ {eq-157}, $b(1)$ {eq-158}… de la Figura 18a, donde el superíndice indica la capa. La red completa no es más que una cadena de estos cálculos, en la que la salida de cada capa es la entrada de la siguiente:
 
 $ŷ=f(3)(f(2)(f(1)(x)))$ {eq-159}
 
 donde cada $f(k)$ {eq-160} representa el cálculo completo de la capa $k$ {eq-161}: suma ponderada, sesgo y activación. Funciona como una cadena de montaje: cada puesto recibe la pieza del anterior, le aplica una transformación y la pasa al siguiente, y el producto final solo aparece al terminar la cadena.
 
-![](media/image36.png)
+![](media/image27.png)
 
-*Figura 15. Estructura general de un perceptrón multicapa (a) y red de dos capas con ReLU y sigmoide que resuelve XOR (b).*
+*Figura 18. Estructura general de un perceptrón multicapa (a) y red de dos capas con ReLU y sigmoide que resuelve XOR (b).*
 
 #### Propagación hacia delante: un ejemplo resuelto
 
-Calcular la predicción de la red para un ejemplo se llama **propagación hacia delante** (*forward pass*). Para verlo con números se retoma la conciliación banco-contabilidad del apartado 2.2: debe saltar una alerta ($y=1$ {eq-162}) solo si el pago aparece en un sistema y no en el otro. La red de la Figura 15b lo resuelve con dos neuronas ocultas ReLU y una neurona de salida sigmoide:
+Calcular la predicción de la red para un ejemplo se llama **propagación hacia delante** (*forward pass*). Para verlo con números se retoma la conciliación banco-contabilidad del apartado 2.2: debe saltar una alerta ($y=1$ {eq-162}) solo si el pago aparece en un sistema y no en el otro. La red de la Figura 18b lo resuelve con dos neuronas ocultas ReLU y una neurona de salida sigmoide:
 
 $h1=ReLU(x1+x2)$ {eq-163}
 
@@ -877,7 +887,7 @@ Para un pago que figura en el banco pero no en contabilidad, $(x1,x2)=(1,0)$ {eq
 
 La red estima un 88 % de probabilidad de descuadre y lanza la alerta. La Tabla 12 repite el cálculo para los cuatro casos. A diferencia de la red de la Tabla 6, que respondía con un 1 o un 0 rotundos, esta devuelve una probabilidad y usa activaciones con pendiente, que son las que permitirán entrenarla en el Módulo 8.
 
-*Tabla 12. Propagación hacia delante de la red de la Figura 15b en los cuatro casos.*
+*Tabla 12. Propagación hacia delante de la red de la Figura 18b en los cuatro casos.*
 
 | **x₁** | **x₂** | **h₁** | **h₂** | **z** | **ŷ = σ(z)** | **¿Alerta?** |
 |---|---|---|---|---|---|---|
@@ -888,21 +898,27 @@ La red estima un 88 % de probabilidad de descuadre y lanza la alerta. La Tabla 1
 
 #### Qué hacen las capas ocultas: cambiar el punto de vista
 
-La Tabla 12 esconde la idea central de las redes multicapa. Si en lugar de mirar las entradas $(x1,x2)$ {eq-172} se miran los valores de la capa oculta $(h1,h2)$ {eq-173}, los cuatro casos se convierten en solo tres puntos: (0, 0); (1, 0), donde caen a la vez los dos casos de descuadre; y (2, 1). En ese nuevo espacio, una sola recta separa las alertas del resto (Figura 16b): el problema que era imposible para un perceptrón (Figura 16a) se ha vuelto linealmente separable, y la neurona de salida, que no es más que un perceptrón con sigmoide, lo resuelve sin dificultad.
+La Tabla 12 esconde la idea central de las redes multicapa. Si en lugar de mirar las entradas $(x1,x2)$ {eq-172} se miran los valores de la capa oculta $(h1,h2)$ {eq-173}, los cuatro casos se convierten en solo tres puntos: (0, 0); (1, 0), donde caen a la vez los dos casos de descuadre; y (2, 1). En ese nuevo espacio, una sola recta separa las alertas del resto (Figura 19b): el problema que era imposible para un perceptrón (Figura 19a) se ha vuelto linealmente separable, y la neurona de salida, que no es más que un perceptrón con sigmoide, lo resuelve sin dificultad.
 
 Es lo que hace cualquier red multicapa, a mayor escala: las capas ocultas **transforman los datos en una representación nueva** en la que el problema resulta sencillo para la capa de salida. Es lo mismo que hace un analista cuando crea variables nuevas a partir de las originales (ratios, indicadores, combinaciones) hasta que el patrón se ve con claridad. La diferencia es que la red construye esas variables por sí sola, aprendiéndolas a partir de los ejemplos, en lugar de que alguien las diseñe a mano.
 
-![](media/image19.png)
+![](media/image40.png)
 
-*Figura 16. Los cuatro casos de XOR en el espacio de las entradas (a) y en el espacio de la capa oculta, donde una recta los separa (b).*
+*Figura 19. Los cuatro casos de XOR en el espacio de las entradas (a) y en el espacio de la capa oculta, donde una recta los separa (b).*
+
+La pestaña «Perceptrón, XOR y capas ocultas» de la versión interactiva anima esta transformación: los cuatro casos se desplazan desde el espacio de las entradas hasta el de la capa oculta, donde la franja entre dos rectas se convierte en un semiplano limitado por una sola recta (Figura 20). También permite añadir neuronas ReLU una a una para aproximar la curva de demanda del punto siguiente.
+
+![](media/image30.png)
+
+*Figura 20. Pestaña «Perceptrón, XOR y capas ocultas» de la versión interactiva: el perceptrón aprende AND en cuatro épocas, con los mismos pesos que la Tabla 4 (a), y los cuatro casos de XOR en el espacio de la capa oculta de la red de conciliación, donde una sola recta separa las alertas (b).*
 
 #### ¿Qué puede aprender una red? El teorema de aproximación universal
 
-Cybenko (1989) y Hornik (1991) demostraron el **teorema de aproximación universal**: una red con una sola capa oculta y suficientes neuronas puede aproximar cualquier función continua con la precisión que se desee. Con ReLU la intuición es directa: cada neurona oculta aporta un «codo» (apartado 3.3), así que con $k$ {eq-174} neuronas la red puede construir una poligonal de $k$ {eq-175} tramos. En la Figura 17, una curva de demanda a lo largo del día, con picos por la mañana y por la tarde, se aproxima con 3 neuronas de forma tosca y con 12 casi a la perfección.
+Cybenko (1989) y Hornik (1991) demostraron el **teorema de aproximación universal**: una red con una sola capa oculta y suficientes neuronas puede aproximar cualquier función continua con la precisión que se desee. Con ReLU la intuición es directa: cada neurona oculta aporta un «codo» (apartado 3.3), así que con $k$ {eq-174} neuronas la red puede construir una poligonal de $k$ {eq-175} tramos. En la Figura 21, una curva de demanda a lo largo del día, con picos por la mañana y por la tarde, se aproxima con 3 neuronas de forma tosca y con 12 casi a la perfección.
 
-![](media/image26.png)
+![](media/image11.png)
 
-*Figura 17. Aproximación de una curva de demanda diaria con una capa oculta de 3 neuronas ReLU (a) y de 12 neuronas (b).*
+*Figura 21. Aproximación de una curva de demanda diaria con una capa oculta de 3 neuronas ReLU (a) y de 12 neuronas (b).*
 
 Igual que el teorema de convergencia del perceptrón (apartado 2.2), este resultado tiene su letra pequeña:
 
@@ -958,19 +974,19 @@ La Tabla 14 resume qué hace cada capa y qué hay que decidir en cada una. Tres 
 
 #### Según cómo conectan: más allá de la capa densa
 
-La capa densa es universal, pero no siempre la más adecuada. Con imágenes, su número de parámetros se dispara, y además ignora la estructura del dato: para ella, el píxel de al lado y el del otro extremo de la imagen son igual de «vecinos», y da igual que una palabra esté al principio o al final de la frase. Por eso existen capas especializadas que incorporan esa estructura (Figura 18):
+La capa densa es universal, pero no siempre la más adecuada. Con imágenes, su número de parámetros se dispara, y además ignora la estructura del dato: para ella, el píxel de al lado y el del otro extremo de la imagen son igual de «vecinos», y da igual que una palabra esté al principio o al final de la frase. Por eso existen capas especializadas que incorporan esa estructura (Figura 22):
 
 - **Capa densa:** cada neurona está conectada a todas las entradas. Es la opción para datos tabulares y la que se usa al final de casi cualquier red para dar la respuesta.
 
-- **Capa convolucional:** cada neurona mira solo una pequeña ventana de la entrada, unos pocos píxeles vecinos, y todas comparten los mismos pesos, que se desplazan por la imagen como una lupa (Figura 18b). Así detecta un mismo patrón, como un borde o una mancha, esté donde esté, y con muchísimos menos parámetros. Es la base de la visión por computador.
+- **Capa convolucional:** cada neurona mira solo una pequeña ventana de la entrada, unos pocos píxeles vecinos, y todas comparten los mismos pesos, que se desplazan por la imagen como una lupa (Figura 22b). Así detecta un mismo patrón, como un borde o una mancha, esté donde esté, y con muchísimos menos parámetros. Es la base de la visión por computador.
 
-- **Capa recurrente:** procesa una secuencia elemento a elemento y guarda una **memoria** que pasa de un paso al siguiente (Figura 18c). Así, al leer «recibido», la red sabe que antes apareció «no». Sus variantes más conocidas son LSTM y GRU, usadas con texto y series temporales.
+- **Capa recurrente:** procesa una secuencia elemento a elemento y guarda una **memoria** que pasa de un paso al siguiente (Figura 22c). Así, al leer «recibido», la red sabe que antes apareció «no». Sus variantes más conocidas son LSTM y GRU, usadas con texto y series temporales.
 
 - **Capa de atención:** permite que cada elemento de una secuencia «consulte» directamente a todos los demás y decida a cuáles dar más importancia. Es la pieza central de la arquitectura Transformer (2017), en la que se basan los modelos de lenguaje actuales, y ha desplazado a las capas recurrentes en la mayoría de tareas de texto.
 
-![](media/image30.png)
+![](media/image22.png)
 
-*Figura 18. Tres formas de conectar una capa: densa (a), convolucional, con una ventana de pesos compartidos (b), y recurrente, con memoria entre pasos (c).*
+*Figura 22. Tres formas de conectar una capa: densa (a), convolucional, con una ventana de pesos compartidos (b), y recurrente, con memoria entre pasos (c).*
 
 #### Capas auxiliares
 
@@ -998,7 +1014,7 @@ En resumen, un perceptrón multicapa encadena capas de neuronas que transforman 
 
 ## 5. Aplicaciones comunes
 
-Las redes neuronales se aplican hoy en prácticamente cualquier sector. Este apartado recorre doce aplicaciones habituales agrupadas en cuatro familias. Conviene advertir que las familias combinan dos criterios distintos: clasificación y regresión hablan del **tipo de respuesta** que se busca, mientras que visión por computador y lenguaje y voz hablan del **tipo de dato** que se recibe. Por eso una aplicación puede pertenecer a dos familias a la vez: el OCR es visión por computador, pero lo que hace es clasificar caracteres. La Figura 23, al final del apartado, sitúa las doce aplicaciones según ambos criterios.
+Las redes neuronales se aplican hoy en prácticamente cualquier sector. Este apartado recorre doce aplicaciones habituales agrupadas en cuatro familias. Conviene advertir que las familias combinan dos criterios distintos: clasificación y regresión hablan del **tipo de respuesta** que se busca, mientras que visión por computador y lenguaje y voz hablan del **tipo de dato** que se recibe. Por eso una aplicación puede pertenecer a dos familias a la vez: el OCR es visión por computador, pero lo que hace es clasificar caracteres. La Figura 27, al final del apartado, sitúa las doce aplicaciones según ambos criterios.
 
 Para cada aplicación se indica qué datos recibe la red, cómo es su capa de salida (Tabla 11) y qué hay que vigilar al ponerla en marcha.
 
@@ -1008,13 +1024,13 @@ En clasificación, la red asigna cada ejemplo a una categoría. Con dos clases, 
 
 #### Evaluación de riesgo crediticio
 
-Un banco quiere estimar la probabilidad de que un solicitante no devuelva un préstamo. Es la versión realista del ejemplo del apartado 2.1: en lugar de dos condiciones de sí o no, la red recibe variables como los ingresos, el ratio entre deuda e ingresos, la antigüedad laboral o los impagos previos, y su neurona de salida sigmoide devuelve la probabilidad de impago (Figura 19a).
+Un banco quiere estimar la probabilidad de que un solicitante no devuelva un préstamo. Es la versión realista del ejemplo del apartado 2.1: en lugar de dos condiciones de sí o no, la red recibe variables como los ingresos, el ratio entre deuda e ingresos, la antigüedad laboral o los impagos previos, y su neurona de salida sigmoide devuelve la probabilidad de impago (Figura 23a).
 
-La salida no es la decisión: la decisión la pone el **umbral**. En una cartera simulada de 4000 clientes, de los que alrededor del 10 % impaga, la red de la Figura 19 detecta con un umbral de 0.5 solo el 34 % de los impagos, a cambio de rechazar a apenas el 1 % de los buenos clientes; si el umbral baja a 0.2, detecta el 66 % de los impagos, pero rechaza al 9 % de los buenos (Figura 19b). Cuál conviene depende de lo que cueste cada tipo de error, y es exactamente el análisis de clases desbalanceadas, precision y recall del Módulo 6.
+La salida no es la decisión: la decisión la pone el **umbral**. En una cartera simulada de 4000 clientes, de los que alrededor del 10 % impaga, la red de la Figura 23 detecta con un umbral de 0.5 solo el 34 % de los impagos, a cambio de rechazar a apenas el 1 % de los buenos clientes; si el umbral baja a 0.2, detecta el 66 % de los impagos, pero rechaza al 9 % de los buenos (Figura 23b). Cuál conviene depende de lo que cueste cada tipo de error, y es exactamente el análisis de clases desbalanceadas, precision y recall del Módulo 6.
 
-![](media/image24.png)
+![](media/image55.png)
 
-*Figura 19. Red para estimar la probabilidad de impago (a) y probabilidades que asigna a clientes que pagaron y que impagaron, con dos umbrales de decisión (b). Datos simulados.*
+*Figura 23. Red para estimar la probabilidad de impago (a) y probabilidades que asigna a clientes que pagaron y que impagaron, con dos umbrales de decisión (b). Datos simulados.*
 
 Hay dos advertencias propias de este caso. La primera, que con datos tabulares como estos los modelos de árboles suelen rendir igual o mejor (apartado 1.2). La segunda, que el banco debe poder explicar por qué deniega un crédito, algo difícil con una red de miles de pesos: el Reglamento europeo de IA considera de alto riesgo los sistemas que evalúan la solvencia de las personas y les exige transparencia y supervisión humana. Por eso, en banca se usan a menudo modelos más interpretables o técnicas de explicación añadidas al modelo.
 
@@ -1054,17 +1070,17 @@ En regresión, la red predice un número, por lo que la capa de salida es una so
 
 Una agencia o un banco que concede hipotecas necesita estimar el precio de una vivienda a partir de sus características: superficie, número de habitaciones, zona, antigüedad o planta. La red capta relaciones no lineales que una regresión lineal no recoge, como que el valor de cada metro cuadrado depende de la zona o que la antigüedad penaliza más a las viviendas grandes.
 
-En la Figura 20a, una red 7-32-16-1 entrenada con 1875 viviendas simuladas estima el precio de otras 625 que no había visto con un error medio de unos 22000 €, en torno al 7 % del precio medio. La ventaja diferencial de las redes aparece cuando se añaden datos no tabulares, como las fotos de la vivienda o el texto del anuncio: una misma red puede combinar una parte convolucional para las fotos, otra para el texto y otra densa para las variables, lo que se llama un modelo **multimodal**. Con solo variables tabulares, los modelos de árboles siguen siendo la referencia.
+En la Figura 24a, una red 7-32-16-1 entrenada con 1875 viviendas simuladas estima el precio de otras 625 que no había visto con un error medio de unos 22000 €, en torno al 7 % del precio medio. La ventaja diferencial de las redes aparece cuando se añaden datos no tabulares, como las fotos de la vivienda o el texto del anuncio: una misma red puede combinar una parte convolucional para las fotos, otra para el texto y otra densa para las variables, lo que se llama un modelo **multimodal**. Con solo variables tabulares, los modelos de árboles siguen siendo la referencia.
 
 #### Previsión de demanda de recursos
 
 Consiste en prever cuántos recursos harán falta: agentes por franja horaria en un centro de atención telefónica, consumo eléctrico de una planta, capacidad de los servidores de una aplicación o camas en un hospital. Es un problema de series temporales (Módulo 5): la red recibe los valores de los últimos días o semanas, las **variables de retardo**, junto con variables de calendario (día de la semana, festivos) y externas (temperatura, campañas), y predice el valor de los próximos periodos.
 
-La Figura 20b muestra una red con una capa oculta de 16 neuronas que prevé la demanda de cada día de las tres últimas semanas a partir de los 14 días anteriores, con un error medio cercano al 6 %, y que reproduce el patrón semanal: picos los viernes y caídas el fin de semana. Frente a ARIMA (Módulo 5), la red no exige que la serie sea estacionaria y admite con facilidad muchas variables externas, pero necesita más datos y es menos interpretable. Con una única serie corta, un ARIMA bien ajustado suele ser suficiente.
+La Figura 24b muestra una red con una capa oculta de 16 neuronas que prevé la demanda de cada día de las tres últimas semanas a partir de los 14 días anteriores, con un error medio cercano al 6 %, y que reproduce el patrón semanal: picos los viernes y caídas el fin de semana. Frente a ARIMA (Módulo 5), la red no exige que la serie sea estacionaria y admite con facilidad muchas variables externas, pero necesita más datos y es menos interpretable. Con una única serie corta, un ARIMA bien ajustado suele ser suficiente.
 
-![](media/image3.png)
+![](media/image1.png)
 
-*Figura 20. Precio estimado frente a precio real de las viviendas de prueba (a) y previsión de la demanda diaria en las tres últimas semanas (b). Datos simulados.*
+*Figura 24. Precio estimado frente a precio real de las viviendas de prueba (a) y previsión de la demanda diaria en las tres últimas semanas (b). Datos simulados.*
 
 #### Predicción de ventas
 
@@ -1082,7 +1098,7 @@ Las entradas combinan el histórico de ventas, el precio, las promociones, el ca
 
 ### 5.3. Visión por computador
 
-Para una red, una imagen es una tabla de números: cada píxel es un valor de intensidad, o tres (rojo, verde y azul) si la imagen es en color. La Figura 21a muestra un dígito manuscrito escaneado de 8 × 8 píxeles, del conjunto de dígitos incluido en la librería scikit-learn: sus 64 valores, de 0 (blanco) a 16 (negro), son las 64 entradas de la red de la Tabla 13. Como se vio en el apartado 4.1, con imágenes reales el número de pesos de una red densa se dispara, por lo que en visión se usan redes **convolucionales** (apartado 4.2), que se estudiarán en el Módulo 9.
+Para una red, una imagen es una tabla de números: cada píxel es un valor de intensidad, o tres (rojo, verde y azul) si la imagen es en color. La Figura 25a muestra un dígito manuscrito escaneado de 8 × 8 píxeles, del conjunto de dígitos incluido en la librería scikit-learn: sus 64 valores, de 0 (blanco) a 16 (negro), son las 64 entradas de la red de la Tabla 13. Como se vio en el apartado 4.1, con imágenes reales el número de pesos de una red densa se dispara, por lo que en visión se usan redes **convolucionales** (apartado 4.2), que se estudiarán en el Módulo 9.
 
 #### Control de calidad industrial
 
@@ -1100,11 +1116,11 @@ Es la aplicación de visión con más implicaciones legales. Los datos biométri
 
 El reconocimiento óptico de caracteres (OCR, *Optical Character Recognition*) convierte la imagen de un documento, como una factura escaneada, un albarán o un DNI fotografiado, en texto editable. Es el ejemplo de clasificación multiclase del apartado 3.5: en su forma más sencilla, la red recibe la imagen de un carácter y devuelve, con softmax, la probabilidad de cada símbolo posible.
 
-La red 64-32-10 de la Tabla 13, entrenada con 1347 dígitos escaneados, reconoce correctamente el 96 % de otros 450 que no había visto. La Figura 21b muestra su salida para el dígito de la Figura 21a: un 87 % de probabilidad de que sea un 8 y un 13 % de que sea un 9, los dos dígitos que más se parecen en esa imagen. Esa información es valiosa en la práctica: un sistema de OCR de facturas puede enviar a revisión humana solo los campos en los que la red duda.
+La red 64-32-10 de la Tabla 13, entrenada con 1347 dígitos escaneados, reconoce correctamente el 96 % de otros 450 que no había visto. La Figura 25b muestra su salida para el dígito de la Figura 25a: un 87 % de probabilidad de que sea un 8 y un 13 % de que sea un 9, los dos dígitos que más se parecen en esa imagen. Esa información es valiosa en la práctica: un sistema de OCR de facturas puede enviar a revisión humana solo los campos en los que la red duda.
 
-![](media/image14.png)
+![](media/image33.png)
 
-*Figura 21. Dígito escaneado de 8 × 8 píxeles con la intensidad de cada píxel (a) y probabilidades que asigna la red 64-32-10 a cada dígito (b).*
+*Figura 25. Dígito escaneado de 8 × 8 píxeles con la intensidad de cada píxel (a) y probabilidades que asigna la red 64-32-10 a cada dígito (b).*
 
 Los sistemas actuales no leen carácter a carácter: una primera red localiza las zonas de texto en la página y otra lee cada línea completa como una secuencia, apoyándose en modelos de lenguaje, lo que les permite usar el contexto (si lee «fact_ra», casi seguro que es «factura»). El OCR suele ser además el primer paso de un proceso mayor: extraer importes, fechas o el NIF del emisor para registrarlos automáticamente.
 
@@ -1122,11 +1138,11 @@ El texto y la voz comparten un rasgo que no tienen las tablas ni las imágenes: 
 
 - **Texto:** se divide en fragmentos llamados **tokens** (palabras o trozos de palabra) y cada token se transforma en un vector mediante una capa de embedding (apartado 4.2). En ese espacio, palabras de significado parecido, como «factura» y «recibo», quedan cerca.
 
-- **Audio:** la onda de sonido (Figura 22a) se convierte en un **espectrograma**, una imagen que muestra qué frecuencias suenan en cada instante (Figura 22b). Así, el audio puede procesarse con técnicas parecidas a las de visión.
+- **Audio:** la onda de sonido (Figura 26a) se convierte en un **espectrograma**, una imagen que muestra qué frecuencias suenan en cada instante (Figura 26b). Así, el audio puede procesarse con técnicas parecidas a las de visión.
 
-![](media/image10.png)
+![](media/image37.png)
 
-*Figura 22. Onda de una señal de voz simulada (a) y su espectrograma, en el que las zonas más oscuras indican las frecuencias con más energía en cada instante (b).*
+*Figura 26. Onda de una señal de voz simulada (a) y su espectrograma, en el que las zonas más oscuras indican las frecuencias con más energía en cada instante (b).*
 
 La mayoría de los sistemas actuales de texto y voz se basan en la arquitectura Transformer y sus capas de atención (apartado 4.2), que se estudiarán en el Módulo 9.
 
@@ -1158,11 +1174,11 @@ Su calidad se mide con la **tasa de error por palabra** (WER, *Word Error Rate*)
 
 #### Visión de conjunto
 
-La Figura 23 sitúa las doce aplicaciones según el tipo de dato que recibe la red (filas) y el tipo de respuesta que da (columnas), con el color del apartado en que se han estudiado. Se extraen dos conclusiones. La primera, que las redes son especialmente útiles en las filas de imágenes, texto y audio, donde los modelos clásicos apenas pueden competir, mientras que en la fila de datos tabulares deben compararse siempre con modelos de árboles (apartado 1.2). La segunda, que las aplicaciones que devuelven una secuencia, en la columna derecha, son las que requieren arquitecturas más específicas, que se verán en el Módulo 9.
+La Figura 27 sitúa las doce aplicaciones según el tipo de dato que recibe la red (filas) y el tipo de respuesta que da (columnas), con el color del apartado en que se han estudiado. Se extraen dos conclusiones. La primera, que las redes son especialmente útiles en las filas de imágenes, texto y audio, donde los modelos clásicos apenas pueden competir, mientras que en la fila de datos tabulares deben compararse siempre con modelos de árboles (apartado 1.2). La segunda, que las aplicaciones que devuelven una secuencia, en la columna derecha, son las que requieren arquitecturas más específicas, que se verán en el Módulo 9.
 
-![](media/image18.png)
+![](media/image47.png)
 
-*Figura 23. Las doce aplicaciones según el tipo de dato de entrada y el tipo de respuesta.*
+*Figura 27. Las doce aplicaciones según el tipo de dato de entrada y el tipo de respuesta.*
 
 En resumen, la misma pieza básica, la neurona del apartado 1, sirve para estimar un riesgo, valorar una vivienda, inspeccionar una pieza o transcribir una reunión. Lo que cambia de una aplicación a otra es cómo se convierten los datos en números (variables escaladas, píxeles, tokens o espectrogramas), qué tipo de capas los procesan y cómo es la capa de salida. En todos los casos queda pendiente la misma pregunta: cómo se ajustan los miles o millones de pesos de la red a partir de los ejemplos, que es el objeto del Módulo 8.
 
@@ -1182,7 +1198,7 @@ donde $N$ {eq-182} es el número de ejemplos y $L$ {eq-183} la pérdida de cada 
 
 #### Un ejemplo: el coste de la red de conciliación
 
-La red que detectaba descuadres entre banco y contabilidad (Figura 15b y Tabla 12 del Módulo 7) da una probabilidad de 0.88 en los dos casos de descuadre y de 0.12 en los dos casos sin descuadre. Acierta en los cuatro, pero no con total seguridad, y la función de coste lo refleja. Con la entropía cruzada, la pérdida más habitual en clasificación, que se explica en el apartado 1.1, cada caso aporta lo que recoge la Tabla 20.
+La red que detectaba descuadres entre banco y contabilidad (Figura 18b y Tabla 12 del Módulo 7) da una probabilidad de 0.88 en los dos casos de descuadre y de 0.12 en los dos casos sin descuadre. Acierta en los cuatro, pero no con total seguridad, y la función de coste lo refleja. Con la entropía cruzada, la pérdida más habitual en clasificación, que se explica en el apartado 1.1, cada caso aporta lo que recoge la Tabla 20.
 
 *Tabla 20. Pérdida de la red de conciliación en los cuatro casos.*
 
@@ -1228,15 +1244,15 @@ La Tabla 21 compara ambas pérdidas con el correo de la Tabla 2 del Módulo 7, q
 | 0.73 | Se equivoca (correo antes de corregir) | 0.533 | 1.309 | 0.288 | 0.73 |
 | 0.98 | Se equivoca con seguridad | 0.960 | 3.912 | 0.038 | 0.98 |
 
-Dos diferencias explican por qué en clasificación se prefiere la entropía cruzada (Figura 24):
+Dos diferencias explican por qué en clasificación se prefiere la entropía cruzada (Figura 28):
 
-- **Castiga mucho más la seguridad equivocada:** con el ECM, la pérdida nunca pasa de 1, aunque la red esté segura al 98 % de algo falso. Con la entropía cruzada, ese mismo error cuesta 3.912, casi doscientas veces más que acertar con seguridad (Figura 24a).
+- **Castiga mucho más la seguridad equivocada:** con el ECM, la pérdida nunca pasa de 1, aunque la red esté segura al 98 % de algo falso. Con la entropía cruzada, ese mismo error cuesta 3.912, casi doscientas veces más que acertar con seguridad (Figura 28a).
 
-- **Da una señal de corrección útil:** las dos últimas columnas indican con qué fuerza se corrige la suma ponderada $z$ {eq-192} de la neurona de salida, una pendiente que se explicará en el apartado 2. Con entropía cruzada y sigmoide, esa señal es simplemente $ŷ−y$ {eq-193}: cuanto mayor es el error, mayor es la corrección. Con el ECM se cuela en la fórmula la pendiente de la sigmoide, que se satura (apartado 3.1 del Módulo 7), y en el peor caso, $ŷ=0.98$ {eq-194}, la señal cae a 0.038, unas 25 veces menos que con entropía cruzada (Figura 24b). La red aprendería más despacio justo de sus errores más graves.
+- **Da una señal de corrección útil:** las dos últimas columnas indican con qué fuerza se corrige la suma ponderada $z$ {eq-192} de la neurona de salida, una pendiente que se explicará en el apartado 2. Con entropía cruzada y sigmoide, esa señal es simplemente $ŷ−y$ {eq-193}: cuanto mayor es el error, mayor es la corrección. Con el ECM se cuela en la fórmula la pendiente de la sigmoide, que se satura (apartado 3.1 del Módulo 7), y en el peor caso, $ŷ=0.98$ {eq-194}, la señal cae a 0.038, unas 25 veces menos que con entropía cruzada (Figura 28b). La red aprendería más despacio justo de sus errores más graves.
 
-![](media/image34.png)
+![](media/image48.png)
 
-*Figura 24. Pérdida de un correo legítimo según la probabilidad de spam que da la red (a) y fuerza de la corrección que recibe la neurona de salida (b), con entropía cruzada y con error cuadrático.*
+*Figura 28. Pérdida de un correo legítimo según la probabilidad de spam que da la red (a) y fuerza de la corrección que recibe la neurona de salida (b), con entropía cruzada y con error cuadrático.*
 
 Con más de dos clases, la salida es una capa softmax y se usa la **entropía cruzada categórica**, que de nuevo es el logaritmo, cambiado de signo, de la probabilidad asignada a la clase correcta:
 
@@ -1261,11 +1277,11 @@ En el Módulo 6 se evaluaban los modelos con métricas como la exactitud, el F1 
 
 #### Lo que cambia en una red: un paisaje con muchos valles
 
-Hay una diferencia importante respecto a la Parte I. En la regresión lineal y en la regresión logística, el coste tiene forma de cuenco: un único valle, sin trampas, en el que cualquier camino cuesta abajo lleva al mismo mínimo (Figura 25a). En la regresión lineal, además, ese mínimo puede calcularse directamente con una fórmula. Cuando hay capas ocultas, nada de esto se cumple. El coste depende de los pesos de una forma mucho más enrevesada, y su «paisaje» tiene varios valles, zonas casi planas y **puntos de silla**: puntos donde el terreno sube en unas direcciones y baja en otras, como el centro de una silla de montar (Figura 25b).
+Hay una diferencia importante respecto a la Parte I. En la regresión lineal y en la regresión logística, el coste tiene forma de cuenco: un único valle, sin trampas, en el que cualquier camino cuesta abajo lleva al mismo mínimo (Figura 29a). En la regresión lineal, además, ese mínimo puede calcularse directamente con una fórmula. Cuando hay capas ocultas, nada de esto se cumple. El coste depende de los pesos de una forma mucho más enrevesada, y su «paisaje» tiene varios valles, zonas casi planas y **puntos de silla**: puntos donde el terreno sube en unas direcciones y baja en otras, como el centro de una silla de montar (Figura 29b).
 
-![](media/image4.png)
+![](media/image16.png)
 
-*Figura 25. Coste de una regresión logística con dos pesos, con un único mínimo (a), y esquema del paisaje de coste de una red neuronal, con varios mínimos y un punto de silla (b). Las zonas más oscuras indican un coste menor.*
+*Figura 29. Coste de una regresión logística con dos pesos, con un único mínimo (a), y esquema del paisaje de coste de una red neuronal, con varios mínimos y un punto de silla (b). Las zonas más oscuras indican un coste menor.*
 
 Parte de esos valles son inevitables y, además, inofensivos: si se intercambian dos neuronas de una capa oculta con todos sus pesos, la red calcula exactamente lo mismo, así que cada buena solución aparece repetida muchas veces. En la práctica, con redes grandes, la mayoría de los mínimos que se alcanzan dan un coste parecido, y el problema más frecuente no son los mínimos malos sino las mesetas y los puntos de silla, donde el terreno es tan plano que el entrenamiento avanza muy despacio. Sin fórmula directa y sin garantía de llegar al mejor valle, la única opción es descender paso a paso, que es lo que estudian los apartados 2 y 3. La Tabla 23 resume las diferencias.
 
@@ -1283,7 +1299,7 @@ En resumen, la función de coste convierte «lo bien que funciona la red» en un
 
 ## 2. Backpropagation
 
-Para reducir el coste hay que saber, para cada peso de la red, en qué sentido moverlo y cuánto influye en el resultado. Esa información la da el **gradiente**, y el algoritmo que lo calcula de forma eficiente es la retropropagación del error o **backpropagation**. Es la pieza que faltaba en el apartado 2.2 del Módulo 7, donde quedó claro que la regla del perceptrón sólo sabe corregir la neurona de salida. Este apartado explica primero la intuición del algoritmo y después cómo se propaga el error capa a capa en un ejemplo resuelto.
+Para reducir el coste hay que saber, para cada peso de la red, en qué sentido moverlo y cuánto influye en el resultado. Esa información la da el **gradiente**, y el algoritmo que lo calcula de forma eficiente es la retropropagación del error o **backpropagation**. Es la pieza que faltaba en el apartado 2.2 del Módulo 7, donde quedó claro que la regla del perceptrón solo sabe corregir la neurona de salida. Este apartado explica primero la intuición del algoritmo y después cómo se propaga el error capa a capa en un ejemplo resuelto.
 
 ### 2.1. Intuición del algoritmo
 
@@ -1291,11 +1307,11 @@ Para reducir el coste hay que saber, para cada peso de la red, en qué sentido m
 
 Cuando una red se equivoca, la culpa está repartida entre todos sus pesos. Unos han contribuido mucho al error, otros poco y algunos incluso lo han reducido. Es lo que ocurre en una empresa cuando un trimestre sale mal: la dirección no culpa a todos por igual, sino que analiza cuánto ha influido cada departamento en el resultado; cada departamento hace lo mismo con sus equipos, y así hasta llegar a cada persona. La retropropagación hace exactamente eso con la red: parte del error de la salida y lo reparte hacia atrás, capa a capa, en proporción a la influencia de cada peso.
 
-La Figura 26 muestra el proceso en una red de seis capas ocultas. Primero, las señales viajan de la entrada a la salida; después, la predicción se compara con la respuesta correcta y el error recorre la red en sentido contrario. El brillo de cada neurona y el tamaño de los pulsos rojos indican cuánto error le llega, y el número bajo cada capa lo expresa respecto a la última capa oculta. Con activación ReLU y una inicialización adecuada, el error llega prácticamente entero hasta la primera capa (×1.08). La versión interactiva anima las dos pasadas y permite cambiar la activación, los pesos iniciales y el número de capas, y añadir atajos residuales; se volverá a ella en el apartado 4.1.
+La Figura 30 muestra el proceso en una red de seis capas ocultas. Primero, las señales viajan de la entrada a la salida; después, la predicción se compara con la respuesta correcta y el error recorre la red en sentido contrario. El brillo de cada neurona y el tamaño de los pulsos rojos indican cuánto error le llega, y el número bajo cada capa lo expresa respecto a la última capa oculta. Con activación ReLU y una inicialización adecuada, el error llega prácticamente entero hasta la primera capa (×1.08). La versión interactiva anima las dos pasadas y permite cambiar la activación, los pesos iniciales y el número de capas, y añadir atajos residuales; se volverá a ella en el apartado 4.1.
 
-![](media/image20.png)
+![](media/image45.png)
 
-*Figura 26. Retropropagación en una red de seis capas ocultas con activación ReLU e inicialización de He: el error de la salida (rojo) recorre la red hacia atrás y llega a cada capa con un tamaño similar. Valores calculados con una red real; las neuronas se dibujan como biológicas solo como recurso visual, ya que el cerebro no aprende por retropropagación.*
+*Figura 30. Retropropagación en una red de seis capas ocultas con activación ReLU e inicialización de He: el error de la salida (rojo) recorre la red hacia atrás y llega a cada capa con un tamaño similar. Valores calculados con una red real; las neuronas se dibujan como biológicas solo como recurso visual, ya que el cerebro no aprende por retropropagación.*
 
 #### Qué es el gradiente
 
@@ -1315,7 +1331,7 @@ $∂L∂w1=∂L∂ŷ·∂ŷ∂z·∂z∂w1$ {eq-206}
 
 Funciona como un tren de engranajes: si el primero hace girar al segundo el doble de rápido y el segundo al tercero el triple, el primero hace girar al tercero seis veces más rápido. Cada eslabón solo necesita conocer su propia relación de transmisión, su pendiente local, y el efecto total se obtiene multiplicándolas.
 
-Con los números del correo, que no era spam ($y=0$ {eq-207}) y al que la neurona daba $ŷ=0.73$ {eq-208}, con pérdida de entropía cruzada (Figura 27a):
+Con los números del correo, que no era spam ($y=0$ {eq-207}) y al que la neurona daba $ŷ=0.73$ {eq-208}, con pérdida de entropía cruzada (Figura 31a):
 
 - **Pérdida respecto a la probabilidad:** $∂L/∂ŷ=1/(1−ŷ)=3.72$ {eq-209}. Si la probabilidad de spam sube, la pérdida sube.
 
@@ -1335,21 +1351,21 @@ Es exactamente la regla del perceptrón del Módulo 7, con una diferencia de fon
 
 Con una sola neurona, la cadena tiene tres eslabones. En una red con varias capas, la cadena de cada peso de la primera capa atraviesa todas las capas siguientes, y las cadenas de pesos distintos comparten la mayor parte de sus eslabones. La retropropagación aprovecha ese hecho: calcula las pendientes empezando por la salida y avanzando hacia la entrada, y guarda cada resultado intermedio para reutilizarlo en todos los pesos que dependen de él. Así obtiene el gradiente completo con una pasada hacia delante, para calcular las predicciones, y una pasada hacia atrás, para repartir el error.
 
-La alternativa ingenua sería mover cada peso un poco, volver a calcular el coste y ver cuánto cambia: una pasada completa por la red por cada peso. Para la red de dígitos del Módulo 7, con 2410 parámetros, serían más de 2400 pasadas para una sola corrección; para un modelo de 1000 millones de parámetros, mil millones. La retropropagación cuesta, en cambio, el equivalente a unas pocas pasadas, del orden de tres, tenga la red el tamaño que tenga (Figura 27b). Sin ella, entrenar las redes actuales sería imposible.
+La alternativa ingenua sería mover cada peso un poco, volver a calcular el coste y ver cuánto cambia: una pasada completa por la red por cada peso. Para la red de dígitos del Módulo 7, con 2410 parámetros, serían más de 2400 pasadas para una sola corrección; para un modelo de 1000 millones de parámetros, mil millones. La retropropagación cuesta, en cambio, el equivalente a unas pocas pasadas, del orden de tres, tenga la red el tamaño que tenga (Figura 31b). Sin ella, entrenar las redes actuales sería imposible.
 
-![](media/image2.png)
+![](media/image17.png)
 
-*Figura 27. Regla de la cadena aplicada a un peso de la neurona del correo (a) y número de pasadas por la red necesarias para obtener todos los gradientes, perturbando cada peso o con retropropagación, en escala logarítmica (b).*
+*Figura 31. Regla de la cadena aplicada a un peso de la neurona del correo (a) y número de pasadas por la red necesarias para obtener todos los gradientes, perturbando cada peso o con retropropagación, en escala logarítmica (b).*
 
 Tiene un precio: para ir hacia atrás hay que conservar en memoria los valores calculados en la pasada hacia delante. Por eso entrenar una red consume bastante más memoria que usarla para predecir, y es uno de los factores que limitan el tamaño de los lotes (apartado 3.3). La idea matemática, la diferenciación automática en modo inverso, se describió en 1970, pero fue el trabajo de Rumelhart, Hinton y Williams de 1986 el que la popularizó para redes neuronales (apartado 1.2 del Módulo 7).
 
 ### 2.2. Propagación del error
 
-Para ver el algoritmo completo en una red con capa oculta se retoma la red de conciliación de la Figura 15b del Módulo 7, en el caso en que el pago figura en los dos sistemas, $(x1,x2)=(1,1)$ {eq-222}, y por tanto no hay descuadre ($y=0$ {eq-223}). La red responde $ŷ=0.12$ {eq-224}: acierta, pero no con total seguridad, y su pérdida es 0.127 (Tabla 20).
+Para ver el algoritmo completo en una red con capa oculta se retoma la red de conciliación de la Figura 18b del Módulo 7, en el caso en que el pago figura en los dos sistemas, $(x1,x2)=(1,1)$ {eq-222}, y por tanto no hay descuadre ($y=0$ {eq-223}). La red responde $ŷ=0.12$ {eq-224}: acierta, pero no con total seguridad, y su pérdida es 0.127 (Tabla 20).
 
 #### Paso 1: hacia delante
 
-Se calculan y se guardan todos los valores intermedios, exactamente como en la Tabla 12 del Módulo 7 (Figura 28a): la neurona oculta $h1$ {eq-225} recibe $z=2$ {eq-226} y devuelve 2; $h2$ {eq-227} recibe $z=1$ {eq-228} y devuelve 1; y la neurona de salida recibe $z=4·2−8·1−2=−2$ {eq-229}, que la sigmoide convierte en $ŷ=0.12$ {eq-230}.
+Se calculan y se guardan todos los valores intermedios, exactamente como en la Tabla 12 del Módulo 7 (Figura 32a): la neurona oculta $h1$ {eq-225} recibe $z=2$ {eq-226} y devuelve 2; $h2$ {eq-227} recibe $z=1$ {eq-228} y devuelve 1; y la neurona de salida recibe $z=4·2−8·1−2=−2$ {eq-229}, que la sigmoide convierte en $ŷ=0.12$ {eq-230}.
 
 #### Paso 2: el error de la salida
 
@@ -1371,7 +1387,7 @@ donde la suma recorre las neuronas $k$ {eq-237} de la capa siguiente a las que e
 
 - **Neurona **$h2$ {eq-241}**:** $δ2=1·(−8·0.119)=−0.954$ {eq-242}. Su peso hacia la salida es negativo, así que conviene que se active más.
 
-Con esos errores se obtienen los gradientes de los pesos de la primera capa, con la misma regla de antes: error de la neurona de destino por valor que llega. Como las dos entradas valen 1, los pesos que llegan a $h1$ {eq-243} tienen gradiente 0.477 y los que llegan a $h2$ {eq-244}, −0.954 (Figura 28b). La Tabla 24 recoge el recorrido completo.
+Con esos errores se obtienen los gradientes de los pesos de la primera capa, con la misma regla de antes: error de la neurona de destino por valor que llega. Como las dos entradas valen 1, los pesos que llegan a $h1$ {eq-243} tienen gradiente 0.477 y los que llegan a $h2$ {eq-244}, −0.954 (Figura 32b). La Tabla 24 recoge el recorrido completo.
 
 *Tabla 24. Retropropagación en la red de conciliación para el caso (1, 1).*
 
@@ -1383,9 +1399,9 @@ Con esos errores se obtienen los gradientes de los pesos de la primera capa, con
 | 4. Error de la capa oculta | δ de h₁ y de h₂ | 1 · (4 · 0.119),  1 · (−8 · 0.119) | 0.477 y −0.954 |
 | 5. Gradientes de la capa oculta | Pesos y sesgos de h₁ y h₂ | δ₁ · xᵢ y δ₂ · xᵢ, con x₁ = x₂ = 1 | 0.477 (h₁) y −0.954 (h₂) |
 
-![](media/image40.png)
+![](media/image42.png)
 
-*Figura 28. Paso hacia delante en la red de conciliación para el caso (1, 1), con el valor de cada neurona (a), y paso hacia atrás, con el error δ de cada neurona y el gradiente de cada peso (b).*
+*Figura 32. Paso hacia delante en la red de conciliación para el caso (1, 1), con el valor de cada neurona (a), y paso hacia atrás, con el error δ de cada neurona y el gradiente de cada peso (b).*
 
 El signo de cada gradiente indica cómo corregir. El descenso por gradiente (apartado 3) mueve cada peso en sentido contrario a su gradiente: los pesos que llegan a $h1$ {eq-245} y el peso 4 bajan, los pesos que llegan a $h2$ {eq-246} suben y el peso −8 se hace todavía más negativo. Todos esos cambios empujan en la misma dirección: reducir $z$ {eq-247} y, con él, la probabilidad de descuadre en un caso en el que no lo hay.
 
@@ -1450,7 +1466,7 @@ Las cuatro columnas cuentan cuatro historias (Figura 33):
 
 - $η=1.1$ {eq-259}**, excesiva:** cada paso se pasa tanto que termina más lejos que antes, y el coste crece sin límite. El entrenamiento **diverge**; en una red real, la pérdida se convierte en infinito o en «NaN» (un valor no numérico) en pocas iteraciones.
 
-![](media/image38.png)
+![](media/image31.png)
 
 *Figura 33. Recorrido del peso sobre la curva de coste con una tasa de aprendizaje pequeña y otra grande (a) y evolución del coste con las cuatro tasas de la Tabla 26, en escala logarítmica (b).*
 
@@ -1464,13 +1480,13 @@ El descenso por gradiente tiene un punto débil que el ejemplo de un solo peso n
 
 - **Tasas adaptativas (RMSProp, Adam):** cada peso recibe su propia tasa de aprendizaje, que se reduce si sus gradientes son grandes y se amplía si son pequeños. **Adam** (Kingma y Ba, 2014) combina esta idea con el momentum y es hoy el optimizador por defecto en la mayoría de proyectos.
 
-![](media/image7.png)
+![](media/image2.png)
 
 *Figura 34. Trayectoria de tres optimizadores en un valle largo y estrecho durante las primeras 60 iteraciones (a) y evolución del coste en 100 iteraciones, en escala logarítmica (b).*
 
-La pestaña «Descenso por gradiente» de la versión interactiva: reproduce los pasos de la Tabla 26 con cualquier tasa de aprendizaje y, sobre un paisaje de dos pesos, compara el descenso por gradiente con momentum y Adam desde el punto de partida que se elija, con o sin el ruido de los lotes pequeños del apartado 3.2 (Figura 35).
+La pestaña «Descenso por gradiente» de la versión interactiva permite experimentar con todo lo anterior: reproduce los pasos de la Tabla 26 con cualquier tasa de aprendizaje y, sobre un paisaje de dos pesos, compara el descenso por gradiente con momentum y Adam desde el punto de partida que se elija, con o sin el ruido de los lotes pequeños del apartado 3.2 (Figura 35).
 
-![](media/image35.png)
+![](media/image29.png)
 
 *Figura 35. Pestaña «Descenso por gradiente» de la versión interactiva: primeros pasos con la tasa η = 0.9 de la Tabla 26, que se pasan del mínimo en zigzag (a), y trayectoria del descenso por gradiente, momentum y Adam en un valle largo y estrecho durante 400 iteraciones (b).*
 
@@ -1504,7 +1520,7 @@ La Figura 36a compara el recorrido de los pesos de una regresión logística con
 
 - **Ventaja:** en el paisaje irregular de una red (apartado 1.1), las sacudidas ayudan a salir de mesetas y puntos de silla en los que un descenso perfectamente suave avanzaría muy despacio. Se considera, además, una de las razones por las que las redes entrenadas con SGD generalizan bien, aunque es una cuestión todavía en estudio.
 
-![](media/image31.png)
+![](media/image28.png)
 
 *Figura 36. Recorrido de los pesos de una regresión logística durante dos épocas con batch completo, mini-batch de 20 ejemplos y un ejemplo por paso (a), y coste de SGD cerca del mínimo con una tasa de aprendizaje constante y con una tasa decreciente (b). Datos simulados.*
 
@@ -1518,7 +1534,7 @@ Entre los dos extremos, usar todos los ejemplos en cada paso o usar solo uno, es
 
 Con lotes, el entrenamiento se organiza con tres términos que aparecen en cualquier framework (Figura 37 y Tabla 28). Con la red de dígitos del Módulo 7, entrenada con 1347 imágenes y lotes de 32, una época consta de 43 iteraciones: 42 lotes completos y un último lote con los 3 ejemplos restantes.
 
-![](media/image44.png)
+![](media/image36.png)
 
 *Figura 37. Reparto de los 1347 ejemplos de entrenamiento de la red de dígitos en lotes de 32: cada lote da lugar a una iteración y el conjunto de los 43 lotes, a una época.*
 
@@ -1537,7 +1553,7 @@ Las GPU, los procesadores que permitieron el despegue del deep learning (apartad
 
 La Figura 38 lo muestra con la red 64-32-10 de reconocimiento de dígitos, entrenada con SGD y con la tasa de aprendizaje adecuada a cada tamaño de lote. Por época (Figura 38a), los lotes pequeños avanzan más: tras 30 épocas, la pérdida es de 0.02 con un ejemplo por paso, de 0.08 con lotes de 32 y de 0.43 con el batch completo, que en ese tiempo solo ha dado 30 pasos. Pero lo que cuenta en la práctica es el tiempo de cálculo (Figura 38b). En el mismo tiempo, 0.6 segundos en un ordenador sin GPU, el lote de 32 completa unas 180 épocas y alcanza la pérdida más baja (0.01); el batch completo hace unas 520 épocas y llega a 0.04; y el estocástico puro solo completa 10 épocas y se queda en 0.09, porque desaprovecha la capacidad de cálculo en paralelo. Las tres versiones reconocen correctamente entre el 95 % y el 98 % de los dígitos de prueba.
 
-![](media/image37.png)
+![](media/image44.png)
 
 *Figura 38. Pérdida de la red de dígitos 64-32-10 con tres tamaños de lote, por época (a) y según el tiempo de cálculo en un ordenador sin GPU (b). Los tiempos exactos dependen del equipo.*
 
@@ -1562,7 +1578,7 @@ No hay un valor óptimo universal, pero sí pautas contrastadas:
 | Memoria necesaria | Puede no caber | Mínima | Ajustable con el tamaño del lote |
 | Uso real | Datos pequeños y problemas sencillos | Casi nunca | La opción estándar |
 
-En resumen, entrenar una red es descender a pasos por el paisaje del coste: el gradiente da la dirección, la tasa de aprendizaje la longitud del paso, el optimizador (habitualmente Adam o AdamW) la forma de combinarlos y el tamaño de lote cuántos ejemplos se usan para estimar cada paso.
+En resumen, entrenar una red es descender a pasos por el paisaje del coste: el gradiente da la dirección, la tasa de aprendizaje la longitud del paso, el optimizador (habitualmente Adam o AdamW) la forma de combinarlos y el tamaño de lote cuántos ejemplos se usan para estimar cada paso. Conviene tener en cuenta que, en los frameworks, el optimizador llamado «SGD» trabaja en realidad con mini-batches: el tamaño del lote se fija aparte, al pasar los datos al entrenamiento.
 
 ## 4. Problemas comunes en el entrenamiento
 
@@ -1591,15 +1607,15 @@ Si en cada capa la señal se multiplica, de media, por un factor algo menor que 
 | 1.1 | 1.61 | 2.59 | 6.73 | 117 |
 | 1.5 | 7.6 | 57.7 | 3325 | 6 · 10⁸ |
 
-El problema ya apareció en la práctica en el apartado 3.4 del Módulo 7: con seis capas ocultas y activación sigmoide, la red de TensorFlow Playground no conseguía aprender, porque la pendiente de la sigmoide vale como mucho 0.25 y, multiplicada capa a capa, apagaba la señal. La Figura 39b lo mide en una red de diez capas ocultas recién inicializada: con sigmoide, la señal que llega a la primera capa es más de 400 000 veces más pequeña que la de la última; con ReLU y una inicialización adecuada, se mantiene constante; y con ReLU pero pesos iniciales un 50 % más grandes, crece 40 veces.
+El problema ya apareció en la práctica en el apartado 3.4 del Módulo 7: con seis capas ocultas y activación sigmoide, la red de TensorFlow Playground no conseguía aprender, porque la pendiente de la sigmoide vale como mucho 0.25 y, multiplicada capa a capa, apagaba la señal. La Figura 39b lo mide en una red de diez capas ocultas recién inicializada: con sigmoide, la señal que llega a la primera capa es más de 400 000 veces más pequeña que la de la última; con ReLU y una inicialización adecuada, se mantiene prácticamente constante; y con ReLU pero pesos iniciales un 50 % más grandes de lo debido, crece casi 40 veces.
 
-![](media/image6.png)
+![](media/image4.png)
 
 *Figura 39. Tamaño de una señal que se multiplica capa a capa por distintos factores, en escala logarítmica (a), y señal de error medida en cada capa de una red de diez capas ocultas recién inicializada, con sigmoide, con ReLU bien inicializada y con ReLU con pesos iniciales demasiado grandes (b).*
 
-La red de neuronas del apartado 2.1 permite ver este efecto (Figura 40). Con sigmoide y seis capas ocultas, el error se reduce en cada capa a algo menos de la cuarta parte y a la primera llega unas 1400 veces más débil que a la última (×0.0007): las primeras neuronas apenas se iluminan. Con ReLU pero pesos iniciales un 50 % más grandes, el error crece en cada capa y a la primera llega 8 veces más fuerte. En la versión interactiva puede aumentarse el número de capas para ver que el efecto crece de forma exponencial.
+La red de neuronas del apartado 2.1 permite ver este efecto (Figura 40). Con sigmoide y seis capas ocultas, el error se reduce en cada capa a algo menos de la cuarta parte y a la primera llega unas 1400 veces más débil que a la última (×0.0007): las primeras neuronas apenas se iluminan. Con ReLU pero pesos iniciales un 50 % más grandes, el error crece en cada capa y a la primera llega 8 veces más fuerte. En la versión interactiva puede aumentarse el número de capas para comprobar que el efecto crece de forma exponencial.
 
-![](media/image13.png)
+![](media/image39.png)
 
 *Figura 40. Error que llega a cada capa de una red de seis capas ocultas con sigmoide, que se desvanece hacia la entrada (a), y con ReLU y pesos iniciales demasiado grandes, que crece hacia la entrada (b). Valores calculados con una red real.*
 
@@ -1619,13 +1635,13 @@ El desvanecimiento del gradiente se identificó a principios de los años novent
 
 - **Puertas en las redes recurrentes:** las LSTM (1997) y las GRU (2014) incorporan mecanismos que dejan pasar la información y el error a lo largo de secuencias largas sin multiplicarlos en cada paso.
 
-![](media/image39.png)
+![](media/image24.png)
 
 *Figura 41. Bloque de dos capas normal (a) y bloque residual, en el que un atajo suma la entrada del bloque a su salida (b).*
 
 En la red de neuronas, los atajos residuales aparecen como arcos que se saltan dos capas (Figura 42). Con la misma activación sigmoide de la Figura 40a, las capas que reciben un atajo (la 2, la 4 y la 6) conservan el error completo, y las intermedias reciben en torno a una cuarta parte (×0.23), frente al ×0.0007 que llegaba a la primera capa sin atajos. El camino directo garantiza que la señal llegue, por muchas capas que tenga la red.
 
-![](media/image27.png)
+![](media/image20.png)
 
 *Figura 42. La red de la Figura 40a con atajos residuales cada dos capas (arcos verdes): el error ya no se desvanece y llega a las primeras capas. Valores calculados con una red real.*
 
@@ -1652,7 +1668,7 @@ La herramienta básica de diagnóstico es la **curva de aprendizaje**: la pérdi
 
 La Figura 43 lo muestra con una red 2-128-128-1, con más de 17 000 parámetros, entrenada con solo 80 ejemplos de un problema de clasificación con bastante ruido. La pérdida de validación es mínima en la época 35 y a partir de ahí no deja de crecer, mientras que la de entrenamiento llega prácticamente a cero (Figura 43a). Al final, la red acierta el 100 % de los ejemplos de entrenamiento pero solo el 78 % de los de validación, y su frontera de decisión se retuerce para rodear puntos aislados (Figura 43b). La misma red detenida en la época 35 acierta el 84 % en entrenamiento y el 86 % en validación: peor en los datos que ha visto y mejor en los que no.
 
-![](media/image15.png)
+![](media/image7.png)
 
 *Figura 43. Pérdida en entrenamiento y en validación de una red 2-128-128-1 entrenada con 80 ejemplos (a) y fronteras de decisión al final del entrenamiento y en el punto de parada temprana (b). Datos simulados.*
 
@@ -1672,13 +1688,13 @@ Las técnicas contra el sobreajuste responden a tres ideas: dar a la red más in
 
 - **Partir de un modelo preentrenado:** reutilizar una red ya entrenada con grandes volúmenes de datos y ajustarla al problema propio reduce drásticamente los datos necesarios. Es el *transfer learning*, que se verá en el Módulo 9.
 
-![](media/image41.png)
+![](media/image50.png)
 
 *Figura 44. Red completa, tal como se usa al predecir (a), y la misma red en un paso de entrenamiento con dropout, en el que se han apagado al azar cuatro de sus doce neuronas ocultas (b).*
 
-Estas técnicas pueden probarse en la pestaña «Entrenamiento y sobreajuste» de la versión interactiva, que entrena una red 2-64-64-1 en directo y dibuja a la vez su frontera de decisión y sus curvas de aprendizaje. Con 80 ejemplos y sin ninguna técnica, la pérdida de validación es mínima en la época 96 y después no deja de crecer; con parada temprana, el entrenamiento se detiene en la época 136 y recupera los pesos de la época 96, que aciertan el 86 % de la validación vs al 78 % del final del entrenamiento sin ella (Figura 45).
+Estas técnicas pueden probarse en la pestaña «Entrenamiento y sobreajuste» de la versión interactiva, que entrena una red 2-64-64-1 en directo y dibuja a la vez su frontera de decisión y sus curvas de aprendizaje. Con 80 ejemplos y sin ninguna técnica, la pérdida de validación es mínima en la época 96 y después no deja de crecer; con parada temprana, el entrenamiento se detiene en la época 136 y recupera los pesos de la época 96, que aciertan el 86 % de la validación frente al 78 % del final del entrenamiento sin ella (Figura 45).
 
-![](media/image17.png)
+![](media/image6.png)
 
 *Figura 45. Pestaña «Entrenamiento y sobreajuste» de la versión interactiva: red 2-64-64-1 entrenada con 80 ejemplos sin técnicas contra el sobreajuste, cuya pérdida de validación crece a partir de la época 96 (a), y la misma red con parada temprana, detenida en la época 136 con los pesos de la época 96 (b). Datos simulados.*
 
@@ -1711,3 +1727,325 @@ La mayoría de los problemas de entrenamiento se reconocen en las curvas de pér
 | Validación claramente mejor que entrenamiento | Dropout u otra regularización activa solo al entrenar, o validación poco representativa | Comprobar que la validación procede de la misma distribución; una pequeña diferencia es normal |
 
 En resumen, entrenar una red consiste en minimizar una función de coste (apartado 1) descendiendo por su paisaje con los gradientes que calcula la retropropagación (apartado 2), mediante un optimizador que avanza por lotes (apartado 3). Los dos riesgos principales son que la señal de error no llegue bien a las primeras capas, algo que hoy se previene con ReLU, una buena inicialización, normalización y conexiones residuales, y que la red memorice los datos, que se detecta con las curvas de validación y se combate con más datos, parada temprana, regularización y dropout. Todo ello se configura en unas pocas líneas con los frameworks de deep learning, que son el punto de partida del Módulo 9.
+
+# Módulo 9. Introducción al Deep Learning
+
+## 1. ¿Qué es Deep Learning?
+
+Los Módulos 7 y 8 han construido, pieza a pieza, todo lo necesario para entender una red neuronal: la neurona, las capas, las funciones de activación y el entrenamiento con retropropagación y descenso por gradiente. El **deep learning** (aprendizaje profundo) no añade una pieza nueva a esa lista: es lo que se obtiene al llevar esas mismas piezas a gran escala, con redes de muchas capas entrenadas con muchos datos. Este apartado explica qué lo distingue de las redes vistas hasta ahora y en qué casos se utiliza.
+
+#### Una definición: aprender en capas
+
+Se llama deep learning al aprendizaje automático basado en redes neuronales con varias capas ocultas; de ahí lo de «profundo». Como se vio en el apartado 4.1 del Módulo 7, una red multicapa es una cadena de cálculos en la que la salida de cada capa es la entrada de la siguiente. Con $L$ {eq-261} capas:
+
+$ŷ=f(L)(⋯f(2)(f(1)(x)))$ {eq-262}
+
+La red de dígitos del Módulo 7 tenía $L = 2$ {eq-263}: una capa oculta y la de salida. Una red profunda tiene decenas o cientos de eslabones en esa cadena, y cada uno construye sobre lo que calcula el anterior. Es la misma lógica de la empresa organizada por niveles del apartado 4.1 del Módulo 7: cada nivel resume y elabora la información que recibe del anterior, de modo que en lo alto se trabaja con conceptos que nadie ve directamente en los datos de partida.
+
+El deep learning es, por tanto, una parte de las redes neuronales, que a su vez son una familia de modelos de aprendizaje automático, una rama de la inteligencia artificial (Figura 46a). La IA generativa que se mencionó en el apartado 1.2 del Módulo 7, como los modelos de lenguaje o los generadores de imágenes, pertenece a ese círculo interior.
+
+#### ¿Cuántas capas hacen falta para ser «profundo»?
+
+No hay un número oficial. Suele hablarse de deep learning a partir de dos o tres capas ocultas, pero la cifra importa menos que la tendencia: desde 2012, el número de capas de las redes de referencia no ha dejado de crecer (Figura 46b). AlexNet, la red que ganó la competición ImageNet en 2012 (apartado 1.2 del Módulo 7), tenía 8 capas con pesos; solo tres años después, ResNet-152 tenía 152. Ese salto no habría sido posible sin las técnicas del Módulo 8: ReLU, la inicialización de He, la normalización y, sobre todo, las conexiones residuales, que se presentaron precisamente con ResNet (apartado 4.1 del Módulo 8).
+
+![](media/image34.png)
+
+*Figura 46. Lugar del deep learning dentro de la inteligencia artificial (a) y número de capas con pesos de algunas redes conocidas, en escala logarítmica (b).*
+
+### 1.1. Diferencias con redes neuronales «clásicas»
+
+Las redes del Módulo 7, como la red 64-32-10 de dígitos o la red de conciliación, son redes neuronales «clásicas»: pocas capas, todas densas, unos miles de parámetros y datos preparados de antemano. Una red de deep learning se basa exactamente en los mismos principios, pero cambia de escala en varios frentes a la vez, y ese cambio de escala modifica la forma de trabajar.
+
+#### La diferencia de fondo: quién diseña las variables
+
+En el aprendizaje automático clásico, el rendimiento de un modelo depende en buena parte de la **ingeniería de variables** (*feature engineering*): el analista decide qué información extraer de los datos brutos y en qué forma dársela al modelo. Para detectar fraude con tarjetas, por ejemplo, no se entrega al modelo la lista de operaciones, sino variables calculadas a mano, como el importe medio de los últimos 30 días, el número de países distintos en una semana o la hora habitual de compra (Figura 47a). Si una pista importante no se convierte en variable, el modelo nunca la verá.
+
+El deep learning cambia ese reparto del trabajo. La red recibe los datos brutos, ya sean los píxeles de una imagen, las palabras de un texto o la secuencia de operaciones de un cliente, y sus capas ocultas construyen sus propias variables (Figura 47b). Es la idea del apartado 4.1 del Módulo 7, donde las capas ocultas «cambiaban el punto de vista» hasta volver sencillo el problema, llevada a muchas capas: en una imagen, las primeras detectan bordes, las intermedias combinan bordes en formas y las últimas reconocen objetos. Por eso al deep learning también se le llama **aprendizaje de representaciones**.
+
+![](media/image15.png)
+
+*Figura 47. En el enfoque clásico, las variables las diseña una persona experta (a); en deep learning, las capas de la red las aprenden a partir de los datos brutos (b).*
+
+#### Un ejemplo: lo que aprende la red de dígitos
+
+Incluso una red tan pequeña como la 64-32-10 del Módulo 7 muestra este efecto. La Figura 48 compara dos formas de describir los dígitos 3, 5, 8 y 9, los que más se confunden entre sí. En la Figura 48a, cada imagen se describe con sus 64 píxeles originales; en la 48b, con los 32 valores que calcula la capa oculta de la red ya entrenada. Para poder dibujarlas, ambas descripciones se han resumido en dos coordenadas con un **análisis de componentes principales** (PCA), una técnica que condensa muchas variables en unas pocas conservando la mayor parte de su información.
+
+Con los píxeles, los cuatro dígitos aparecen mezclados en una nube central. Con la representación de la capa oculta, cada dígito ocupa su propia zona: un clasificador sencillo (*k* vecinos más próximos) que solo ve esas dos coordenadas acierta el 85 % de las veces, frente al 75 % con los píxeles. Nadie le ha dicho a la red qué rasgos distinguen un 8 de un 3: los ha encontrado ella sola al minimizar la función de coste.
+
+![](media/image13.png)
+
+*Figura 48. Dígitos 3, 5, 8 y 9 descritos con sus 64 píxeles (a) y con los 32 valores de la capa oculta de la red 64-32-10 del Módulo 7 (b), resumidos en dos componentes principales. Valores calculados con una red real.*
+
+#### Más capas, más parámetros, más datos y más cálculo
+
+La profundidad arrastra el resto de diferencias. La red de dígitos tenía 2410 parámetros (Tabla 13 del Módulo 7); una ResNet-50, una red de visión de tamaño medio, tiene unos 25 millones, y los grandes modelos de lenguaje actuales, miles de millones. Ajustar tantos parámetros sin caer en el sobreajuste (apartado 4.2 del Módulo 8) exige muchísimos más datos, y procesarlos exige GPU o TPU, los procesadores especializados que permitieron el despegue del deep learning (Figura 6 del Módulo 7).
+
+La consecuencia práctica es que el deep learning no siempre gana. Con pocos datos, un modelo clásico suele rendir igual o mejor, porque una red grande no tiene ejemplos suficientes para aprender sus propias variables; a medida que crecen los datos, el modelo clásico se estanca y las redes más grandes siguen mejorando (Figura 49a). Es la recomendación del apartado 1.2 del Módulo 7, vista ahora desde la cantidad de datos: el tipo de dato y su volumen deciden, en buena medida, qué enfoque conviene (Figura 49b).
+
+![](media/image35.png)
+
+*Figura 49. Rendimiento de modelos clásicos y de redes de distinto tamaño según la cantidad de datos (a) y enfoque recomendado según el tipo y el volumen de datos (b). Esquemas orientativos.*
+
+#### Arquitecturas especializadas
+
+Las redes clásicas usan casi siempre capas densas. El deep learning, en cambio, se apoya en las capas que incorporan la estructura del dato, presentadas en el apartado 4.2 del Módulo 7: convolucionales para imágenes, recurrentes para secuencias y de atención para texto. Combinadas con normalización y conexiones residuales, dan lugar a arquitecturas como las redes convolucionales (CNN) o los Transformers, que se estudian en el apartado 4 de este módulo. La Tabla 34 resume todas las diferencias.
+
+*Tabla 34. Diferencias entre una red neuronal «clásica» y una red de deep learning.*
+
+| **Aspecto** | **Red neuronal «clásica»** | **Deep learning** |
+|---|---|---|
+| Capas ocultas | Una o dos | De decenas a cientos |
+| Parámetros | Miles (red de dígitos: 2410) | De millones a miles de millones |
+| Entrada | Variables preparadas por el analista | Datos brutos: píxeles, texto, audio, secuencias |
+| Variables | Diseñadas a mano | Aprendidas por la red, de simples a abstractas |
+| Tipos de capa | Densas | Convolucionales, recurrentes, de atención, de normalización y residuales |
+| Datos necesarios | Cientos o miles de ejemplos | De decenas de miles a miles de millones, o un modelo preentrenado |
+| Hardware | Basta una CPU | GPU o TPU |
+| Tiempo de entrenamiento | Segundos o minutos | De horas a meses |
+| Punto de partida | Se entrena desde cero | Lo habitual es partir de un modelo preentrenado |
+
+### 1.2. Casos de uso
+
+El deep learning es hoy la tecnología de referencia siempre que los datos no caben bien en una tabla: imágenes, vídeo, texto, audio o señales de sensores. El apartado 5 del Módulo 7 ya recorrió doce aplicaciones de las redes neuronales; las que exigen redes profundas son, sobre todo, las de las filas de imágenes, texto y audio de la Figura 27.
+
+#### Dónde marca la diferencia
+
+- **Visión por computador:** inspección visual en fábricas, lectura de documentos, análisis de imágenes médicas o conteo de personas y vehículos. Se trata en el apartado 4.1.
+
+- **Lenguaje natural:** clasificación y búsqueda de documentos, extracción de datos de contratos y facturas, traducción, resúmenes y asistentes conversacionales. Se trata en el apartado 4.2.
+
+- **Voz y audio:** transcripción de llamadas y reuniones, comandos de voz y detección de sonidos anómalos en maquinaria.
+
+- **Secuencias:** detección de fraude a partir del historial de operaciones, mantenimiento predictivo con datos de sensores y previsión de ventas con miles de series a la vez (apartado 5.2 del Módulo 7).
+
+- **IA generativa:** generación de texto, código, imágenes o voz. Los modelos de lenguaje que hay detrás de los asistentes actuales son redes Transformer con miles de millones de parámetros.
+
+#### Casos de uso por sector
+
+La Tabla 35 recoge ejemplos habituales en distintos sectores. En casi todos, el deep learning no sustituye al proceso de negocio completo, sino que automatiza la parte que antes exigía que una persona mirara, leyera o escuchara.
+
+*Tabla 35. Casos de uso del deep learning por sector.*
+
+| **Sector** | **Caso de uso** | **Tipo de dato** | **Arquitectura habitual** |
+|---|---|---|---|
+| Banca y seguros | Detección de fraude en pagos; lectura automática de la documentación de clientes | Secuencias de operaciones; documentos escaneados | Recurrente o Transformer; CNN y OCR |
+| Industria | Inspección visual en la línea; mantenimiento predictivo | Imágenes; señales de sensores | CNN; recurrente o convolucional sobre la señal |
+| Salud | Priorización de radiografías; transcripción de informes dictados | Imágenes médicas; audio | CNN; Transformer de voz |
+| Comercio y distribución | Recomendación de productos; previsión de ventas por tienda y producto | Historial de compras; series temporales | Embeddings y capas densas; modelo global |
+| Administración y legal | Clasificación de expedientes; búsqueda en normativa y contratos | Texto | Transformer |
+| Servicios y consultoría | Asistentes internos sobre la documentación de la empresa; análisis de llamadas | Texto y audio | Modelos de lenguaje y de voz preentrenados |
+
+#### El atajo habitual: los modelos preentrenados
+
+Entrenar desde cero una red profunda requiere millones de ejemplos y mucho cálculo, algo que pocas empresas pueden permitirse. Lo habitual es partir de un **modelo preentrenado**: una red que un tercero ya ha entrenado con enormes volúmenes de datos generales, como millones de fotografías o buena parte del texto público de internet. Sus primeras capas ya saben detectar bordes y formas, o la estructura del idioma, y ese conocimiento sirve para casi cualquier tarea. Sobre esa base hay tres formas de trabajar, de menor a mayor esfuerzo:
+
+- **Usarlo tal cual:** llamar a un modelo existente, instalado en la empresa o a través de un servicio en la nube, por ejemplo para transcribir audio o resumir textos.
+
+- **Aprovechar sus representaciones:** usar la red como generadora de variables y entrenar encima un modelo pequeño, incluso clásico. Es la misma idea de la Figura 48b, con una red mucho más potente.
+
+- **Ajustarlo (fine-tuning):** seguir entrenando el modelo, o solo sus últimas capas, con los datos propios. Para tareas como clasificar fotos de averías o tipos de reclamación suelen bastar unos cientos o unos pocos miles de ejemplos.
+
+Esta forma de trabajar, el **aprendizaje por transferencia** (*transfer learning*), es la que lleva el deep learning a casos con pocos datos propios, la esquina superior izquierda de la Figura 49b, y la razón por la que la mayoría de los proyectos de empresa no entrenan ninguna red desde cero.
+
+#### Antes de empezar: cinco preguntas
+
+Que el deep learning esté de moda no lo convierte en la opción adecuada para cualquier problema. La Tabla 36 recoge cinco preguntas que conviene hacerse antes de elegirlo y que conectan con advertencias ya vistas: los modelos de árboles con datos tabulares (apartado 1.2 del Módulo 7), la explicabilidad en el crédito (apartado 5.1 del Módulo 7) y el sobreajuste con pocos datos (apartado 4.2 del Módulo 8).
+
+*Tabla 36. Cinco preguntas para decidir si un problema necesita deep learning.*
+
+| **Pregunta** | **Señal a favor** | **Señal en contra** |
+|---|---|---|
+| ¿Qué tipo de datos hay? | Imágenes, texto, audio, vídeo o secuencias largas | Una tabla con unas decenas de columnas |
+| ¿Cuántos ejemplos etiquetados hay? | Decenas de miles, o un modelo preentrenado que se pueda ajustar | Unos cientos y ningún modelo preentrenado aplicable |
+| ¿Hay que explicar cada decisión? | Basta con medir bien el acierto | Una norma exige justificar cada caso, como en el crédito |
+| ¿Qué infraestructura hay? | GPU propias o en la nube y un equipo que mantenga el modelo | Solo CPU y nadie que lo mantenga en producción |
+| ¿Compensa el coste? | La mejora de acierto tiene un impacto económico claro | Un modelo clásico ya da un resultado suficiente |
+
+En resumen, el deep learning es el uso de redes neuronales con muchas capas que aprenden por sí mismas las variables a partir de los datos brutos. No es una técnica distinta de la de los Módulos 7 y 8, sino su versión a gran escala, posible gracias a más datos, más capacidad de cálculo y las técnicas de entrenamiento del Módulo 8. Brilla con imágenes, texto y audio, y en la empresa suele aplicarse ajustando modelos preentrenados; con datos tabulares y pocos ejemplos, el modelo clásico sigue siendo el primer candidato.
+
+## 2. Frameworks de Deep Learning
+
+Todo lo visto hasta ahora podría programarse a mano: una red no es más que multiplicaciones de matrices, funciones de activación y la regla de la cadena. Pero hacerlo para una red de cien capas, en GPU y con millones de ejemplos, sería inviable. Para eso existen los **frameworks** de deep learning, librerías que resuelven toda esa infraestructura y permiten al equipo centrarse en el modelo y en los datos. Este apartado presenta los dos más utilizados, TensorFlow y PyTorch, y los compara con un mismo ejemplo.
+
+#### Qué hace un framework
+
+Cualquier framework de deep learning ofrece, como mínimo, cinco servicios:
+
+- **Tensores:** tablas de números de cualquier dimensión, como una imagen (alto × ancho × color) o un lote de imágenes, con todas las operaciones matemáticas necesarias.
+
+- **Cálculo en GPU:** el mismo código se ejecuta en CPU o en GPU cambiando una sola opción.
+
+- **Gradientes automáticos:** el framework registra las operaciones de la pasada hacia delante y calcula solo la retropropagación, como se adelantó en el apartado 2.2 del Módulo 8.
+
+- **Piezas listas para usar:** capas, funciones de activación, funciones de coste y optimizadores como Adam.
+
+- **Herramientas de trabajo:** carga de datos por lotes, guardado de modelos, seguimiento del entrenamiento y despliegue en producción.
+
+Un framework funciona como el motor sobre el que se monta un vehículo: el equipo diseña la carrocería, pero no fabrica cada pieza del motor. La Figura 50a muestra las capas que hay debajo del código de un proyecto, desde las librerías de alto nivel, como Keras, hasta las librerías de los fabricantes de GPU, como CUDA, que nadie programa directamente en un proyecto normal.
+
+#### Tres nombres propios
+
+Los primeros frameworks populares, como Theano (2007) o Caffe (2013), nacieron en universidades. El panorama actual lo dominan dos proyectos de grandes empresas: **TensorFlow**, publicado por Google en 2015, y **PyTorch**, publicado por Meta (entonces Facebook) en 2017 (Figura 50b). Google desarrolla además **JAX**, muy usado en investigación a gran escala. Y por encima de ellos está **Keras**, una librería de alto nivel que hoy puede funcionar sobre cualquiera de los tres.
+
+![](media/image38.png)
+
+*Figura 50. Capas de software y hardware que hay debajo de un framework de deep learning (a) e hitos principales de su historia (b).*
+
+### 2.1. TensorFlow
+
+#### Origen: el sistema de Google
+
+**TensorFlow** es el framework de deep learning de Google, publicado como código abierto en noviembre de 2015. Era el sucesor de DistBelief, el sistema interno con el que Google entrenaba desde 2011 las redes de su buscador, de Google Fotos o del reconocimiento de voz. Por eso nació con una vocación clara: llevar modelos a producción a gran escala, desde los centros de datos hasta los teléfonos móviles. Su nombre describe lo que hace: tensores que fluyen por un grafo de operaciones.
+
+#### De los grafos estáticos a la ejecución inmediata
+
+En su primera versión, TensorFlow seguía el estilo **«definir y después ejecutar»**: primero se describía la red completa como un grafo de operaciones, sin datos, y después se ejecutaba ese grafo con los datos reales (Figura 51a). Es como escribir la receta entera antes de encender el fuego: permite optimizar el proceso y repetirlo en cualquier cocina, pero si algo sale mal, el error aparece al final y cuesta saber en qué paso estaba.
+
+Esa rigidez lo hacía potente en producción, pero incómodo para experimentar. En 2019, TensorFlow 2.0 adoptó la **ejecución inmediata** (*eager execution*), en la que cada línea se calcula al momento, como en Python normal (Figura 51b), e hizo de Keras su forma oficial de construir modelos. El grafo no desapareció: se genera automáticamente cuando se necesita rendimiento, mediante la instrucción tf.function.
+
+![](media/image49.png)
+
+*Figura 51. Estilo «definir y después ejecutar» de TensorFlow 1.x, en el que primero se construye el grafo y después se ejecuta con datos (a), y ejecución inmediata, en la que cada operación se calcula al momento (b).*
+
+#### Keras: la puerta de entrada
+
+**Keras** es una librería de alto nivel creada en 2015 por François Chollet, que se integró en TensorFlow y es hoy la forma más sencilla de construir una red. Su filosofía reduce el trabajo a tres verbos: definir el modelo capa a capa, compilarlo (elegir la función de coste, el optimizador y las métricas) y entrenarlo con fit(), que ejecuta por dentro todo el proceso del Módulo 8: lotes, retropropagación y actualización de los pesos.
+
+Desde la versión 3, publicada a finales de 2023, Keras es **multibackend**: el mismo código puede ejecutarse sobre TensorFlow, JAX o PyTorch cambiando una sola variable de configuración. Eso lo hace independiente del framework que tiene debajo, algo especialmente útil en formación y en equipos que no quieren atarse a una tecnología.
+
+#### Un ecosistema pensado para producción
+
+La fortaleza histórica de TensorFlow está en todo lo que rodea al modelo: preparar los datos, vigilar el entrenamiento y, sobre todo, desplegar el resultado en servidores, móviles o navegadores. La Tabla 37 resume sus componentes principales.
+
+*Tabla 37. Componentes principales del ecosistema de TensorFlow.*
+
+| **Componente** | **Para qué sirve** | **Ejemplo de uso** |
+|---|---|---|
+| Keras | Definir, entrenar y evaluar modelos con pocas líneas | La red de dígitos de la Tabla 39 |
+| tf.data | Leer y preparar los datos por lotes de forma eficiente | Leer millones de imágenes sin cargarlas todas en memoria |
+| TensorBoard | Visualizar la pérdida y otras métricas durante el entrenamiento | Detectar el sobreajuste con las curvas del apartado 4.2 del Módulo 8 |
+| SavedModel | Guardar el modelo completo en un formato estándar | Pasar el modelo del equipo de datos al de sistemas |
+| TF Serving | Ofrecer el modelo como un servicio en producción | Puntuar en tiempo real las operaciones de una pasarela de pago |
+| LiteRT (antes TensorFlow Lite) | Ejecutar modelos en móviles y dispositivos | Leer matrículas en una cámara sin conexión a internet |
+| TensorFlow.js | Ejecutar modelos en el navegador | Detectar objetos con la cámara del portátil sin enviar imágenes a un servidor |
+| TFX | Automatizar el ciclo completo: validar datos, entrenar, evaluar y desplegar | Reentrenar cada semana un modelo de previsión de demanda |
+
+#### Situación actual
+
+TensorFlow sigue siendo un framework estable y muy extendido en sistemas en producción, pero su papel ha cambiado. En marzo de 2026, con la versión 2.21, Google anunció que el núcleo de TensorFlow se centrará en adelante en corregir errores y fallos de seguridad y en actualizar dependencias, como las nuevas versiones de Python, y recomendó Keras 3, JAX o PyTorch para los proyectos nuevos de IA generativa. Por su parte, TensorFlow Lite, renombrado como **LiteRT** en 2024, se desarrolla ahora por separado y puede ejecutar en dispositivos modelos creados con PyTorch o JAX.
+
+Para una empresa, la lectura práctica es doble: los sistemas que ya funcionan sobre TensorFlow pueden mantenerse con tranquilidad, pero un proyecto nuevo, sobre todo si utiliza modelos de lenguaje, tiene más recorrido con otras opciones.
+
+### 2.2. PyTorch
+
+#### Origen: un framework pensado para investigar
+
+**PyTorch** es el framework de deep learning creado en el laboratorio de investigación en IA de Meta (entonces Facebook) y publicado en enero de 2017. Heredaba las ideas de Torch, una librería anterior escrita en el lenguaje Lua, pero trasladadas a Python. A diferencia de TensorFlow, no nació para producción, sino para que los investigadores pudieran probar ideas nuevas con rapidez. Desde 2022, Meta sigue contribuyendo, pero su gobierno corresponde a la **PyTorch Foundation**, una fundación independiente dentro de la Linux Foundation en la que participan, entre otras, AMD, AWS, Google, Microsoft y NVIDIA.
+
+#### Programar como en Python
+
+PyTorch adoptó desde el principio la ejecución inmediata (Figura 51b): cada operación se calcula al momento y puede inspeccionarse con print() o con el depurador habitual de Python, mientras el grafo necesario para la retropropagación se construye sobre la marcha. A este estilo se le llama «definir mientras se ejecuta» (*define-by-run*), y fue la principal razón de su éxito entre los investigadores, que podían escribir redes cuya estructura cambia según los datos sin trucos especiales.
+
+La otra seña de identidad de PyTorch es que el bucle de entrenamiento queda a la vista. Donde Keras lo esconde dentro de fit(), en PyTorch se escribe explícitamente, y sus cinco líneas son, una a una, los pasos del Módulo 8:
+
+- **opt.zero_grad():** borra los gradientes del lote anterior.
+
+- **salida = modelo(xb):** propagación hacia delante (apartado 4.1 del Módulo 7).
+
+- **perdida = coste(salida, yb):** función de coste (apartado 1 del Módulo 8).
+
+- **perdida.backward():** retropropagación (apartado 2 del Módulo 8).
+
+- **opt.step():** paso del optimizador, por ejemplo Adam (apartado 3 del Módulo 8).
+
+Escribirlo exige algo más de código, pero da un control total: resulta sencillo, por ejemplo, combinar varias funciones de coste o recortar el gradiente (apartado 4.1 del Módulo 8) en un punto concreto. Para quien prefiere no escribir el bucle, librerías como PyTorch Lightning lo automatizan de forma parecida a fit().
+
+#### PyTorch 2: compilar sin cambiar el código
+
+La ejecución inmediata es cómoda, pero renuncia a optimizaciones que solo son posibles viendo el cálculo completo, la ventaja original de los grafos de TensorFlow. PyTorch 2.0, publicado en marzo de 2023, lo resolvió con **torch.compile**: una sola instrucción que captura el grafo del modelo y genera código optimizado para la GPU sin cambiar nada más. Así, PyTorch combina la comodidad de la ejecución inmediata con el rendimiento de un grafo. En 2026 ha pasado a publicar una versión nueva cada dos meses; la más reciente, de octubre de 2026, es la 2.15.
+
+#### El estándar de la IA generativa
+
+PyTorch es hoy el framework dominante en investigación y en IA generativa. La mayoría de los modelos de lenguaje abiertos se publican en PyTorch, y herramientas muy usadas para servirlos, como vLLM, están construidas sobre él. Un indicador claro es Hugging Face Transformers, la librería de referencia para descargar y ajustar modelos preentrenados de texto, imagen y voz: durante años ofreció versiones para TensorFlow, JAX y PyTorch, pero con su versión 5, presentada a finales de 2025, pasó a centrarse solo en PyTorch. La Tabla 38 resume su ecosistema.
+
+*Tabla 38. Componentes principales del ecosistema de PyTorch.*
+
+| **Componente** | **Para qué sirve** | **Ejemplo de uso** |
+|---|---|---|
+| torch.nn y autograd | Definir capas y calcular los gradientes automáticamente | La red de dígitos de la Tabla 39 |
+| Dataset y DataLoader | Leer los datos y repartirlos en lotes barajados (apartado 3.3 del Módulo 8) | Entrenar con miles de facturas escaneadas |
+| torchvision y torchaudio | Modelos, conjuntos de datos y transformaciones para imagen y audio | Aumento de datos con giros y recortes en control de calidad |
+| torch.compile | Acelerar el modelo compilándolo, sin cambiar el código | Reducir el tiempo de entrenamiento de una red de visión |
+| PyTorch Lightning | Organizar el bucle de entrenamiento y automatizar tareas repetitivas | Entrenar en varias GPU sin reescribir el código |
+| Hugging Face Transformers | Descargar y ajustar modelos preentrenados | Ajustar un modelo de lenguaje para clasificar reclamaciones |
+| torch.export y ONNX | Exportar el modelo para ejecutarlo fuera de Python | Integrar el modelo en una aplicación escrita en Java o C# |
+| ExecuTorch | Ejecutar modelos en móviles y dispositivos | Un asistente de voz que funcione sin conexión |
+| vLLM | Servir modelos de lenguaje a muchos usuarios a la vez | Un asistente interno sobre la documentación de la empresa |
+
+### 2.3. Comparativa general
+
+TensorFlow y PyTorch resuelven el mismo problema y comparten las mismas ideas: tensores, gradientes automáticos, capas y optimizadores. Las diferencias están en el estilo de trabajo, en el ecosistema y en la dirección en la que evoluciona cada uno. Para compararlos con algo concreto, este apartado construye la misma red con ambos.
+
+#### La misma red en los dos frameworks
+
+La Tabla 39 programa la red 64-32-10 de reconocimiento de dígitos del Módulo 7 (Tabla 13), con activación ReLU, salida softmax, entropía cruzada (apartado 1.1 del Módulo 8), el optimizador Adam y lotes de 32 durante 30 épocas, como en la Tabla 28 del Módulo 8. En Keras, X e y son las tablas de imágenes y de etiquetas; en PyTorch, lotes es un DataLoader que las reparte en lotes de 32 ejemplos.
+
+*Tabla 39. La red 64-32-10 de dígitos programada en Keras y en PyTorch.*
+
+| **Keras (TensorFlow)** | **PyTorch** |
+|---|---|
+| **# 1. Definir la red** / modelo = keras.Sequential([ / keras.Input(shape=(64,)), / layers.Dense(32, activation="relu"), / layers.Dense(10, activation="softmax"), / ]) | **# 1. Definir la red** / modelo = nn.Sequential( / nn.Linear(64, 32), / nn.ReLU(), / nn.Linear(32, 10), / ) |
+| **# 2. Coste y optimizador** / modelo.compile( / optimizer="adam", / loss="sparse_categorical_crossentropy", / metrics=["accuracy"], / ) | **# 2. Coste y optimizador** / coste = nn.CrossEntropyLoss() / opt = torch.optim.Adam(modelo.parameters(), / lr=0.001) |
+| **# 3. Entrenar** / modelo.fit(X, y, epochs=30, batch_size=32) | **# 3. Entrenar** / for epoca in range(30): / for xb, yb in lotes: / opt.zero_grad() / salida = modelo(xb) / perdida = coste(salida, yb) / perdida.backward() / opt.step() |
+| **# 4. Predecir** / prob = modelo.predict(X_prueba) / clase = prob.argmax(axis=1) | **# 4. Predecir** / with torch.no_grad(): / clase = modelo(X_prueba).argmax(1) |
+
+Tres detalles merecen atención. El primero, que la red de PyTorch no tiene softmax al final: como se advirtió en el apartado 1.1 del Módulo 8, CrossEntropyLoss espera las puntuaciones sin transformar y aplica softmax internamente. El segundo, que el prefijo *sparse* de Keras indica que las etiquetas son números de clase (del 0 al 9) y no vectores con un 1 en la clase correcta. El tercero, que el paso 3 es donde más se diferencian: Keras lo resuelve en una línea y PyTorch muestra el bucle completo.
+
+#### ¿Dan el mismo resultado?
+
+Las dos versiones se han entrenado con los mismos 1347 dígitos y se han evaluado con los mismos 450 de prueba del Módulo 7, repitiendo el entrenamiento con cinco semillas aleatorias distintas. Las curvas de pérdida son prácticamente iguales (Figura 52a) y el acierto final ronda el 96 % en ambos casos, como en el apartado 5.3 del Módulo 7: Keras obtiene de media un 96.8 % y PyTorch, un 95.8 % (Figura 52b).
+
+La pequeña diferencia no se debe al framework, sino a sus **valores por defecto**. Keras inicializa los pesos con el método de Glorot (apartado 4.1 del Módulo 8) y los sesgos a cero; PyTorch usa una escala más pequeña para los pesos y valores aleatorios para los sesgos. Si la red de PyTorch se inicializa igual que la de Keras, su acierto medio sube al 96.4 %, y la distancia que queda es menor que la variación entre semillas, que en cada framework llega a casi un punto. La lección sirve para cualquier comparación entre herramientas: antes de atribuir una diferencia al framework, hay que comprobar que ambos modelos están configurados exactamente igual.
+
+![](media/image51.png)
+
+*Figura 52. Pérdida de entrenamiento y de validación de la red 64-32-10 programada en Keras y en PyTorch, media de cinco semillas (a), y acierto en los 450 dígitos de prueba de cada versión y de PyTorch con la misma inicialización que Keras (b). Valores calculados con redes reales.*
+
+#### Las diferencias que sí importan
+
+Si el resultado es el mismo, la elección depende de otros factores: el estilo de trabajo del equipo, la facilidad para depurar, los modelos disponibles y la forma de desplegar el resultado. La Tabla 40 los compara, y la Figura 53 muestra el recorrido de un modelo en cada ecosistema, desde los datos hasta el despliegue. Los dos caminos no están aislados: Keras 3 puede funcionar sobre PyTorch, LiteRT y ONNX convierten modelos de PyTorch para otros entornos, y TensorBoard sirve para ambos.
+
+![](media/image52.png)
+
+*Figura 53. Recorrido de un modelo desde los datos hasta el despliegue en el ecosistema de TensorFlow y en el de PyTorch, con los puentes que los conectan.*
+
+*Tabla 40. Comparativa general entre TensorFlow y PyTorch.*
+
+| **Aspecto** | **TensorFlow (con Keras)** | **PyTorch** |
+|---|---|---|
+| Origen y gobierno | Google, 2015 | Meta, 2017; PyTorch Foundation (Linux Foundation) desde 2022 |
+| Estilo de programación | Alto nivel: compile() y fit() | Python explícito: bucle de entrenamiento a la vista |
+| Curva de aprendizaje | Muy suave con Keras | Algo más exigente, a cambio de más control |
+| Depuración | Más difícil dentro de las funciones compiladas con tf.function | Directa, con print() y el depurador de Python |
+| Rendimiento | Compilación con XLA | Compilación con torch.compile; parecido en la práctica |
+| Investigación | Uso minoritario | Referencia: la mayoría de modelos nuevos se publican en PyTorch |
+| IA generativa | Google recomienda Keras 3, JAX o PyTorch para proyectos nuevos | Estándar: Hugging Face, vLLM y la mayoría de modelos abiertos |
+| Despliegue | Muy maduro: TF Serving, LiteRT, TensorFlow.js | Maduro: torch.export, ONNX, ExecuTorch, vLLM |
+| Evolución | Núcleo en mantenimiento desde 2026: seguridad y dependencias | Desarrollo muy activo: una versión cada dos meses en 2026 |
+
+#### Cómo elegir
+
+No existe una respuesta universal, pero sí pautas razonables para la mayoría de situaciones de empresa (Tabla 41). Como regla general, para un proyecto nuevo el punto de partida más sensato hoy es PyTorch, o Keras 3 cuando se prefiere la sencillez de fit(); TensorFlow sigue teniendo sentido sobre todo allí donde ya está en producción.
+
+*Tabla 41. Qué framework elegir según la situación.*
+
+| **Situación** | **Opción recomendada** | **Por qué** |
+|---|---|---|
+| Formación, prototipos rápidos y redes sencillas | Keras 3 | Pocas líneas, muy legible y sin atarse a un framework |
+| Proyecto nuevo con modelos de lenguaje | PyTorch | Es donde están los modelos, las librerías y la comunidad |
+| Ajustar un modelo preentrenado de visión o de texto | PyTorch con Hugging Face | Miles de modelos listos para descargar y ajustar |
+| Sistema en producción ya construido con TensorFlow | Mantener TensorFlow | Es estable y seguirá recibiendo correcciones; migrar solo si hace falta |
+| Ejecutar el modelo en móviles o dispositivos | LiteRT o ExecuTorch | Ambos funcionan sin conexión; LiteRT admite también modelos de PyTorch |
+| Investigación a gran escala en TPU de Google | JAX, o Keras 3 sobre JAX | Diseñado para aprovechar los TPU y el cálculo distribuido |
+
+En resumen, un framework de deep learning aporta los tensores, el cálculo en GPU, los gradientes automáticos y las piezas que permiten construir una red sin programar la retropropagación a mano. TensorFlow, nacido en Google con vocación de producción, mantiene un ecosistema de despliegue muy maduro, pero su núcleo está hoy en modo de mantenimiento. PyTorch, nacido para investigar, se ha convertido en el estándar de la investigación y de la IA generativa. Para redes como las de este curso, ambos dan el mismo resultado, y Keras 3 permite trabajar con una interfaz sencilla sobre cualquiera de ellos. El apartado 3 describe el flujo de trabajo completo de un proyecto de deep learning: definir el modelo, entrenarlo y evaluarlo.

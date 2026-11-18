@@ -1,18 +1,18 @@
-/* Laboratorio · ejercicios interactivos de los módulos 7 y 8, con corrección al final */
+/* Laboratorio · ejercicios interactivos de los módulos 7, 8 y 9, con corrección al final */
 (function(){"use strict";
 const C=Curso,K=EJCore,{num,numT,F,rgba,arrow,rrect,node,mix}=C;
 const sig=K.sig,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),pct=v=>Math.round(v*100)+" %";
 function hexrgb(h){if(h.startsWith("rgb"))return h.match(/\d+/g).slice(0,3).map(Number);const n=parseInt(h.slice(1),16);return[n>>16,(n>>8)&255,n&255]}
 // paneles lado a lado con la misma altura: cada uno crece en proporción a su ancho lógico
 const panels=(h,specs)=>C.panels(h,specs.map(s=>Object.assign({flex:`${s.W} 1 ${Math.round(s.W*0.55)}px`},s)));
-const ORDER=["m7-1","m7-2","m7-3","m7-4","m7-5","m8-1","m8-2","m8-3","m8-4","m8-5"];
+const ORDER=["m7-1","m7-2","m7-3","m7-4","m7-5","m8-1","m8-2","m8-3","m8-4","m8-5","m9-1","m9-2","m9-3","m9-4","m9-5"];
 
 // ============================================================ registro y corrección
 const EJ={};
 function reg(id,host,o){const e=Object.assign({id,touched:false,seen:false},o);EJ[id]=e;
   e.touch=()=>{if(e.touched)return;e.touched=true;updBar()};
   const b=host.querySelector(".badge");if(b)b.textContent="Ejercicio";return e}
-function updBar(){const n=ORDER.filter(id=>EJ[id]&&EJ[id].touched).length;const d=document.getElementById("ejDone");if(d)d.innerHTML=`<b>${n}</b> de 10 ejercicios empezados`;
+function updBar(){const n=ORDER.filter(id=>EJ[id]&&EJ[id].touched).length;const d=document.getElementById("ejDone");if(d)d.innerHTML=`<b>${n}</b> de ${ORDER.length} ejercicios empezados`;
   ORDER.forEach(id=>{const a=document.querySelector(`.toc a[href="#ej-${id}"]`);if(a)a.classList.toggle("done",!!(EJ[id]&&EJ[id].touched))})}
 const it=(p,m,t)=>({p,m,t});
 const f1=v=>numT(Math.round(v*10)/10,1);
@@ -550,5 +550,198 @@ C.define("ej-m8-5",function(host,opts,api){
     solve(){st.d=1;st.l=2;st.E=300;setD(1);setL(2);sE.set(300);build();run=true;btn.textContent="❚❚ Pausa";lp.start()}});
   const SOL="dropout del 20 % con L2 λ = 0.003 durante 300 épocas (≈ 88 % tanto en entrenamiento como en validación). También valen dropout del 50 % con unas 150–250 épocas, o L2 λ = 0.01. Sin regularización la red llega al 100 % en entrenamiento y baja al 74 % en validación.";
   setD(0);setL(0);build();draw();api.onTheme(draw);
+});
+// =====================================================================
+// M9 · 1 · Variables a mano o aprendidas
+// =====================================================================
+C.define("ej-m9-1",function(host,opts,api){
+  const D=window.DATA_M9.f48,n=D.n,img=Uint8Array.from(atob(D.img),ch=>ch.charCodeAt(0));const fold=K.strat5(D.y);
+  const VARS={};Object.entries(K.FEATS).forEach(([k,v])=>{const a=[];for(let i=0;i<n;i++)a.push(v.f(img.subarray(i*64,i*64+64)));VARS[k]={t:v.t,g:"mano",v:a}});
+  [["pix1","Píxeles: componente 1",D.P,0],["pix2","Píxeles: componente 2",D.P,1],["hid1","Capa oculta: componente 1",D.H,0],["hid2","Capa oculta: componente 2",D.H,1]].forEach(([k,t,Z,j])=>{const a=[];for(let i=0;i<n;i++)a.push(Z[2*i+j]);VARS[k]={t,g:k.startsWith("pix")?"pix":"red",v:a}});
+  const Z={};Object.keys(VARS).forEach(k=>Z[k]=K.zscore(VARS[k].v));
+  const st={x:"tinta",y:"simetria",q:null};const cache={};const acc=()=>{const key=st.x+"|"+st.y;if(!(key in cache))cache[key]=st.x===st.y?0:K.knn2(VARS[st.x].v,VARS[st.y].v,D.y,fold);return cache[key]};
+  const COL={3:"blue",5:"red",8:"green",9:"ocre"};
+  const [A,B]=panels(host,[{W:560,H:420,aria:"Dispersión de los dígitos 3, 5, 8 y 9 con las dos variables elegidas."},{W:420,H:420,aria:"Acierto del clasificador de 5 vecinos con esas dos variables."}]);
+  function draw(){const P=api.pal();
+    {const k=A.k,c=k.c;k.clear();const pl=new C.Plot(k,[60,16,544,360],{xr:[-3.2,3.2],yr:[-3.2,3.2]});pl.axes({xt:[],yt:[],grid:false,xl:VARS[st.x].t,yl:VARS[st.y].t,xlgap:22,ylgap:20});
+      pl.clip();const zx=Z[st.x],zy=Z[st.y];for(let i=0;i<n;i++){c.globalAlpha=0.6;c.fillStyle=P[COL[D.y[i]]];c.beginPath();c.arc(pl.X(zx[i]),pl.Y(zy[i]),3.2,0,7);c.fill()}c.globalAlpha=1;pl.unclip();
+      c.fillStyle=rgba(P.bg,.92);c.strokeStyle=P.lgray;c.lineWidth=1;rrect(c,pl.x1-98,20,94,86,6);c.fill();c.stroke();C.legend(c,[3,5,8,9].map(d=>({type:"dot",color:P[COL[d]],label:"Dígito "+d})),pl.x1-90,34,{lh:19,fs:12})}
+    {const k=B.k,c=k.c;k.clear();const a=acc();const pl=new C.Plot(k,[70,40,400,330],{xr:[0,1],yr:[0,1]});
+      label(c,"Acierto de 5 vecinos con estas 2 variables",210,22,{fs:13,w:600,color:P.text});
+      [["Píxeles (PCA)",0.758,P.gray],["Objetivo",0.82,P.green]].forEach(([t,v,col])=>{c.strokeStyle=col;c.setLineDash([5,4]);c.lineWidth=1.6;c.beginPath();c.moveTo(pl.x0,pl.Y(v));c.lineTo(pl.x1,pl.Y(v));c.stroke();c.setLineDash([]);label(c,t+" "+pct(v),pl.x1,pl.Y(v)+(v>0.8?-6:14),{align:"right",fs:11.5,color:col})});
+      const ok=a>=0.82;c.fillStyle=ok?P.green:a>=0.76?P.ocre:P.red;c.fillRect(170,pl.Y(a),90,pl.Y(0)-pl.Y(a));label(c,(a*100).toFixed(1)+" %",215,pl.Y(a)-10,{font:`800 22px ${F.head}`,color:P.text});
+      c.strokeStyle=P.axis;c.lineWidth=1.1;c.beginPath();c.moveTo(pl.x0,pl.y1);c.lineTo(pl.x1,pl.y1);c.stroke();
+      const who=[st.x,st.y].map(v=>VARS[v].g);const tag=who.includes("red")?"usa variables aprendidas por la red":who.includes("pix")?"usa un resumen de los píxeles":"solo usa variables hechas a mano";label(c,tag,215,pl.y1+26,{fs:12.5,color:P.muted})}}
+  const grp=(g,t)=>`<optgroup label="${t}">${Object.keys(VARS).filter(k=>VARS[k].g===g).map(k=>`<option value="${k}">${VARS[k].t}</option>`).join("")}</optgroup>`;
+  const optsHtml=grp("mano","Hechas a mano")+grp("pix","Resumen de los 64 píxeles (PCA)")+grp("red","Capa oculta de la red 64-32-10 (PCA)");
+  const row=C.ctlRow(host);const mk=(lab,key)=>{const l=C.el("label",{class:"w-sl"});l.appendChild(C.el("span",{class:"lab"},lab));const s=C.el("select",{class:"w-btn"},optsHtml);
+    s.value=st[key];s.addEventListener("change",()=>{st[key]=s.value;ex.touch();draw()});l.appendChild(s);row.appendChild(l);return s};
+  const sx=mk("Eje horizontal","x"),sy=mk("Eje vertical","y");
+  const r2=C.ctlRow(host);const setQ=C.seg(C.group(r2,"¿Quién ha diseñado las variables de la capa oculta?"),[["exp","Una persona experta"],["red","La propia red, al entrenarse"],["pca","El PCA"]],v=>{st.q=v;setQ(v);ex.touch()});
+  C.hint(host,"Cada punto es una imagen real. El clasificador solo ve las dos variables que elijas.");
+  const ex=reg("m9-1",host,{
+    grade(){const a=acc(),items=[];const who=[st.x,st.y].map(v=>VARS[v].g);
+      items.push(it(a>=0.82?7:a>=0.76?3:0,7,`Con «${VARS[st.x].t}» y «${VARS[st.y].t}», el clasificador acierta el <b>${(a*100).toFixed(1)} %</b>`+(a>=0.82?": "+(who.includes("red")?"las variables de la capa oculta separan los cuatro dígitos mucho mejor que las hechas a mano.":"objetivo conseguido."):a>=0.76?` (objetivo: 82 %). Mejoras a los píxeles, pero los dígitos siguen mezclados. Prueba con lo que ha aprendido la capa oculta (Módulo 9, apartado 1.1).`:` (objetivo: 82 %). Con variables hechas a mano, el 3, el 5, el 8 y el 9 se solapan: es la limitación de la ingeniería de variables (Módulo 9, apartado 1.1).`)));
+      items.push(it(st.q==="red"?3:0,3,st.q==="red"?"Las variables de la capa oculta las ha encontrado la red sola al minimizar la función de coste: es el <b>aprendizaje de representaciones</b>.":st.q===null?"No has respondido a la pregunta.":st.q==="pca"?"El PCA solo resume en dos coordenadas los 32 valores que ya calcula la capa oculta; quien los ha diseñado es la red al entrenarse.":"Nadie ha diseñado a mano esas 32 variables: las ha aprendido la red al minimizar la función de coste (apartado 1.1)."));
+      return{items,sol:"las dos componentes de la capa oculta (85.4 %). También vale combinar una componente de la capa oculta con la segunda de los píxeles (83.9 %). La mejor pareja sin la capa oculta se queda en el 76.8 %, y las variables hechas a mano no pasan del 66 %. Las variables de la capa oculta las ha aprendido la propia red."}},
+    solve(){st.x="hid1";st.y="hid2";sx.value="hid1";sy.value="hid2";st.q="red";setQ("red");draw()}});
+  setQ(null);api.onTheme(draw);draw();
+});
+
+// =====================================================================
+// M9 · 2 · Cuántos datos y qué enfoque
+// =====================================================================
+C.define("ej-m9-2",function(host,opts,api){
+  const PR={fotos:{t:"Fotos de averías",d:"Clasificar fotos de averías en 4 tipos. Cada foto etiquetada cuesta 2 €.",goal:0.9,budget:5000,ok:"preentrenado"},
+    scoring:{t:"Scoring de clientes",d:"Predecir impagos con una tabla de 20 columnas. Cada cliente etiquetado cuesta 0.50 €.",goal:0.85,budget:3000,ok:"clasico"}};
+  const AP={clasico:"Modelo clásico",pequena:"Red pequeña desde cero",profunda:"Red profunda desde cero",preentrenado:"Ajustar un preentrenado"};
+  const APC={clasico:"gray",pequena:"blue2",profunda:"red",preentrenado:"green"};
+  const NS=[100,200,300,500,750,1000,1500,2000,3000,5000,7500,10000,20000,50000,100000];
+  const st={cur:"fotos",fotos:{a:"profunda",i:5},scoring:{a:"profunda",i:5}};
+  const [A,B]=panels(host,[{W:640,H:380,aria:"Acierto esperado de cada enfoque según el número de ejemplos etiquetados."},{W:380,H:380,aria:"Acierto y coste del proyecto con la elección actual."}]);
+  const out=p=>K.projOutcome(p,st[p].a,NS[st[p].i]);
+  function draw(){const P=api.pal(),p=st.cur,S=st[p],pr=PR[p];
+    {const k=A.k,c=k.c;k.clear();const pl=new C.Plot(k,[62,18,600,320],{xr:[100,100000],yr:[0.2,1],xlog:true});
+      pl.axes({xt:[100,1000,10000,100000],yt:[0.2,0.4,0.6,0.8,1],xlab:v=>C.thou(v),fmty:v=>Math.round(v*100)+" %",xl:"Ejemplos etiquetados (escala logarítmica)",yl:"Acierto esperado",ylgap:48});
+      pl.hline(pr.goal,{color:P.green,dash:[5,4],w:1.4});label(c,"objetivo "+pct(pr.goal),pl.x0+6,pl.Y(pr.goal)-6,{align:"left",fs:11.5,color:P.green});
+      Object.keys(AP).forEach(a=>{const on=a===S.a;pl.fn(x=>K.projOutcome(p,a,x).acc,{color:P[APC[a]],w:on?3.4:1.8,alpha:on?1:0.45,n:200})});
+      const o=out(p);pl.dot(NS[S.i],o.acc,{color:P[APC[S.a]],r:7,stroke:P.bg,sw:2});
+      if(p==="scoring")label(c,"(no hay un modelo preentrenado para esta tabla)",pl.x1-4,pl.y1-10,{align:"right",fs:11.5,color:P.muted})}
+    {const k=B.k,c=k.c;k.clear();const o=out(p);
+      label(c,pr.t,190,26,{font:`800 17px ${F.head}`,color:P.text});
+      const bar=(y,lab,v,max,goal,fmt,good)=>{label(c,lab,30,y,{align:"left",fs:12.5,color:P.muted});c.fillStyle=P.bg2;c.fillRect(30,y+10,320,22);c.fillStyle=good?P.green:P.red;c.fillRect(30,y+10,320*Math.min(1,v/max),22);
+        const gx=30+320*Math.min(1,goal/max);c.strokeStyle=P.ink;c.lineWidth=2;c.beginPath();c.moveTo(gx,y+5);c.lineTo(gx,y+37);c.stroke();label(c,fmt(v),350,y,{align:"right",w:700,fs:14,color:P.text})};
+      bar(70,"Acierto esperado",o.acc,1,pr.goal,v=>(v*100).toFixed(1)+" %",o.acc>=pr.goal);
+      bar(150,`Coste (presupuesto ${C.thou(pr.budget)} €)`,o.cost,pr.budget*2,pr.budget,v=>C.thou(v)+" €",o.cost<=pr.budget);
+      const lines=[`${C.thou(NS[S.i])} ejemplos × ${numT(K.PROJ[p].label,2)} € = ${C.thou(NS[S.i]*K.PROJ[p].label)} €`,`Entrenamiento (${AP[S.a].toLowerCase()}): ${C.thou(K.PROJ[p].train[S.a])} €`];
+      lines.forEach((l,i)=>label(c,l,30,222+i*22,{align:"left",fs:12.5,color:P.text}));
+      C.legend(c,Object.keys(AP).map(a=>({color:P[APC[a]],label:AP[a]+(a===S.a?" (elegido)":""),w:a===S.a?3.4:2})),30,282,{lh:19,fs:12});label(c,pr.d,190,368,{fs:11.5,color:P.muted})}}
+  const r1=C.ctlRow(host);const setP=C.seg(C.group(r1,"Proyecto"),Object.entries(PR).map(([k,v],i)=>[k,`${i+1} · ${v.t}`]),v=>{st.cur=v;setP(v);setA(st[v].a);sl.set(st[v].i);draw()});
+  const r2=C.ctlRow(host);const setA=C.seg(C.group(r2,"Enfoque"),Object.entries(AP),v=>{st[st.cur].a=v;setA(v);ex.touch();draw()});
+  const r3=C.ctlRow(host);const sl=C.slider(r3,"Ejemplos etiquetados",0,NS.length-1,1,st.fotos.i,v=>{st[st.cur].i=v;ex.touch();draw()},v=>C.thou(NS[v]));
+  C.hint(host,"Las curvas son orientativas, como las de la Figura 49. Resuelve los dos proyectos.");
+  const ex=reg("m9-2",host,{
+    grade(){const items=[];Object.entries(PR).forEach(([p,pr],j)=>{const S=st[p],o=out(p);const g=o.acc>=pr.goal,b=o.cost<=pr.budget;
+      items.push(it(S.a===pr.ok?2:0,2,`<b>${pr.t}.</b> `+(S.a===pr.ok?(p==="fotos"?"Ajustar un modelo preentrenado: sus capas ya saben ver bordes y formas, y bastan unos pocos miles de fotos (aprendizaje por transferencia).":"Modelo clásico: con una tabla y unos miles de filas, el modelo de árboles es el primer candidato (Tabla 36)."):`Elegiste «${AP[S.a]}». `+(p==="fotos"?"Con fotos y pocos datos propios, lo habitual es ajustar un modelo preentrenado (Módulo 9, apartado 1.2).":"Con datos tabulares y pocos ejemplos, el modelo clásico suele ganar (Figura 49 y Tabla 36)."))));
+      items.push(it(g?2:o.acc>=pr.goal-0.05?1:0,2,`Acierto esperado: <b>${(o.acc*100).toFixed(1)} %</b> con ${C.thou(NS[S.i])} ejemplos`+(g?".":` (objetivo: ${pct(pr.goal)}).`+(S.a===pr.ok?" Necesitas algunos ejemplos más.":""))));
+      items.push(it(g&&b?1:0,1,b?(g?`Coste: ${C.thou(o.cost)} €, dentro del presupuesto de ${C.thou(pr.budget)} €.`:`Coste: ${C.thou(o.cost)} €, pero sin llegar al acierto pedido.`):`Coste: <b>${C.thou(o.cost)} €</b>, por encima del presupuesto de ${C.thou(pr.budget)} €.`))});
+      return{items,sol:"fotos de averías → ajustar un modelo preentrenado con 1500 o 2000 fotos (93–94 %, 3300–4300 €). Una red desde cero necesitaría decenas de miles de fotos. Scoring → modelo clásico con 3000–5000 clientes (85–88 %, 1500–2500 €); las redes necesitan muchos más datos para igualarlo."}},
+    solve(){st.fotos={a:"preentrenado",i:7};st.scoring={a:"clasico",i:9};setA(st[st.cur].a);sl.set(st[st.cur].i);draw()}});
+  setP("fotos");setA(st.fotos.a);api.onTheme(draw);draw();
+});
+
+// =====================================================================
+// M9 · 3 · Arregla el bucle de PyTorch
+// =====================================================================
+C.define("ej-m9-3",function(host,opts,api){
+  const LRS=[0.01,0.1,0.5];const st={zero:false,soft:true,swap:false,lr:0};let res=null,anim=1,t=0;
+  const [A,B]=panels(host,[{W:470,H:400,aria:"Código del modelo y del bucle de entrenamiento; cada línea marcada se puede activar o desactivar."},{W:570,H:400,aria:"Pérdida de validación por época y fronteras de las tres clases."}]);
+  function run(){res=K.loopTrain({zero:st.zero,soft:st.soft,order:st.swap?"step-first":"ok",lr:LRS[st.lr]});anim=0;lp.start()}
+  const LINES=()=>[["modelo = nn.Sequential(",0],["nn.Linear(2, 16), nn.ReLU(),",1],["nn.Linear(16, 3),",1],[st.soft?"nn.Softmax(dim=1),":"# (sin softmax)",1,"soft"],[")",0],["coste = nn.CrossEntropyLoss()",0],[`opt = torch.optim.SGD(modelo.parameters(), lr=${LRS[st.lr]})`,0,"lr"],
+    ["for epoca in range(30):",0],["for xb, yb in lotes:",1],[st.zero?"opt.zero_grad()":"# opt.zero_grad()",2,"zero"],["salida = modelo(xb)",2],["perdida = coste(salida, yb)",2],...(st.swap?[["opt.step()",2,"swap"],["perdida.backward()",2,"swap"]]:[["perdida.backward()",2,"swap"],["opt.step()",2,"swap"]])];
+  let hovL=null;
+  function draw(){const P=api.pal();
+    {const k=A.k,c=k.c;k.clear();LINES().forEach(([l,ind,tag],i)=>{const y=22+i*27;const on=hovL===tag&&tag;if(tag){c.fillStyle=on?P.fillb:P.bg2;rrect(c,8,y-12,454,24,5);c.fill()}
+      label(c,l,18+ind*22,y,{align:"left",base:"middle",font:`13px ${F.mono}`,color:l.startsWith("#")?P.muted:tag?P.text:P.text});if(tag)label(c,"✎",452,y,{align:"right",base:"middle",fs:12,color:P.blue})})}
+    {const k=B.k,c=k.c;k.clear();const r=res;const pl=new C.Plot(k,[56,16,300,300],{xr:[1,30],yr:[0,1.3]});pl.axes({xt:[1,10,20,30],yt:[0,0.25,0.5,0.75,1,1.25],fmty:v=>numT(v,2),xl:"Época",yl:"Pérdida de validación",ylgap:42});
+      pl.hline(0.15,{color:P.green,dash:[5,4],w:1.4});label(c,"objetivo 0.15",pl.x1,pl.Y(0.15)-6,{align:"right",fs:11.5,color:P.green});
+      if(r){const m=Math.max(1,Math.round(anim*30));const xs=Array.from({length:m},(_,i)=>i+1);pl.clip();pl.line(xs,r.hist.slice(0,m).map(v=>Math.min(v,1.3)),{color:r.loss<0.15?P.green:P.red,w:2.6});pl.unclip()}
+      const p2=new C.Plot(k,[330,16,554,240],{xr:[-2.6,2.6],yr:[-2.6,2.6]});c.strokeStyle=P.axis;c.lineWidth=1;c.strokeRect(p2.x0,p2.y0,p2.x1-p2.x0,p2.y1-p2.y0);
+      if(r){const N=46,cw=(p2.x1-p2.x0)/N,chh=(p2.y1-p2.y0)/N;const cols=[P.blue,P.red,P.green];for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=p2.iX(p2.x0+(i+.5)*cw),y=p2.iY(p2.y0+(j+.5)*chh);const pr=r.prob(x,y);const b=pr.indexOf(Math.max(...pr));c.fillStyle=rgba(cols[b],0.12+0.4*(pr[b]-1/3)*1.5);c.fillRect(p2.x0+i*cw,p2.y0+j*chh,cw+0.5,chh+0.5)}
+        for(let q=0;q<r.val.n;q++){c.fillStyle=cols[r.val.Y[q]];c.beginPath();c.arc(p2.X(r.val.X[2*q]),p2.Y(r.val.X[2*q+1]),2.6,0,7);c.fill()}}
+      label(c,"Validación: 3 clases",442,262,{fs:12,color:P.muted});
+      if(r){label(c,"Pérdida final",442,300,{fs:12.5,color:P.muted});label(c,num(r.loss,3),442,330,{font:`800 24px ${F.head}`,color:r.loss<0.15?P.green:P.red});label(c,`acierto ${pct(r.acc)}`,442,356,{fs:12.5,color:P.text})}}}
+  const lp=C.loop(api,dt=>{t+=dt;if(anim<1){anim=Math.min(1,anim+dt*1.6);draw();return anim<1}return false});
+  A.k.cv.addEventListener("pointermove",e=>{const p=A.k.ptr(e);const i=Math.round((p.y-22)/27);const L=LINES()[i];const tag=L&&L[2]?L[2]:null;if(tag!==hovL){hovL=tag;A.k.cv.style.cursor=tag?"pointer":"default";draw()}});
+  A.k.cv.addEventListener("pointerleave",()=>{hovL=null;draw()});
+  A.k.cv.addEventListener("click",e=>{const p=A.k.ptr(e);const i=Math.round((p.y-22)/27);const L=LINES()[i];if(!L||!L[2])return;const tag=L[2];
+    if(tag==="soft")st.soft=!st.soft;else if(tag==="zero")st.zero=!st.zero;else if(tag==="swap")st.swap=!st.swap;else st.lr=(st.lr+1)%LRS.length;sync();ex.touch();run();upd()});
+  const row=C.ctlRow(host);const g=C.group(row,"Cambiar");const tog=(lab,key)=>C.button(g,lab,()=>{st[key]=!st[key];sync();ex.touch();run();upd()});
+  const bS=tog("Softmax al final del modelo","soft"),bZ=tog("opt.zero_grad()","zero"),bW=tog("step() antes de backward()","swap");
+  const setL=C.seg(C.group(row,"Tasa (lr)"),LRS.map((v,i)=>[i,String(v)]),v=>{st.lr=+v;setL(v);ex.touch();run();upd()});
+  function sync(){[[bS,st.soft],[bZ,st.zero],[bW,st.swap]].forEach(([b,v])=>b.setAttribute("aria-pressed",String(v)));setL(st.lr)}
+  const rd=C.readout(host);C.hint(host,"Pulsa una línea marcada con ✎ o usa los botones: la red se vuelve a entrenar al momento durante 30 épocas.");
+  function upd(){const r=res;rd.innerHTML=`Pérdida de validación tras 30 épocas: <b>${num(r.loss,3)}</b> · acierto ${pct(r.acc)}.`+(r.loss<0.15?" Objetivo conseguido.":" Objetivo: pérdida por debajo de 0.15.")}
+  const ex=reg("m9-3",host,{
+    grade(){const r=res,items=[];
+      items.push(it(r.loss<0.15?4:r.loss<0.3?2:0,4,`La pérdida de validación queda en <b>${num(r.loss,3)}</b>`+(r.loss<0.15?" (objetivo: menos de 0.15): el bucle entrena bien.":` (objetivo: menos de 0.15) con un acierto del ${pct(r.acc)}.`+(r.acc>0.9&&st.soft?" El acierto es alto, pero la pérdida no puede bajar: algo en el código lo impide.":""))));
+      items.push(it(st.zero?2:0,2,st.zero?"<code>opt.zero_grad()</code> borra los gradientes del lote anterior en cada paso.":"Falta <code>opt.zero_grad()</code>: PyTorch <b>suma</b> los gradientes de cada lote a los anteriores y los pasos se hacen cada vez más largos y desviados (Módulo 9, apartado 2.2)."));
+      items.push(it(!st.soft?2:0,2,!st.soft?"Sin softmax al final: <code>CrossEntropyLoss</code> espera las puntuaciones sin transformar.":"La red termina en <code>Softmax</code> y <code>CrossEntropyLoss</code> vuelve a aplicarla: con probabilidades entre 0 y 1 como entrada, la pérdida no baja de ≈0.55 (apartado 2.3 y apartado 1.1 del Módulo 8)."));
+      items.push(it(!st.swap?2:0,2,!st.swap?"<code>backward()</code> va antes de <code>step()</code>: primero se calculan los gradientes y después se usan.":"<code>step()</code> va antes de <code>backward()</code>: el optimizador da el paso sin gradientes (o con los del lote anterior), así que la red no aprende."));
+      return{items,sol:`quitar la softmax final, recuperar <code>opt.zero_grad()</code>, dejar <code>backward()</code> antes de <code>step()</code> y subir la tasa a 0.1 (pérdida ≈ ${num(K.loopTrain({lr:0.1}).loss,3)}). Con tasa 0.5 también funciona; con 0.01, el bucle es correcto pero 30 épocas no bastan (≈ 0.35).`}},
+    solve(){st.zero=true;st.soft=false;st.swap=false;st.lr=1;sync();run();upd()}});
+  sync();run();upd();api.onTheme(draw);
+});
+
+// =====================================================================
+// M9 · 4 · Compara Keras y PyTorch con justicia
+// =====================================================================
+C.define("ej-m9-4",function(host,opts,api){
+  const E=window.DATA_M9.ej14;const st={w:"torch",b:"rand",seeds:1,q:null};const SEEDS=[1,3,5,10];
+  const key=()=>st.w==="torch"&&st.b==="rand"?"torch":st.w==="torch"?"torchDz":st.b==="rand"?"torchGr":"torchGz";
+  const accs=k=>E[k].slice(0,st.seeds).map(v=>v/450*100),mean=a=>a.reduce((p,q)=>p+q,0)/a.length;
+  const [A]=C.panels(host,[{W:1040,H:340,aria:"Acierto de cada semilla en Keras y en PyTorch, con la media de cada uno."}]);const k=A.k,c=k.c;
+  function draw(){const P=api.pal();k.clear();const pl=new C.Plot(k,[70,16,640,290],{xr:[-0.6,1.6],yr:[95,97.6]});pl.axes({xt:[],yt:[95,95.5,96,96.5,97,97.5],fmty:v=>numT(v,1),yl:"Acierto en los 450 dígitos (%)",ylgap:46});
+    const K2=key(),G=[["Keras (por defecto)","keras",P.blue],["PyTorch ("+(K2==="torch"?"por defecto":"inicialización cambiada")+")",K2,P.red]];
+    G.forEach(([t,kk,col],gi)=>{const a=accs(kk),m=mean(a);label(c,t,pl.X(gi),pl.y1+24,{fs:13,color:P.text});
+      a.forEach((v,j)=>pl.dot(gi+(st.seeds>1?(j/(st.seeds-1)-0.5)*0.5:0),v,{color:col,r:6,stroke:P.bg,sw:1.5}));
+      c.strokeStyle=col;c.lineWidth=5;c.beginPath();c.moveTo(pl.X(gi-0.33),pl.Y(m));c.lineTo(pl.X(gi+0.33),pl.Y(m));c.stroke();label(c,num(m,2)+" %",pl.X(gi+0.36),pl.Y(m)+5,{align:"left",w:700,fs:14,color:P.text})});
+    const a=accs("keras"),b=accs(K2),gap=mean(a)-mean(b),sp=st.seeds>1?Math.max(Math.max(...a)-Math.min(...a),Math.max(...b)-Math.min(...b)):0;
+    const x0=700;c.fillStyle=P.bg2;rrect(c,x0,30,320,250,12);c.fill();
+    label(c,"Diferencia de medias",x0+20,66,{align:"left",fs:13,color:P.muted});label(c,num(Math.abs(gap),2)+" puntos",x0+300,66,{align:"right",font:`800 22px ${F.head}`,color:P.text});
+    label(c,"Variación entre semillas",x0+20,118,{align:"left",fs:13,color:P.muted});label(c,st.seeds>1?num(sp,2)+" puntos":"–",x0+300,118,{align:"right",font:`800 22px ${F.head}`,color:P.text});
+    const W=280,mx=1.6;c.fillStyle=P.red;c.fillRect(x0+20,150,W*Math.min(1,Math.abs(gap)/mx),16);c.fillStyle=P.gray;c.fillRect(x0+20,174,W*Math.min(1,sp/mx),16);
+    label(c,"diferencia",x0+24,207,{align:"left",fs:11.5,color:P.red});label(c,"variación",x0+110,207,{align:"left",fs:11.5,color:P.gray});
+    label(c,st.seeds===1?"Con una sola semilla no se ve cuánto varía el resultado.":Math.abs(gap)<sp?"La diferencia es menor que la variación entre semillas.":"La diferencia supera la variación entre semillas.",x0+160,246,{fs:12.5,w:600,color:P.text})}
+  const r1=C.ctlRow(host);const setW=C.seg(C.group(r1,"PyTorch · pesos iniciales"),[["torch","Por defecto (escala más pequeña)"],["glorot","Glorot, como Keras"]],v=>{st.w=v;setW(v);ex.touch();draw()});
+  const setB=C.seg(C.group(r1,"Sesgos"),[["rand","Aleatorios"],["zero","A cero, como Keras"]],v=>{st.b=v;setB(v);ex.touch();draw()});
+  const r2=C.ctlRow(host);const setS=C.seg(C.group(r2,"Semillas por framework"),SEEDS.map(v=>[v,String(v)]),v=>{st.seeds=+v;setS(v);ex.touch();draw()});
+  const r3=C.ctlRow(host);const setQ=C.seg(C.group(r3,"Conclusión"),[["pt","PyTorch acierta menos"],["kr","Keras acierta menos"],["no","La diferencia no se debe al framework"]],v=>{st.q=v;setQ(v);ex.touch()});
+  C.hint(host,"Cada punto es una red 64-32-10 entrenada de cero con una semilla distinta (30 épocas, Adam, lotes de 32).");
+  const ex=reg("m9-4",host,{
+    grade(){const items=[],T=2.5;
+      items.push(it(st.w==="glorot"?T:0,T,st.w==="glorot"?"Pesos iniciales de Glorot en las dos redes: empiezan igual.":"PyTorch sigue con su escala de pesos por defecto, distinta de la de Keras: no se compara solo el framework (Módulo 9, apartado 2.3)."));
+      items.push(it(st.b==="zero"?T:0,T,st.b==="zero"?"Sesgos a cero en las dos, como hace Keras.":"PyTorch sigue con sesgos aleatorios y Keras los pone a cero: otra diferencia de configuración."));
+      items.push(it(st.seeds>=5?2:st.seeds===3?1:0,2,st.seeds>=5?`Con ${st.seeds} semillas por framework se ve cuánto varía el resultado de una ejecución a otra.`:`Con ${st.seeds} semilla${st.seeds>1?"s":""} no se puede saber si una diferencia de unas décimas es real o es azar: usa al menos 5.`));
+      items.push(it(st.q==="no"?3:0,3,st.q==="no"?"Correcto: con la misma configuración, la diferencia que queda es menor que la variación entre semillas.":st.q===null?"No has elegido una conclusión.":"Con las dos redes configuradas igual, la diferencia de medias es de centésimas, mucho menor que la variación entre semillas: no se puede atribuir al framework."));
+      const a=mean(accs("keras")),b=mean(accs(key()));
+      return{items,sol:`pesos de Glorot y sesgos a cero en PyTorch, con 5 o 10 semillas. Con 10 semillas, Keras da ${num(mean(E.keras.map(v=>v/4.5)),2)} % y PyTorch ${num(mean(E.torchGz.map(v=>v/4.5)),2)} %: la diferencia es menor que la variación entre semillas (casi un punto), así que no se debe al framework. Ahora mismo: Keras ${num(a,2)} % y PyTorch ${num(b,2)} %.`}},
+    solve(){st.w="glorot";st.b="zero";st.seeds=10;st.q="no";setW("glorot");setB("zero");setS(10);setQ("no");draw()}});
+  setW(st.w);setB(st.b);setS(st.seeds);setQ(null);api.onTheme(draw);draw();
+});
+
+// =====================================================================
+// M9 · 5 · Lleva el modelo a producción
+// =====================================================================
+C.define("ej-m9-5",function(host,opts,api){
+  const FW={tf:"Keras / TensorFlow",pt:"PyTorch / Hugging Face"},EXP={saved:"SavedModel",onnx:"torch.export / ONNX",lite:"Conversión a LiteRT"},
+    DST={serving:"TF Serving (servidor)",ort:"ONNX Runtime o Triton (servidor)",executorch:"ExecuTorch (móvil)",litert:"LiteRT (móvil)",tfjs:"TensorFlow.js (navegador)"};
+  const HOP1={tf:["saved","lite"],pt:["onnx","lite"]},HOP2={saved:["serving","tfjs"],onnx:["ort","executorch"],lite:["litert"]};
+  const SC={voz:{t:"Asistente de voz sin conexión",d:"Un asistente de voz que funcione en el móvil sin conexión a internet, a partir de un modelo de voz preentrenado de Hugging Face.",fw:"pt",dst:["executorch","litert"]},
+    pagos:{t:"Puntuar pagos en tiempo real",d:"Puntuar en tiempo real las operaciones de la pasarela de pago con el modelo Keras que ya está en producción sobre TensorFlow.",fw:"tf",dst:["serving"]}};
+  const st={cur:"voz",voz:{fw:"tf",exp:"onnx",dst:"serving"},pagos:{fw:"pt",exp:"saved",dst:"executorch"}};
+  const [A]=C.panels(host,[{W:1040,H:300,aria:"Recorrido del modelo: framework, formato de exportación y lugar donde se ejecuta, con cada paso en verde si es compatible."}]);const k=A.k,c=k.c;
+  const ok1=s=>HOP1[s.fw].includes(s.exp),ok2=s=>HOP2[s.exp].includes(s.dst);
+  function draw(){const P=api.pal(),s=st[st.cur],sc=SC[st.cur];k.clear();label(c,sc.d,520,26,{fs:13.5,w:600,color:P.text});
+    const B3=[[60,FW[s.fw],"Modelo"],[400,EXP[s.exp],"Exportación"],[740,DST[s.dst],"Dónde se ejecuta"]];
+    B3.forEach(([x,t,h],i)=>{label(c,h,x+120,82,{fs:12.5,w:700,color:P.muted});c.fillStyle=i===0?(s.fw==="tf"?P.fillb:P.fillr):P.bg2;rrect(c,x,96,240,96,10);c.fill();c.strokeStyle=i===0?(s.fw==="tf"?P.blue:P.red):P.gray;c.lineWidth=2;rrect(c,x,96,240,96,10);c.stroke();
+      label(c,t,x+120,150,{fs:14,w:700,color:P.text})});
+    [[ok1(s),300,400],[ok2(s),640,740]].forEach(([ok,x0,x1])=>{arrow(c,x0+6,144,x1-6,144,ok?P.green:P.red,3,12);label(c,ok?"✓ compatible":"✗ no encaja",(x0+x1)/2,128,{fs:12.5,w:700,color:ok?P.green:P.red})});
+    const icon=s.dst==="executorch"||s.dst==="litert"?"En el propio móvil: funciona sin conexión":s.dst==="tfjs"?"En el navegador del usuario":"En un servidor, a través de la red";label(c,icon,860,222,{fs:12.5,color:P.text});
+    label(c,`Escenario ${st.cur==="voz"?1:2} de 2`,520,276,{fs:12,color:P.muted})}
+  const r0=C.ctlRow(host);const setC=C.seg(C.group(r0,"Escenario"),Object.entries(SC).map(([kk,v],i)=>[kk,`${i+1} · ${v.t}`]),v=>{st.cur=v;setC(v);sync();draw()});
+  const r1=C.ctlRow(host);const setF=C.seg(C.group(r1,"Modelo"),Object.entries(FW),v=>{st[st.cur].fw=v;ex.touch();sync();draw()});
+  const r2=C.ctlRow(host);const setE=C.seg(C.group(r2,"Exportación"),Object.entries(EXP),v=>{st[st.cur].exp=v;ex.touch();sync();draw()});
+  const r3=C.ctlRow(host);const setD=C.seg(C.group(r3,"Dónde se ejecuta"),Object.entries(DST),v=>{st[st.cur].dst=v;ex.touch();sync();draw()});
+  function sync(){const s=st[st.cur];setF(s.fw);setE(s.exp);setD(s.dst)}
+  C.hint(host,"Las flechas dicen si cada paso encaja técnicamente; si la ruta cumple lo que pide el escenario se corrige al final. Resuelve los dos escenarios.");
+  const ex=reg("m9-5",host,{
+    grade(){const items=[];Object.entries(SC).forEach(([kk,sc])=>{const s=st[kk];const route=ok1(s)&&ok2(s);
+      items.push(it(s.fw===sc.fw?1.5:0,1.5,`<b>${sc.t}.</b> `+(s.fw===sc.fw?(kk==="voz"?"PyTorch: los modelos de Hugging Face se publican en PyTorch.":"Se mantiene Keras sobre TensorFlow: el sistema ya funciona y seguirá recibiendo correcciones (Tabla 41)."):(kk==="voz"?"El modelo de Hugging Face está en PyTorch: pasarlo a TensorFlow sería trabajo extra (Hugging Face Transformers v5 solo usa PyTorch).":"El modelo ya está en producción con Keras y TensorFlow: no hace falta migrarlo (Tabla 41)."))));
+      items.push(it(sc.dst.includes(s.dst)?2:0,2,sc.dst.includes(s.dst)?`«${DST[s.dst]}» cumple lo que pide el escenario.`:`«${DST[s.dst]}» no cumple lo que pide: `+(kk==="voz"?"tiene que funcionar en el móvil y sin conexión (ExecuTorch o LiteRT).":"es un servicio de puntuación en tiempo real en un servidor (TF Serving).")));
+      items.push(it(route?1.5:0,1.5,route?"Todos los pasos de la ruta encajan.":`La ruta no encaja: ${!ok1(s)?`un modelo de ${FW[s.fw]} no se exporta con «${EXP[s.exp]}»`:`«${EXP[s.exp]}» no se ejecuta en «${DST[s.dst]}»`} (Figura 53).`))});
+      return{items,sol:"asistente de voz → PyTorch / Hugging Face, torch.export y ExecuTorch (también vale la conversión a LiteRT y LiteRT en el móvil). Puntuar pagos → Keras / TensorFlow, SavedModel y TF Serving."}},
+    solve(){st.voz={fw:"pt",exp:"onnx",dst:"executorch"};st.pagos={fw:"tf",exp:"saved",dst:"serving"};sync();draw()}});
+  setC("voz");sync();api.onTheme(draw);draw();
 });
 })();

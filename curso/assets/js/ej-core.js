@@ -90,6 +90,66 @@ function gradProfile(act,init,res,layers=10,width=32,batch=64,seed=7){const r=rn
       d=dn;if(pend&&l%2===0){for(let j=0;j<width;j++)d[j]+=pend[j];pend=null}}}
   return Array.from(out)}
 
-const api={rng,gauss,sig,ACT,MLP,xorData,moons,CURVE,CX,fitKnots,J1,dJ1,descend1,RAV,ravJ,ravG,optimize,reached,gradProfile};
+// ================================================================ Módulo 9
+// ---------------------------------------------------------------- ej. 11 · variables de los dígitos y k vecinos
+// variables «a mano» de una imagen 8 × 8 (valores 0–16), sin normalizar
+const FEATS={
+  tinta:{t:"Tinta total",f:x=>{let s=0;for(let i=0;i<64;i++)s+=x[i];return s}},
+  arriba:{t:"Arriba − abajo",f:x=>{let s=0;for(let i=0;i<64;i++)s+=i<32?x[i]:-x[i];return s}},
+  izq:{t:"Izquierda − derecha",f:x=>{let s=0;for(let i=0;i<64;i++)s+=(i%8)<4?x[i]:-x[i];return s}},
+  centro:{t:"Tinta en el centro",f:x=>{let s=0;for(let r=2;r<6;r++)for(let q=2;q<6;q++)s+=x[r*8+q];return s}},
+  supizq:{t:"Cuadrante superior izquierdo",f:x=>{let s=0;for(let r=0;r<4;r++)for(let q=0;q<4;q++)s+=x[r*8+q];return s}},
+  simetria:{t:"Simetría izquierda-derecha",f:x=>{let s=0;for(let r=0;r<8;r++)for(let q=0;q<4;q++)s+=Math.abs(x[r*8+q]-x[r*8+7-q]);return -s}}};
+function zscore(v){const n=v.length;let m=0;for(const a of v)m+=a/n;let sd=0;for(const a of v)sd+=(a-m)**2/n;sd=Math.sqrt(sd)||1;return v.map(a=>(a-m)/sd)}
+// 5 particiones estratificadas, en orden, como StratifiedKFold(5) sin barajar
+function strat5(y){const fold=new Array(y.length);[...new Set(y)].forEach(c=>{const ix=[];y.forEach((v,i)=>{if(v===c)ix.push(i)});const m=ix.length,sz=Array(5).fill(Math.floor(m/5));for(let i=0;i<m%5;i++)sz[i]++;let p=0;sz.forEach((s,f)=>{for(let t=0;t<s;t++)fold[ix[p++]]=f})});return fold}
+// acierto de k vecinos (k = 5) con validación cruzada en 5 partes y dos coordenadas tipificadas
+function knn2(a,b,y,fold,k=5){a=zscore(a);b=zscore(b);const n=y.length;let ok=0;const d=new Float64Array(n);
+  for(let i=0;i<n;i++){const best=[];for(let j=0;j<n;j++){if(fold[j]===fold[i])continue;const dd=(a[i]-a[j])**2+(b[i]-b[j])**2;if(best.length<k||dd<best[best.length-1][0]){best.push([dd,y[j]]);best.sort((p,q)=>p[0]-q[0]);if(best.length>k)best.pop()}}
+    const cnt={};let bl=null,bc=-1;for(const q of best){cnt[q[1]]=(cnt[q[1]]||0)+1;if(cnt[q[1]]>bc){bc=cnt[q[1]];bl=q[1]}}if(bl===y[i])ok++}return ok/n}
+
+// ---------------------------------------------------------------- ej. 12 · cuántos datos y qué enfoque (curvas orientativas)
+// n: ejemplos etiquetados; acierto esperado de cada enfoque según el tipo de proyecto
+const lg=z=>1/(1+Math.exp(-z));
+const PROJ={
+  fotos:{label:2,approach:{clasico:n=>0.50+0.24*(1-Math.exp(-n/600)),pequena:n=>0.30+0.58*lg((Math.log10(n)-3.7)/0.3),
+      profunda:n=>0.25+0.72*lg((Math.log10(n)-4.6)/0.32),preentrenado:n=>0.40+0.55*(1-Math.exp(-n/450))},
+    train:{clasico:0,pequena:200,profunda:4000,preentrenado:300}},
+  scoring:{label:0.5,approach:{clasico:n=>0.62+0.27*(1-Math.exp(-n/1500)),pequena:n=>0.55+0.32*lg((Math.log10(n)-3.6)/0.35),
+      profunda:n=>0.50+0.37*lg((Math.log10(n)-4.3)/0.35),preentrenado:n=>0.50+0.32*lg((Math.log10(n)-3.8)/0.35)},
+    train:{clasico:0,pequena:200,profunda:4000,preentrenado:300}}};
+function projOutcome(p,a,n){const P=PROJ[p];return{acc:P.approach[a](n),cost:Math.round(n*P.label+P.train[a])}}
+
+// ---------------------------------------------------------------- ej. 13 · bucle de entrenamiento con fallos
+// tres nubes de puntos (3 clases)
+function blobs3(n,seed){const r=rng(seed),g=gauss(r);const X=new Float64Array(2*n),Y=new Int8Array(n);
+  for(let i=0;i<n;i++){const c=i%3,a=Math.PI/2+c*2*Math.PI/3;X[2*i]=1.3*Math.cos(a)+g()*0.42;X[2*i+1]=1.3*Math.sin(a)+g()*0.42;Y[i]=c}return{X,Y,n}}
+// red 2-16-3 con ReLU, Adam y entropía cruzada (CrossEntropyLoss); cfg: zero (llama a zero_grad), order ("ok" o "step-first"),
+// soft (softmax añadida al final del modelo), lr, epochs, batch
+function loopTrain(cfg){const o=Object.assign({opt:"sgd",zero:true,order:"ok",soft:false,lr:0.01,epochs:30,batch:20,seed:3},cfg);
+  const r=rng(o.seed),g=gauss(r);const H=16;const tr=blobs3(240,11),va=blobs3(150,29);
+  const P={W1:Float64Array.from({length:2*H},()=>(r()*2-1)/Math.sqrt(2)),b1:Float64Array.from({length:H},()=>(r()*2-1)/Math.sqrt(2)),W2:Float64Array.from({length:H*3},()=>(r()*2-1)/Math.sqrt(H)),b2:Float64Array.from({length:3},()=>(r()*2-1)/Math.sqrt(H))};
+  const K=Object.keys(P),Gr={},M={},V={};K.forEach(k=>{Gr[k]=null;M[k]=new Float64Array(P[k].length);V[k]=new Float64Array(P[k].length)});let t=0;
+  function fwd(x0,x1){const h=new Float64Array(H);for(let j=0;j<H;j++){const s=P.W1[j*2]*x0+P.W1[j*2+1]*x1+P.b1[j];h[j]=s>0?s:0}
+    const z=new Float64Array(3);for(let c=0;c<3;c++){let s=P.b2[c];for(let j=0;j<H;j++)s+=P.W2[c*H+j]*h[j];z[c]=s}
+    let out=z;if(o.soft){const m=Math.max(...z);const e=z.map(v=>Math.exp(v-m));const S=e[0]+e[1]+e[2];out=e.map(v=>v/S)}
+    const m=Math.max(...out);const e=out.map(v=>Math.exp(v-m));const S=e[0]+e[1]+e[2];return{h,z,out,p:e.map(v=>v/S)}}
+  function backward(xs,ys){const add={};K.forEach(k=>add[k]=new Float64Array(P[k].length));let L=0;const n=ys.length;
+    for(let q=0;q<n;q++){const x0=xs[2*q],x1=xs[2*q+1],y=ys[q];const f=fwd(x0,x1);L-=Math.log(Math.max(f.p[y],1e-12))/n;
+      let dout=f.p.map((v,c)=>(v-(c===y?1:0))/n);let dz=dout;if(o.soft){const s=f.out;const dot=dout[0]*s[0]+dout[1]*s[1]+dout[2]*s[2];dz=s.map((v,c)=>v*(dout[c]-dot))}
+      for(let c=0;c<3;c++){add.b2[c]+=dz[c];for(let j=0;j<H;j++)add.W2[c*H+j]+=dz[c]*f.h[j]}
+      for(let j=0;j<H;j++){if(f.h[j]<=0)continue;let dh=0;for(let c=0;c<3;c++)dh+=P.W2[c*H+j]*dz[c];add.b1[j]+=dh;add.W1[j*2]+=dh*x0;add.W1[j*2+1]+=dh*x1}}
+    K.forEach(k=>{if(Gr[k]===null)Gr[k]=add[k];else for(let i=0;i<add[k].length;i++)Gr[k][i]+=add[k][i]});return L}
+  function step(){if(o.opt==="sgd"){K.forEach(k=>{const G2=Gr[k];if(G2===null)return;const p=P[k];for(let i=0;i<p.length;i++)p[i]-=o.lr*G2[i]});return}t++;const b1=.9,b2=.999,c1=1-b1**t,c2=1-b2**t;K.forEach(k=>{const G2=Gr[k];if(G2===null)return;const p=P[k],m=M[k],v=V[k];for(let i=0;i<p.length;i++){m[i]=b1*m[i]+(1-b1)*G2[i];v[i]=b2*v[i]+(1-b2)*G2[i]*G2[i];p[i]-=o.lr*(m[i]/c1)/(Math.sqrt(v[i]/c2)+1e-8)}})}
+  function evalSet(D){let L=0,ok=0;for(let q=0;q<D.n;q++){const f=fwd(D.X[2*q],D.X[2*q+1]);L-=Math.log(Math.max(f.p[D.Y[q]],1e-12));if(f.p.indexOf(Math.max(...f.p))===D.Y[q])ok++}return{loss:L/D.n,acc:ok/D.n}}
+  const idx=Array.from({length:tr.n},(_,i)=>i),hist=[];let diverged=false;
+  for(let e=0;e<o.epochs;e++){for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+    for(let s=0;s<idx.length;s+=o.batch){const b=idx.slice(s,s+o.batch);const xs=new Float64Array(2*b.length),ys=b.map(i=>tr.Y[i]);b.forEach((i,q)=>{xs[2*q]=tr.X[2*i];xs[2*q+1]=tr.X[2*i+1]});
+      if(o.zero)K.forEach(k=>Gr[k]=null);
+      if(o.order==="step-first"){step();backward(xs,ys)}else{backward(xs,ys);step()}}
+    const ev=evalSet(va);if(!isFinite(ev.loss)){diverged=true;ev.loss=9}hist.push(ev.loss)}
+  const fin=evalSet(va);return{hist,loss:isFinite(fin.loss)?fin.loss:9,acc:fin.acc,diverged,prob:(x0,x1)=>fwd(x0,x1).p,val:va,train:tr}}
+
+const api={rng,gauss,sig,ACT,MLP,xorData,moons,CURVE,CX,fitKnots,J1,dJ1,descend1,RAV,ravJ,ravG,optimize,reached,gradProfile,FEATS,zscore,strat5,knn2,PROJ,projOutcome,blobs3,loopTrain};
 if(typeof module!=="undefined")module.exports=api;else G.EJCore=api;
 })(typeof window!=="undefined"?window:globalThis);

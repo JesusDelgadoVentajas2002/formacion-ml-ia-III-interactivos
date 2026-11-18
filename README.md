@@ -7,8 +7,9 @@ Curso web de Nter con figuras interactivas: de la neurona artificial al entrenam
 - **Curso:** https://jesusdelgadoventajas2002.github.io/formacion-ml-ia-III-interactivos/curso/
   - [Módulo 7 · Fundamentos de Redes Neuronales](https://jesusdelgadoventajas2002.github.io/formacion-ml-ia-III-interactivos/curso/modulo-7.html)
   - [Módulo 8 · Entrenamiento de Redes Neuronales](https://jesusdelgadoventajas2002.github.io/formacion-ml-ia-III-interactivos/curso/modulo-8.html)
+  - [Módulo 9 · Introducción al Deep Learning](https://jesusdelgadoventajas2002.github.io/formacion-ml-ia-III-interactivos/curso/modulo-9.html)
 - **Laboratorio (ejercicios):** https://jesusdelgadoventajas2002.github.io/formacion-ml-ia-III-interactivos/
-  - 10 ejercicios interactivos (5 del Módulo 7 y 5 del Módulo 8) con botón **Corregir**: nota sobre 10, explicación de cada fallo y solución. Los 5 del Módulo 9 aparecen como «Próximamente».
+  - 15 ejercicios interactivos (5 de cada módulo) con botón **Corregir**: nota sobre 10, explicación de cada fallo y solución.
 
 Tema claro/oscuro con el botón de la barra superior o añadiendo `?theme=dark` a la URL.
 
@@ -28,6 +29,7 @@ curso/
   index.html        Portada del curso
   modulo-7.html     Módulo 7
   modulo-8.html     Módulo 8
+  modulo-9.html     Módulo 9
   assets/           CSS, JS de figuras, datos, fuentes, imágenes
     js/ej-core.js     Ejercicios: cálculo (redes, datos, descenso); se puede probar en node
     js/ejercicios.js  Ejercicios: figuras, puntuación y corrección

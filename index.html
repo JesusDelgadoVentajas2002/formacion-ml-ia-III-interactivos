@@ -7,7 +7,7 @@
 <meta name="description" content="Ejercicios interactivos de los módulos 7 y 8 de la Formación ML/IA básica de Nter, con corrección automática.">
 <link rel="icon" href="curso/assets/img/favicon.png">
 <script>try{var t=new URLSearchParams(location.search).get("theme")||localStorage.getItem("m8-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="stylesheet" href="curso/assets/curso.css?v=20261103">
+<link rel="stylesheet" href="curso/assets/curso.css?v=20261117">
 <link rel="stylesheet" href="curso/assets/ejercicios.css?v=20261103">
 </head>
 <body class="lab">
@@ -15,7 +15,7 @@
   <button class="iconbtn" id="menuBtn" aria-label="Abrir el índice">☰</button>
   <a class="logo" href="curso/index.html" aria-label="Inicio"><img class="on-light" src="curso/assets/img/nter-s.png" alt="nter"><img class="on-dark" src="curso/assets/img/nter-blanco-s.png" alt="nter"></a>
   <div class="course"><b>Formación ML/IA básica</b> · Deep Learning y Redes Neuronales</div>
-  <nav><a class="m" href="curso/index.html">Inicio</a><a href="curso/modulo-7.html">Módulo 7</a><a href="curso/modulo-8.html">Módulo 8</a><span class="soon" title="Próximamente">Módulo 9</span><a class="m" href="index.html" aria-current="page">Laboratorio</a>
+  <nav><a class="m" href="curso/index.html">Inicio</a><a href="curso/modulo-7.html">Módulo 7</a><a href="curso/modulo-8.html">Módulo 8</a><a href="curso/modulo-9.html">Módulo 9</a><a class="m" href="index.html" aria-current="page">Laboratorio</a>
   <button class="iconbtn" id="themeBtn" aria-label="Cambiar entre modo claro y oscuro">☾ Oscuro</button></nav>
 </header>
 <div class="progress"></div>
@@ -33,12 +33,16 @@
     <li><a href="#ej-m8-3">8. Carrera de optimizadores</a></li>
     <li><a href="#ej-m8-4">9. Rescata la red profunda</a></li>
     <li><a href="#ej-m8-5">10. Frena el sobreajuste</a></li></ul></li>
-  <li><a href="#m9">Módulo 9 · Próximamente</a><ul>
-    <li><a class="soon" href="#m9">11–15. Próximamente</a></li></ul></li>
+  <li><a href="#m9">Módulo 9 · Deep Learning</a><ul>
+    <li><a href="#ej-m9-1">11. Variables a mano o aprendidas</a></li>
+    <li><a href="#ej-m9-2">12. Cuántos datos y qué enfoque</a></li>
+    <li><a href="#ej-m9-3">13. Arregla el bucle de PyTorch</a></li>
+    <li><a href="#ej-m9-4">14. Compara los frameworks con justicia</a></li>
+    <li><a href="#ej-m9-5">15. Lleva el modelo a producción</a></li></ul></li>
 </ul></aside>
 <main class="content"><article class="article">
 <header class="mod-hero"><p class="kicker">Formación ML/IA básica · Parte III · Laboratorio</p><h1 id="top">Ejercicios interactivos</h1>
-  <p class="hero-sub">Diez retos sobre redes neuronales para resolver tocando: montar redes, elegir activaciones, bajar por el paisaje de coste y rescatar entrenamientos que fallan.</p></header>
+  <p class="hero-sub">Quince retos sobre redes neuronales y deep learning para resolver tocando: montar redes, elegir activaciones, bajar por el paisaje de coste, rescatar entrenamientos que fallan y trabajar con frameworks.</p></header>
 <div class="lab-how">
   <div><b><span>1</span>Resuelve</b>Cada ejercicio tiene un objetivo. Mueve, elige y entrena hasta que creas que lo has conseguido. Puedes hacerlos en cualquier orden.</div>
   <div><b><span>2</span>Corrige</b>Cuando termines, pulsa <b style="display:inline">Corregir</b> en la barra inferior. Obtendrás una nota sobre 10 y la nota de cada ejercicio.</div>
@@ -110,20 +114,47 @@
 </section>
 
 <h2 id="m9">Módulo 9 · Introducción al Deep Learning</h2>
-<p>Los ejercicios de este módulo estarán disponibles cuando se publique el Módulo 9.</p>
-<div class="soon-grid">
-  <div class="soon-card"><span class="tag">Próximamente</span><span class="n">Ejercicio 11</span><h4>Deep learning o ML clásico</h4><p>¿Cuándo compensa una red profunda?</p></div>
+<section class="ej" data-ej="m9-1">
+  <div class="ej-head"><span class="ej-n">Ejercicio 11</span><h3 id="ej-m9-1">Variables a mano o aprendidas</h3><span class="ej-ref">Repaso: <a href="curso/modulo-9.html#ap-1-1">Módulo 9 · 1.1</a></span></div>
+  <p class="ej-goal"><b>Objetivo:</b> distingue los dígitos 3, 5, 8 y 9 con solo <b>dos variables</b>. Elige cuáles: hechas a mano, un resumen de los píxeles o lo que ha aprendido la capa oculta de la red. Consigue que un clasificador de 5 vecinos acierte al menos el <b>82 %</b> y di quién diseñó las variables de la capa oculta.</p>
+  <div class="ifig" data-w="ej-m9-1"></div><div class="ej-fb" hidden></div>
+</section>
+
+<section class="ej" data-ej="m9-2">
+  <div class="ej-head"><span class="ej-n">Ejercicio 12</span><h3 id="ej-m9-2">Cuántos datos y qué enfoque</h3><span class="ej-ref">Repaso: <a href="curso/modulo-9.html#ap-1-2">Módulo 9 · 1.1 y 1.2</a></span></div>
+  <p class="ej-goal"><b>Objetivo:</b> resuelve dos proyectos con su presupuesto: clasificar fotos de averías (<b>90 %</b> de acierto, como mucho <b>5000 €</b>) y un scoring de clientes con una tabla (<b>85 %</b>, como mucho <b>3000 €</b>). Elige el enfoque y cuántos ejemplos etiquetar.</p>
+  <div class="ifig" data-w="ej-m9-2"></div><div class="ej-fb" hidden></div>
+</section>
+
+<section class="ej" data-ej="m9-3">
+  <div class="ej-head"><span class="ej-n">Ejercicio 13</span><h3 id="ej-m9-3">Arregla el bucle de PyTorch</h3><span class="ej-ref">Repaso: <a href="curso/modulo-9.html#ap-2-2">Módulo 9 · 2.2 y 2.3</a></span></div>
+  <p class="ej-goal"><b>Objetivo:</b> este bucle de entrenamiento tiene fallos y la red no termina de aprender. Corrige el código y la tasa de aprendizaje hasta que la <b>pérdida de validación</b> quede por debajo de <b>0.15</b> tras 30 épocas.</p>
+  <div class="ifig" data-w="ej-m9-3"></div><div class="ej-fb" hidden></div>
+</section>
+
+<section class="ej" data-ej="m9-4">
+  <div class="ej-head"><span class="ej-n">Ejercicio 14</span><h3 id="ej-m9-4">Compara los frameworks con justicia</h3><span class="ej-ref">Repaso: <a href="curso/modulo-9.html#ap-2-3">Módulo 9 · 2.3</a></span></div>
+  <p class="ej-goal"><b>Objetivo:</b> la misma red da resultados distintos en Keras y en PyTorch. Configura la comparación para que <b>solo cambie el framework</b> y con suficientes <b>semillas</b>, y decide si la diferencia se debe a él.</p>
+  <div class="ifig" data-w="ej-m9-4"></div><div class="ej-fb" hidden></div>
+</section>
+
+<section class="ej" data-ej="m9-5">
+  <div class="ej-head"><span class="ej-n">Ejercicio 15</span><h3 id="ej-m9-5">Lleva el modelo a producción</h3><span class="ej-ref">Repaso: <a href="curso/modulo-9.html#ap-2-3">Módulo 9 · 2.3</a></span></div>
+  <p class="ej-goal"><b>Objetivo:</b> monta para cada escenario la ruta del modelo: <b>framework</b>, <b>formato de exportación</b> y <b>dónde se ejecuta</b>. Cada paso tiene que encajar con el siguiente y el destino tiene que cumplir lo que pide el escenario.</p>
+  <div class="ifig" data-w="ej-m9-5"></div><div class="ej-fb" hidden></div>
+</section>
   <div class="soon-card"><span class="tag">Próximamente</span><span class="n">Ejercicio 12</span><h4>Elige el framework</h4><p>TensorFlow, PyTorch y Keras.</p></div>
   <div class="soon-card"><span class="tag">Próximamente</span><span class="n">Ejercicio 13</span><h4>El flujo de trabajo</h4><p>De los datos al modelo en producción.</p></div>
   <div class="soon-card"><span class="tag">Próximamente</span><span class="n">Ejercicio 14</span><h4>Aplicaciones del deep learning</h4><p>Visión, lenguaje, audio y más.</p></div>
   <div class="soon-card"><span class="tag">Próximamente</span><span class="n">Ejercicio 15</span><h4>Reto final</h4><p>Un proyecto completo de principio a fin.</p></div>
 </div>
 </article></main></div>
-<div class="ej-bar" role="region" aria-label="Corrección"><span id="ejDone"><b>0</b> de 10 ejercicios empezados</span><button class="w-btn" id="ejReset" type="button">Empezar de nuevo</button><button class="w-btn primary" id="ejGrade" type="button">Corregir</button></div>
+<div class="ej-bar" role="region" aria-label="Corrección"><span id="ejDone"><b>0</b> de 15 ejercicios empezados</span><button class="w-btn" id="ejReset" type="button">Empezar de nuevo</button><button class="w-btn primary" id="ejGrade" type="button">Corregir</button></div>
 <div class="ej-modal" id="ejModal" hidden role="dialog" aria-modal="true" aria-label="Resultado"><div class="ej-dialog"></div></div>
 <footer class="site"><span>Formación ML/IA básica - Deep Learning y Redes Neuronales · Laboratorio</span><span><img class="on-light" src="curso/assets/img/nter-s.png" alt="nter" style="display:inline"></span></footer>
 <button class="totop" aria-label="Volver arriba">↑</button>
 <script src="curso/assets/js/curso.js?v=20261103"></script>
-<script src="curso/assets/js/ej-core.js?v=20261103"></script>
-<script src="curso/assets/js/ejercicios.js?v=20261103"></script>
+<script src="curso/assets/js/ej-core.js?v=20261117"></script>
+<script src="curso/assets/js/data-m9.js?v=20261117"></script>
+<script src="curso/assets/js/ejercicios.js?v=20261117"></script>
 </body></html>
